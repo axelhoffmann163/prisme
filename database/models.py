@@ -62,6 +62,16 @@ CREATE TABLE IF NOT EXISTS source_health (
     error       TEXT
 );
 
+CREATE TABLE IF NOT EXISTS watchlists (
+    id          SERIAL      PRIMARY KEY,
+    name        TEXT        NOT NULL,
+    query       TEXT        NOT NULL,
+    category    TEXT,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    last_viewed TIMESTAMPTZ,
+    new_since_last INTEGER  DEFAULT 0
+);
+
 CREATE INDEX IF NOT EXISTS idx_articles_source_id ON articles(source_id);
 CREATE INDEX IF NOT EXISTS idx_articles_published_at ON articles(published_at DESC);
 CREATE INDEX IF NOT EXISTS idx_articles_collected_at ON articles(collected_at DESC);
