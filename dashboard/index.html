@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PressWatch — Tableau de bord</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #333; }
+
+    /* Header */
+    .header { background: #1a3a5c; color: white; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .header h1 { font-size: 18px; font-weight: 600; }
+    .header .live { display: flex; align-items: center; gap: 6px; font-size: 13px; opacity: 0.8; }
+    .dot-live { width: 8px; height: 8px; border-radius: 50%; background: #1D9E75; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* Stats */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 16px 24px; }
+    .stat-card { background: white; border-radius: 8px; padding: 14px 16px; border: 1px solid #e5e5e5; }
+    .stat-label { font-size: 11px; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-size: 24px; font-weight: 600; color: #1a3a5c; }
+
+    /* Recherche */
+    .search-bar { padding: 0 24px 16px; }
+    .search-wrap { display: flex; gap: 8px; }
+    .search-input { flex: 1; height: 42px; padding: 0 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; }
+    .search-input:focus { border-color: #1a3a5c; }
+    .search-btn { height: 42px; padding: 0 20px; background: #1a3a5c; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; }
+    .search-btn:hover { background: #0d2a45; }
+    .filters { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .filter-btn { padding: 5px 12px; border-radius: 20px; border: 1px solid #ddd; background: white; font-size: 12px; cursor: pointer; color: #555; }
+    .filter-btn.active { background: #1a3a5c; color: white; border-color: #1a3a5c; }
+
+    /* Articles */
+    .main { padding: 0 24px 24px; }
+    .section-title { font-size: 13px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .articles { display: flex; flex-direction: column; gap: 8px; }
+    .article { background: white; border-radius: 8px; padding: 14px 16px; border: 1px solid #e5e5e5; cursor: pointer; transition: border-color 0.15s; }
+    .article:hover { border-color: #1a3a5c; }
+    .article-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+    .badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+    .badge-PQN { background: #E6F1FB; color: #0C447C; }
+    .badge-PQR { background: #EAF3DE; color: #3B6D11; }
+    .badge-TV  { background: #FAEEDA; color: #854F0B; }
+    .badge-Radio { background: #FBEAF0; color: #72243E; }
+    .badge-Magazine { background: #EEEDFE; color: #3C3489; }
+    .badge-Agence { background: #FAECE7; color: #993C1D; }
+    .badge-Natif { background: #E1F5EE; color: #0F6E56; }
+    .badge-International { background: #F1EFE8; color: #5F5E5A; }
+    .source-name { font-size: 12px; color: #888; }
+    .article-time { font-size: 11px; color: #aaa; margin-left: auto; }
+    .article-title { font-size: 14px; font-weight: 500; color: #1a1a1a; line-height: 1.4; margin-bottom: 4px; }
+    .article-summary { font-size: 12px; color: #666; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* Loading */
+    .loading { text-align: center; padding: 40px; color: #888; font-size: 14px; }
+    .error { text-align: center; padding: 40px; color: #cc3333; font-size: 14px; }
+    .result-count { font-size: 13px; color: #888; margin-bottom: 12px; }
+
+    @media (max-width: 600px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🗞 PressWatch</h1>
+  <div class="live">
+    <div class="dot-live"></div>
+    <span id="live-status">Chargement…</span>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-label">Articles aujourd'hui</div>
+    <div class="stat-value" id="stat-today">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total collectés</div>
+    <div class="stat-value" id="stat-total">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Sources actives</div>
+    <div class="stat-value" id="stat-sources">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Flux en erreur</div>
+    <div class="stat-value" id="stat-errors">—</div>
+  </div>
+</div>
+
+<div class="search-bar">
+  <div class="search-wrap">
+    <input type="text" class="search-input" id="search-input" placeholder="Rechercher dans toute la presse française…" onkeydown="if(event.key==='Enter') doSearch()">
+    <button class="search-btn" onclick="doSearch()">Rechercher</button>
+  </div>
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter(this, null)">Toutes</button>
+    <button class="filter-btn" onclick="setFilter(this, 'PQN')">PQN</button>
+    <button class="filter-btn" onclick="setFilter(this, 'PQR')">PQR</button>
+    <button class="filter-btn" onclick="setFilter(this, 'TV')">TV</button>
+    <button class="filter-btn" onclick="setFilter(this, 'Radio')">Radio</button>
+    <button class="filter-btn" onclick="setFilter(this, 'Magazine')">Magazine</button>
+    <button class="filter-btn" onclick="setFilter(this, 'Agence')">Agence</button>
+  </div>
+</div>
+
+<div class="main">
+  <div id="result-count" class="result-count"></div>
+  <div class="section-title" id="section-title">Derniers articles</div>
+  <div class="articles" id="articles-list">
+    <div class="loading">Chargement des articles…</div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://128.140.41.234:8000';
+  let currentCategory = null;
+  let currentQuery = '';
+
+  function timeAgo(dateStr) {
+    if (!dateStr) return '';
+    const diff = (Date.now() - new Date(dateStr)) / 1000;
+    if (diff < 60) return 'à l\'instant';
+    if (diff < 3600) return `il y a ${Math.floor(diff/60)} min`;
+    if (diff < 86400) return `il y a ${Math.floor(diff/3600)}h`;
+    return `il y a ${Math.floor(diff/86400)}j`;
+  }
+
+  function getBadgeClass(category) {
+    return 'badge badge-' + (category || 'PQN').replace(/\s/g, '');
+  }
+
+  function renderArticles(articles) {
+    const list = document.getElementById('articles-list');
+    if (!articles || articles.length === 0) {
+      list.innerHTML = '<div class="loading">Aucun article trouvé.</div>';
+      return;
+    }
+    list.innerHTML = articles.map(a => `
+      <div class="article" onclick="window.open('${a.url}', '_blank')">
+        <div class="article-meta">
+          <span class="${getBadgeClass(a.category)}">${a.category || 'PQN'}</span>
+          <span class="source-name">${a.source_name || ''}</span>
+          <span class="article-time">${timeAgo(a.collected_at)}</span>
+        </div>
+        <div class="article-title">${a.title}</div>
+        ${a.summary ? `<div class="article-summary">${a.summary}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  async function loadStats() {
+    try {
+      const res = await fetch(`${API}/stats`);
+      const data = await res.json();
+      document.getElementById('stat-today').textContent = (data.articles_today || 0).toLocaleString('fr');
+      document.getElementById('stat-total').textContent = (data.articles_total || 0).toLocaleString('fr');
+      document.getElementById('stat-sources').textContent = data.sources_active || 0;
+      document.getElementById('stat-errors').textContent = data.feeds_in_error || 0;
+      document.getElementById('live-status').textContent = 'En direct';
+    } catch(e) {
+      document.getElementById('live-status').textContent = 'Connexion…';
+    }
+  }
+
+  async function loadArticles() {
+    const list = document.getElementById('articles-list');
+    list.innerHTML = '<div class="loading">Chargement…</div>';
+    try {
+      let url = `${API}/articles?limit=50`;
+      if (currentCategory) url += `&category=${currentCategory}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      document.getElementById('result-count').textContent = `${data.length} articles`;
+      document.getElementById('section-title').textContent = 'Derniers articles';
+      renderArticles(data);
+    } catch(e) {
+      list.innerHTML = '<div class="error">Impossible de charger les articles. Vérifiez votre connexion.</div>';
+    }
+  }
+
+  async function doSearch() {
+    const q = document.getElementById('search-input').value.trim();
+    if (!q) { loadArticles(); return; }
+    currentQuery = q;
+    const list = document.getElementById('articles-list');
+    list.innerHTML = '<div class="loading">Recherche en cours…</div>';
+    try {
+      let url = `${API}/search?q=${encodeURIComponent(q)}&limit=50`;
+      if (currentCategory) url += `&category=${currentCategory}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      document.getElementById('result-count').textContent = `${data.total} résultat${data.total > 1 ? 's' : ''} pour "${q}"`;
+      document.getElementById('section-title').textContent = `Résultats de recherche`;
+      renderArticles(data.results);
+    } catch(e) {
+      list.innerHTML = '<div class="error">Erreur lors de la recherche.</div>';
+    }
+  }
+
+  function setFilter(btn, category) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCategory = category;
+    if (currentQuery) doSearch();
+    else loadArticles();
+  }
+
+  // Init
+  loadStats();
+  loadArticles();
+  setInterval(loadStats, 60000);
+</script>
+
+</body>
+</html>
