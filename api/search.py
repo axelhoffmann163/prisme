@@ -10,7 +10,7 @@ def search_articles(q: str, limit: int = 50, category: str = None, days: int = 7
         "a.collected_at >= NOW() - (%s || ' days')::INTERVAL",
         "(to_tsvector('french', coalesce(a.title, '')) @@ plainto_tsquery('french', %s) OR to_tsvector('french', coalesce(a.summary, '')) @@ plainto_tsquery('french', %s) OR lower(a.title) LIKE lower(%s))"
     ]
-    params = [str(days), q, q, f"%{q}%"]
+    params = [str(days), q, q, f"%{q}%", q, limit]
 
     if category:
         where_clauses.append("s.category = %s")
@@ -42,7 +42,6 @@ def search_articles(q: str, limit: int = 50, category: str = None, days: int = 7
     ORDER BY relevance DESC, a.published_at DESC
     LIMIT %s
     """
-    params.extend([q, limit])
 
     with get_conn() as conn:
         with conn.cursor() as cur:
