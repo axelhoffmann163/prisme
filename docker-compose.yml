@@ -41,6 +41,19 @@ services:
         python main.py
       "
 
+  api:
+    build: .
+    container_name: presswatch-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+
   adminer:
     image: adminer:latest
     container_name: presswatch-adminer
