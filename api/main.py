@@ -2,12 +2,10 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 from database.connection import init_pool, close_pool
-from database.repository import (
-    get_recent_articles,
-    get_stats,
-)
+from database.repository import get_recent_articles, get_stats
 from api.search import search_articles
 from api.sources import get_sources_status
+from api.watchlist import get_watchlists, create_watchlist, delete_watchlist, get_watchlist_articles
 
 app = FastAPI(title="PressWatch API", version="1.0")
 
@@ -38,7 +36,6 @@ def stats():
 def articles(
     limit: int = Query(50, ge=1, le=200),
     category: Optional[str] = None,
-    source_id: Optional[str] = None,
 ):
     return get_recent_articles(limit=limit, category=category)
 
@@ -54,3 +51,19 @@ def search(
 @app.get("/sources")
 def sources():
     return get_sources_status()
+
+@app.get("/watchlists")
+def watchlists():
+    return get_watchlists()
+
+@app.post("/watchlists")
+def add_watchlist(name: str, query: str, category: Optional[str] = None):
+    return create_watchlist(name=name, query=query, category=category)
+
+@app.delete("/watchlists/{watchlist_id}")
+def remove_watchlist(watchlist_id: int):
+    return delete_watchlist(watchlist_id=watchlist_id)
+
+@app.get("/watchlists/{watchlist_id}/articles")
+def watchlist_articles(watchlist_id: int, limit: int = Query(50, ge=1, le=200)):
+    return get_watchlist_articles(watchlist_id=watchlist_id, limit=limit)
