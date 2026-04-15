@@ -1,274 +1,1249 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prisme — Veille presse</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #333; min-height: 100vh; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prisme — Veille presse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F7F6F3;
+  --bg2: #EFEDE8;
+  --sidebar: #0D1117;
+  --sidebar2: #161B22;
+  --accent: #2563EB;
+  --accent2: #1D4ED8;
+  --text: #1A1A1A;
+  --text2: #6B7280;
+  --text3: #9CA3AF;
+  --border: rgba(0,0,0,0.07);
+  --white: #FFFFFF;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --card-hover: 0 4px 12px rgba(0,0,0,0.10), 0 8px 32px rgba(0,0,0,0.06);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --transition: 180ms cubic-bezier(0.4,0,0.2,1);
+}
 
-    /* ── Header ── */
-    .header { background: #1a3a5c; color: white; padding: 13px 24px; display: flex; align-items: center; justify-content: space-between; }
-    .header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
-    .live { display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: 0.8; }
-    .dot-live { width: 7px; height: 7px; border-radius: 50%; background: #1D9E75; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ── Tabs ── */
-    .tabs { background: #15304d; display: flex; padding: 0 24px; gap: 2px; }
-    .tab { padding: 10px 18px; font-size: 13px; color: rgba(255,255,255,0.6); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; }
-    .tab:hover { color: rgba(255,255,255,0.85); }
-    .tab.active { color: white; border-bottom-color: #4a9eff; }
+body {
+  font-family: 'Instrument Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
 
-    /* ── Stats ── */
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 14px 24px 0; }
-    .stat { background: white; border-radius: 8px; padding: 12px 14px; border: 1px solid #e5e5e5; }
-    .stat-label { font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
-    .stat-value { font-size: 22px; font-weight: 600; color: #1a3a5c; }
+/* ═══════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════ */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--sidebar);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  position: relative;
+  z-index: 10;
+}
 
-    /* ── Pages ── */
-    .page { display: none; }
-    .page.active { display: block; }
+.sidebar::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 1px; height: 100%;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.06) 70%, transparent);
+}
 
-    /* ════════════════════════════════
-       PAGE 1 — FLUX
-    ════════════════════════════════ */
-    .flux-layout { display: flex; padding: 14px 24px; gap: 16px; }
-    .sidebar { width: 230px; flex-shrink: 0; }
-    .sidebar-title { font-size: 11px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
-    .btn-icon { background: none; border: none; font-size: 20px; color: #1a3a5c; cursor: pointer; line-height: 1; }
-    .watchlist-item { background: white; border-radius: 8px; padding: 10px 12px; border: 1px solid #e5e5e5; margin-bottom: 6px; cursor: pointer; position: relative; transition: border-color 0.15s; }
-    .watchlist-item:hover { border-color: #1a3a5c; }
-    .watchlist-item.active { border-color: #1a3a5c; background: #f0f6ff; }
-    .watchlist-name { font-size: 13px; font-weight: 500; }
-    .watchlist-query { font-size: 11px; color: #888; margin-top: 2px; }
-    .watchlist-badge { position: absolute; top: 8px; right: 8px; background: #1a3a5c; color: white; border-radius: 10px; font-size: 10px; padding: 2px 6px; }
-    .watchlist-delete { position: absolute; bottom: 8px; right: 8px; font-size: 10px; color: #cc3333; cursor: pointer; opacity: 0; background: none; border: none; transition: opacity 0.15s; }
-    .watchlist-item:hover .watchlist-delete { opacity: 1; }
-    .new-watch-form { background: white; border-radius: 8px; padding: 12px; border: 1px solid #B5D4F4; margin-bottom: 8px; display: none; }
-    .new-watch-form input { width: 100%; height: 32px; padding: 0 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; margin-bottom: 6px; }
-    .new-watch-form button { width: 100%; height: 32px; background: #1a3a5c; color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; }
-    .content { flex: 1; min-width: 0; }
-    .search-wrap { display: flex; gap: 8px; margin-bottom: 10px; }
-    .search-input { flex: 1; height: 40px; padding: 0 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; }
-    .search-input:focus { border-color: #1a3a5c; }
-    .search-btn { height: 40px; padding: 0 18px; background: #1a3a5c; color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; }
-    .filters { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-    .filter-btn { padding: 4px 12px; border-radius: 20px; border: 1px solid #ddd; background: white; font-size: 12px; cursor: pointer; color: #555; }
-    .filter-btn.active { background: #1a3a5c; color: white; border-color: #1a3a5c; }
-    .result-info { font-size: 12px; color: #888; margin-bottom: 8px; }
-    .articles { display: flex; flex-direction: column; gap: 6px; }
-    .article { background: white; border-radius: 8px; padding: 12px 14px; border: 1px solid #e5e5e5; cursor: pointer; transition: border-color 0.15s; }
-    .article:hover { border-color: #1a3a5c; }
-    .article-meta { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; flex-wrap: wrap; }
-    .badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 500; }
-    .badge-PQN { background: #E6F1FB; color: #0C447C; }
-    .badge-PQR { background: #EAF3DE; color: #3B6D11; }
-    .badge-TV { background: #FAEEDA; color: #854F0B; }
-    .badge-Radio { background: #FBEAF0; color: #72243E; }
-    .badge-Magazine { background: #EEEDFE; color: #3C3489; }
-    .badge-Agence { background: #FAECE7; color: #993C1D; }
-    .badge-Natif { background: #E1F5EE; color: #0F6E56; }
-    .badge-International { background: #F1EFE8; color: #5F5E5A; }
-    .source-name { font-size: 12px; color: #888; }
-    .article-time { font-size: 11px; color: #bbb; margin-left: auto; }
-    .article-title { font-size: 13px; font-weight: 500; line-height: 1.4; margin-bottom: 3px; }
-    .article-summary { font-size: 12px; color: #666; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sidebar-logo {
+  padding: 0 18px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 16px;
+}
 
-    /* ════════════════════════════════
-       PAGE 2 — SOURCES
-    ════════════════════════════════ */
-    .sources-page { padding: 16px 24px; }
-    .card { background: white; border-radius: 8px; border: 1px solid #e5e5e5; overflow: hidden; margin-bottom: 14px; }
-    .card-header { padding: 12px 16px; border-bottom: 1px solid #e5e5e5; display: flex; align-items: center; justify-content: space-between; }
-    .card-title { font-size: 13px; font-weight: 600; }
-    .form-add { display: grid; grid-template-columns: 1fr 2fr 120px 100px auto; gap: 8px; align-items: end; padding: 14px 16px; }
-    .field { display: flex; flex-direction: column; gap: 4px; }
-    .field label { font-size: 11px; color: #888; }
-    .field input, .field select { height: 34px; padding: 0 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; }
-    .field input:focus { outline: none; border-color: #1a3a5c; }
-    .btn { height: 34px; padding: 0 14px; border-radius: 6px; border: 1px solid #ddd; font-size: 12px; cursor: pointer; background: white; color: #555; display: inline-flex; align-items: center; gap: 5px; }
-    .btn-primary { background: #1a3a5c; color: white; border-color: transparent; }
-    .btn-primary:hover { background: #0d2a45; }
-    .btn-success { background: #1D9E75; color: white; border-color: transparent; }
-    .test-result { padding: 8px 16px; font-size: 12px; display: none; border-top: 1px solid #e5e5e5; }
-    .test-ok { color: #1D9E75; background: #f0faf6; }
-    .test-err { color: #cc3333; background: #fff5f5; }
-    .src-filters { display: flex; gap: 6px; padding: 10px 16px; border-bottom: 1px solid #e5e5e5; flex-wrap: wrap; align-items: center; }
-    .src-search { height: 30px; padding: 0 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; margin-left: auto; width: 180px; }
-    table { width: 100%; border-collapse: collapse; }
-    th { padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.5px; background: #f9f9f9; border-bottom: 1px solid #e5e5e5; }
-    td { padding: 9px 12px; border-bottom: 1px solid #f0f0f0; font-size: 13px; vertical-align: middle; }
-    tr:last-child td { border-bottom: none; }
-    tr.src-row:hover td { background: #fafafa; }
-    .src-name { font-weight: 500; }
-    .src-url { font-size: 11px; color: #185FA5; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .status-ok { display: flex; align-items: center; gap: 5px; color: #1D9E75; font-size: 12px; }
-    .status-err { display: flex; align-items: center; gap: 5px; color: #cc3333; font-size: 12px; }
-    .status-off { display: flex; align-items: center; gap: 5px; color: #aaa; font-size: 12px; }
-    .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-    .dot-ok { background: #1D9E75; } .dot-err { background: #cc3333; } .dot-off { background: #ccc; }
-    .acts { display: flex; gap: 4px; align-items: center; }
-    .btn-sm { height: 26px; padding: 0 9px; font-size: 11px; border-radius: 5px; border: 1px solid #ddd; cursor: pointer; background: white; color: #555; }
-    .btn-sm:hover { background: #f5f5f5; }
-    .btn-sm-danger { color: #cc3333; border-color: #f5c0c0; }
-    .toggle-sw { position: relative; width: 36px; height: 20px; display: inline-block; }
-    .toggle-sw input { opacity: 0; width: 0; height: 0; }
-    .toggle-sl { position: absolute; cursor: pointer; inset: 0; background: #ccc; border-radius: 20px; transition: .2s; }
-    .toggle-sl:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .2s; }
-    input:checked + .toggle-sl { background: #1D9E75; }
-    input:checked + .toggle-sl:before { transform: translateX(16px); }
-    .edit-row { display: none; background: #f0f6ff; }
-    .edit-row td { padding: 8px 12px; }
-    .edit-grid { display: grid; grid-template-columns: 1fr 2fr 110px 80px auto auto; gap: 6px; align-items: center; }
-    .edit-grid input, .edit-grid select { height: 30px; padding: 0 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px; }
+.sidebar-logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-    .loading { text-align: center; padding: 30px; color: #aaa; font-size: 13px; }
-    .no-items { text-align: center; padding: 16px; color: #aaa; font-size: 13px; }
+.logo-icon {
+  width: 30px; height: 30px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
 
-    @media (max-width: 700px) {
-      .stats { grid-template-columns: repeat(2,1fr); }
-      .flux-layout { flex-direction: column; padding: 10px 14px; }
-      .sidebar { width: 100%; }
-      .form-add { grid-template-columns: 1fr 1fr; }
-    }
-  </style>
+.logo-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -0.3px;
+}
+
+.logo-sub {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+.sidebar-section {
+  padding: 0 10px;
+  margin-bottom: 6px;
+}
+
+.sidebar-section-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 0 8px;
+  margin-bottom: 4px;
+  margin-top: 16px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition);
+  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+  font-weight: 500;
+  position: relative;
+  user-select: none;
+}
+
+.nav-item:hover {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.85);
+}
+
+.nav-item.active {
+  background: rgba(37,99,235,0.15);
+  color: white;
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 18px;
+  background: var(--accent);
+  border-radius: 0 3px 3px 0;
+}
+
+.nav-icon {
+  width: 18px; height: 18px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.nav-item.active .nav-icon { opacity: 1; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: white;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 18px 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+}
+
+.live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #10B981;
+  animation: livepulse 2s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes livepulse {
+  0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(16,185,129,0); }
+}
+
+/* ═══════════════════════════════════════
+   MAIN
+═══════════════════════════════════════ */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* ═══════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════ */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.topbar-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+
+.topbar-search {
+  flex: 1;
+  max-width: 420px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.topbar-search input {
+  width: 100%;
+  height: 36px;
+  padding: 0 14px 0 36px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  font-family: inherit;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: all var(--transition);
+}
+
+.topbar-search input:focus {
+  border-color: var(--accent);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+}
+
+.topbar-search input::placeholder { color: var(--text3); }
+
+.search-icon {
+  position: absolute;
+  left: 11px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+  pointer-events: none;
+}
+
+.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+
+.stats-chips {
+  display: flex;
+  gap: 6px;
+}
+
+.stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.stat-chip strong {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ═══════════════════════════════════════
+   PAGES
+═══════════════════════════════════════ */
+.page { display: none; flex: 1; overflow: hidden; }
+.page.active { display: flex; flex-direction: column; }
+
+/* ═══════════════════════════════════════
+   FILTER BAR
+═══════════════════════════════════════ */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 24px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow-x: auto;
+}
+
+.filter-bar::-webkit-scrollbar { display: none; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--text2);
+  white-space: nowrap;
+  transition: all var(--transition);
+  user-select: none;
+}
+
+.chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(37,99,235,0.04); }
+
+.chip.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+}
+
+.chip-count {
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+  padding: 0 5px;
+  font-size: 10px;
+}
+
+.chip:not(.active) .chip-count {
+  background: var(--bg2);
+  color: var(--text3);
+}
+
+/* ═══════════════════════════════════════
+   FEED
+═══════════════════════════════════════ */
+.feed-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+.feed-container::-webkit-scrollbar { width: 4px; }
+.feed-container::-webkit-scrollbar-track { background: transparent; }
+.feed-container::-webkit-scrollbar-thumb { background: var(--bg2); border-radius: 4px; }
+
+.feed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.feed-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.feed-count {
+  font-size: 12px;
+  color: var(--text3);
+}
+
+.articles-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Article card */
+.article-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  transition: all var(--transition);
+  animation: fadeInUp 0.3s ease both;
+}
+
+.article-card:hover {
+  box-shadow: var(--card-hover);
+  transform: translateY(-1px);
+  border-color: rgba(37,99,235,0.12);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.article-card:nth-child(1) { animation-delay: 0ms; }
+.article-card:nth-child(2) { animation-delay: 30ms; }
+.article-card:nth-child(3) { animation-delay: 60ms; }
+.article-card:nth-child(4) { animation-delay: 90ms; }
+.article-card:nth-child(5) { animation-delay: 120ms; }
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.source-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.badge-PQN { background: #EFF6FF; color: #1D4ED8; }
+.badge-PQR { background: #F0FDF4; color: #15803D; }
+.badge-TV { background: #FFF7ED; color: #C2410C; }
+.badge-Radio { background: #FDF4FF; color: #9333EA; }
+.badge-Magazine { background: #F0F9FF; color: #0369A1; }
+.badge-Agence { background: #FFF1F2; color: #BE123C; }
+.badge-Natif { background: #ECFDF5; color: #065F46; }
+.badge-International { background: #F8FAFC; color: #475569; }
+
+.card-source-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text2);
+}
+
+.card-time {
+  font-size: 11px;
+  color: var(--text3);
+  margin-left: auto;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.45;
+  margin-bottom: 5px;
+  letter-spacing: -0.1px;
+}
+
+.card-summary {
+  font-size: 12.5px;
+  color: var(--text2);
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Loading / empty */
+.state-loading, .state-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--text3);
+  font-size: 13px;
+  gap: 10px;
+  text-align: center;
+}
+
+.spinner {
+  width: 24px; height: 24px;
+  border: 2px solid var(--bg2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ═══════════════════════════════════════
+   SEARCH PAGE
+═══════════════════════════════════════ */
+.search-page {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 24px;
+}
+
+.search-hero {
+  max-width: 600px;
+  margin: 0 auto 32px;
+  text-align: center;
+}
+
+.search-hero h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 28px;
+  color: var(--text);
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+}
+
+.search-box {
+  position: relative;
+}
+
+.search-box input {
+  width: 100%;
+  height: 50px;
+  padding: 0 50px 0 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  font-size: 15px;
+  font-family: inherit;
+  background: var(--white);
+  color: var(--text);
+  outline: none;
+  transition: all var(--transition);
+  box-shadow: var(--card-shadow);
+}
+
+.search-box input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.08), var(--card-shadow);
+}
+
+.search-box button {
+  position: absolute;
+  right: 6px; top: 50%;
+  transform: translateY(-50%);
+  width: 38px; height: 38px;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  transition: all var(--transition);
+}
+
+.search-box button:hover { background: var(--accent2); }
+
+.search-results { max-width: 800px; margin: 0 auto; }
+
+/* ═══════════════════════════════════════
+   WATCHLISTS PAGE
+═══════════════════════════════════════ */
+.watchlists-page {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.page-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: transparent;
+  color: var(--text2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn-ghost:hover { background: var(--bg2); color: var(--text); }
+
+.new-watch-panel {
+  background: var(--white);
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+  display: none;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.08);
+}
+
+.new-watch-panel.visible { display: block; animation: fadeInUp 0.2s ease; }
+
+.watch-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.form-field { display: flex; flex-direction: column; gap: 5px; }
+.form-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+.form-input {
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: all var(--transition);
+}
+.form-input:focus { border-color: var(--accent); background: var(--white); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+
+.watchlists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.watch-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 18px;
+  border: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+}
+
+.watch-card:hover { box-shadow: var(--card-hover); transform: translateY(-2px); border-color: rgba(37,99,235,0.15); }
+
+.watch-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+.watch-card-name { font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -0.2px; }
+.watch-card-query { font-size: 12px; color: var(--text2); margin-bottom: 14px; line-height: 1.4; }
+
+.watch-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.watch-new-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  background: var(--accent);
+  color: white;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.watch-updated {
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.watch-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.watch-card:hover .watch-actions { opacity: 1; }
+
+.watch-action-btn {
+  width: 26px; height: 26px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--transition);
+  color: var(--text3);
+  font-size: 12px;
+}
+
+.watch-action-btn:hover { background: var(--white); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.watch-action-btn.danger:hover { color: #DC2626; border-color: #FECACA; }
+
+.empty-state {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text3);
+}
+
+.empty-state-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.4; }
+.empty-state-title { font-size: 15px; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
+.empty-state-sub { font-size: 13px; }
+
+/* ═══════════════════════════════════════
+   SOURCES PAGE
+═══════════════════════════════════════ */
+.sources-page-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.sources-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.src-stat {
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+}
+
+.src-stat-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
+.src-stat-value { font-size: 24px; font-weight: 600; color: var(--text); }
+
+.add-source-form {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid transparent;
+  transition: all var(--transition);
+}
+
+.form-header:hover { background: var(--bg); }
+.form-header.open { border-bottom-color: var(--border); }
+
+.form-header-title { font-size: 13px; font-weight: 600; }
+.form-header-chevron { color: var(--text3); transition: transform var(--transition); }
+.form-header.open .form-header-chevron { transform: rotate(180deg); }
+
+.form-body { display: none; padding: 16px 18px; }
+.form-body.visible { display: block; animation: fadeInUp 0.2s ease; }
+
+.add-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 120px 90px;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.form-actions { display: flex; gap: 8px; }
+
+.test-result-bar {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  margin-top: 10px;
+  display: none;
+}
+
+.test-ok { background: #ECFDF5; color: #065F46; display: block; }
+.test-err { background: #FFF1F2; color: #BE123C; display: block; }
+
+.sources-table-wrap {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.src-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.src-search-input {
+  margin-left: auto;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  width: 180px;
+  transition: all var(--transition);
+}
+
+.src-search-input:focus { border-color: var(--accent); background: var(--white); }
+
+table { width: 100%; border-collapse: collapse; }
+th {
+  padding: 9px 14px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+tr:last-child td { border-bottom: none; }
+tr.src-row:hover td { background: #FAFAF9; }
+
+.src-name-cell { font-weight: 500; color: var(--text); }
+.src-url-cell { font-size: 11px; color: var(--accent); max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.status-pill.ok { background: #ECFDF5; color: #065F46; }
+.status-pill.err { background: #FFF1F2; color: #BE123C; }
+.status-pill.off { background: var(--bg2); color: var(--text3); }
+
+.status-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+.toggle-sw { position: relative; width: 34px; height: 18px; display: inline-block; }
+.toggle-sw input { opacity: 0; width: 0; height: 0; }
+.toggle-sl {
+  position: absolute; cursor: pointer; inset: 0;
+  background: #D1D5DB; border-radius: 18px; transition: .2s;
+}
+.toggle-sl:before {
+  position: absolute; content: ""; height: 12px; width: 12px;
+  left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .2s;
+}
+input:checked + .toggle-sl { background: var(--accent); }
+input:checked + .toggle-sl:before { transform: translateX(16px); }
+
+.row-actions { display: flex; gap: 4px; }
+.row-btn {
+  height: 26px; padding: 0 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px; font-size: 11px;
+  font-family: inherit; background: var(--white);
+  color: var(--text2); cursor: pointer;
+  transition: all var(--transition);
+}
+.row-btn:hover { background: var(--bg); color: var(--text); }
+.row-btn.danger:hover { color: #DC2626; border-color: #FECACA; background: #FFF1F2; }
+
+.edit-row { display: none; background: #F0F6FF; }
+.edit-row td { padding: 10px 14px; }
+.edit-inline-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 110px 80px auto auto;
+  gap: 6px; align-items: center;
+}
+.edit-inline-grid input, .edit-inline-grid select {
+  height: 30px; padding: 0 8px;
+  border: 1px solid var(--border); border-radius: 7px;
+  font-size: 12px; font-family: inherit;
+  background: var(--white); color: var(--text);
+  outline: none;
+}
+.edit-inline-grid input:focus, .edit-inline-grid select:focus { border-color: var(--accent); }
+
+/* ═══════════════════════════════════════
+   WATCHLIST ARTICLES PANEL
+═══════════════════════════════════════ */
+.watch-articles-page {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text2);
+  cursor: pointer;
+  margin-bottom: 16px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all var(--transition);
+}
+
+.back-btn:hover { background: var(--bg2); color: var(--text); }
+
+/* ═══════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════ */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg2); border-radius: 4px; }
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media (max-width: 768px) {
+  .sidebar { width: 60px; }
+  .logo-text, .logo-sub, .nav-item span, .sidebar-section-label, .live-indicator span { display: none; }
+  .sources-stats { grid-template-columns: repeat(2,1fr); }
+  .add-form-grid { grid-template-columns: 1fr 1fr; }
+  .edit-inline-grid { grid-template-columns: 1fr 1fr; }
+  .watch-form-grid { grid-template-columns: 1fr; }
+  .stats-chips { display: none; }
+}
+</style>
 </head>
 <body>
 
-<div class="header">
-  <h1>🗞 Prisme — Veille presse</h1>
-  <div class="live"><div class="dot-live"></div><span id="live-status">Chargement…</span></div>
-</div>
-
-<div class="tabs">
-  <div class="tab active" onclick="showTab('flux', this)">Flux en direct</div>
-  <div class="tab" onclick="showTab('sources', this)">Sources</div>
-</div>
-
-<div class="stats">
-  <div class="stat"><div class="stat-label">Articles aujourd'hui</div><div class="stat-value" id="stat-today">—</div></div>
-  <div class="stat"><div class="stat-label">Total collectés</div><div class="stat-value" id="stat-total">—</div></div>
-  <div class="stat"><div class="stat-label">Sources actives</div><div class="stat-value" id="stat-sources">—</div></div>
-  <div class="stat"><div class="stat-label">Flux en erreur</div><div class="stat-value" id="stat-errors">—</div></div>
-</div>
-
-<!-- ════════ PAGE FLUX ════════ -->
-<div class="page active" id="page-flux">
-  <div class="flux-layout">
-    <div class="sidebar">
-      <div class="sidebar-title">
-        Mes veilles
-        <button class="btn-icon" onclick="toggleWatchForm()" title="Nouvelle veille">+</button>
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-mark">
+      <div class="logo-icon">🗞</div>
+      <div>
+        <div class="logo-text">Prisme</div>
+        <div class="logo-sub">Veille presse</div>
       </div>
-      <div class="new-watch-form" id="new-watch-form">
-        <input type="text" id="watch-name" placeholder="Nom (ex : Emploi)">
-        <input type="text" id="watch-query" placeholder="Mots-clés (ex : emploi chômage)">
-        <button onclick="saveWatchlist()">Créer la veille</button>
-      </div>
-      <div id="watchlists-list"><div class="loading">Chargement…</div></div>
-    </div>
-
-    <div class="content">
-      <div class="search-wrap">
-        <input type="text" class="search-input" id="search-input" placeholder="Rechercher dans toute la presse française…" onkeydown="if(event.key==='Enter') doSearch()">
-        <button class="search-btn" onclick="doSearch()">Rechercher</button>
-      </div>
-      <div class="filters">
-        <button class="filter-btn active" onclick="setFilter(this,null)">Toutes</button>
-        <button class="filter-btn" onclick="setFilter(this,'PQN')">PQN</button>
-        <button class="filter-btn" onclick="setFilter(this,'PQR')">PQR</button>
-        <button class="filter-btn" onclick="setFilter(this,'TV')">TV</button>
-        <button class="filter-btn" onclick="setFilter(this,'Radio')">Radio</button>
-        <button class="filter-btn" onclick="setFilter(this,'Magazine')">Magazine</button>
-        <button class="filter-btn" onclick="setFilter(this,'Agence')">Agence</button>
-      </div>
-      <div class="result-info" id="result-info"></div>
-      <div class="articles" id="articles-list"><div class="loading">Chargement…</div></div>
     </div>
   </div>
-</div>
 
-<!-- ════════ PAGE SOURCES ════════ -->
-<div class="page" id="page-sources">
-  <div class="sources-page">
-
-    <div class="card">
-      <div class="card-header"><div class="card-title">Ajouter une source</div></div>
-      <div class="form-add">
-        <div class="field"><label>Nom</label><input type="text" id="add-name" placeholder="ex : Le Monde"/></div>
-        <div class="field"><label>URL du flux RSS</label><input type="text" id="add-url" placeholder="https://…"/></div>
-        <div class="field"><label>Catégorie</label>
-          <select id="add-cat">
-            <option>PQN</option><option>PQR</option><option>TV</option>
-            <option>Radio</option><option>Magazine</option><option>Agence</option>
-            <option>Natif</option><option>International</option>
-          </select>
-        </div>
-        <div class="field"><label>Fréquence</label>
-          <select id="add-int">
-            <option value="5">5 min</option><option value="15">15 min</option>
-            <option value="30" selected>30 min</option><option value="60">1h</option>
-            <option value="360">6h</option>
-          </select>
-        </div>
-        <div style="display:flex;gap:6px;align-items:flex-end">
-          <button class="btn" onclick="testUrl()">Tester</button>
-          <button class="btn btn-primary" onclick="addSource()">+ Ajouter</button>
-        </div>
-      </div>
-      <div class="test-result" id="test-result"></div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Navigation</div>
+    <div class="nav-item active" onclick="showPage('flux', this)" id="nav-flux">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/>
+      </svg>
+      <span>Actualité</span>
     </div>
-
-    <div class="card">
-      <div class="src-filters">
-        <button class="filter-btn active" onclick="setSrcFilter(this,'all')">Toutes</button>
-        <button class="filter-btn" onclick="setSrcFilter(this,'PQN')">PQN</button>
-        <button class="filter-btn" onclick="setSrcFilter(this,'PQR')">PQR</button>
-        <button class="filter-btn" onclick="setSrcFilter(this,'TV')">TV</button>
-        <button class="filter-btn" onclick="setSrcFilter(this,'Radio')">Radio</button>
-        <button class="filter-btn" onclick="setSrcFilter(this,'Magazine')">Magazine</button>
-        <button class="filter-btn" onclick="setSrcFilter(this,'errors')">En erreur</button>
-        <input type="text" class="src-search" placeholder="Rechercher…" oninput="srcSearch(this.value)">
-      </div>
-      <div id="sources-table"><div class="loading">Chargement…</div></div>
+    <div class="nav-item" onclick="showPage('search', this)" id="nav-search">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+      </svg>
+      <span>Recherche</span>
     </div>
-
+    <div class="nav-item" onclick="showPage('watchlists', this)" id="nav-watchlists">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25"/>
+      </svg>
+      <span>Mes veilles</span>
+      <span class="nav-badge" id="watch-nav-badge" style="display:none">0</span>
+    </div>
   </div>
-</div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Administration</div>
+    <div class="nav-item" onclick="showPage('sources', this)" id="nav-sources">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/>
+      </svg>
+      <span>Sources</span>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="live-indicator">
+      <div class="live-dot"></div>
+      <span id="live-text">En direct</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Actualité</div>
+    <div class="topbar-search">
+      <svg class="search-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+      </svg>
+      <input type="text" placeholder="Recherche rapide…" id="topbar-search-input" onkeydown="if(event.key==='Enter'){quickSearch(this.value)}">
+    </div>
+    <div class="topbar-actions">
+      <div class="stats-chips">
+        <div class="stat-chip"><strong id="chip-today">—</strong> aujourd'hui</div>
+        <div class="stat-chip"><strong id="chip-total">—</strong> total</div>
+        <div class="stat-chip"><strong id="chip-sources">—</strong> sources</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PAGE FLUX ══════ -->
+  <div class="page active" id="page-flux">
+    <div class="filter-bar">
+      <div class="chip active" onclick="setFilter(this, null)">Tout</div>
+      <div class="chip" onclick="setFilter(this, 'PQN')">PQN</div>
+      <div class="chip" onclick="setFilter(this, 'PQR')">PQR</div>
+      <div class="chip" onclick="setFilter(this, 'TV')">TV</div>
+      <div class="chip" onclick="setFilter(this, 'Radio')">Radio</div>
+      <div class="chip" onclick="setFilter(this, 'Magazine')">Magazine</div>
+      <div class="chip" onclick="setFilter(this, 'Agence')">Agence</div>
+      <div class="chip" onclick="setFilter(this, 'International')">International</div>
+    </div>
+    <div class="feed-container">
+      <div class="feed-header">
+        <div class="feed-title" id="feed-title">Derniers articles</div>
+        <div class="feed-count" id="feed-count"></div>
+      </div>
+      <div class="articles-grid" id="articles-list">
+        <div class="state-loading"><div class="spinner"></div>Chargement…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PAGE SEARCH ══════ -->
+  <div class="page" id="page-search">
+    <div class="search-page">
+      <div class="search-hero">
+        <h2>Rechercher dans la presse</h2>
+        <div class="search-box">
+          <input type="text" id="search-main-input" placeholder="emploi, dialogue social, retraites…" onkeydown="if(event.key==='Enter') doMainSearch()">
+          <button onclick="doMainSearch()">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="search-results">
+        <div class="articles-grid" id="search-results-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PAGE WATCHLISTS ══════ -->
+  <div class="page" id="page-watchlists">
+    <div class="watchlists-page">
+      <div class="page-header">
+        <h2>Mes veilles</h2>
+        <button class="btn-primary" onclick="toggleNewWatchPanel()">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+          </svg>
+          Nouvelle veille
+        </button>
+      </div>
+
+      <div class="new-watch-panel" id="new-watch-panel">
+        <div class="watch-form-grid">
+          <div class="form-field">
+            <label class="form-label">Nom de la veille</label>
+            <input type="text" class="form-input" id="watch-name" placeholder="ex : Emploi">
+          </div>
+          <div class="form-field">
+            <label class="form-label">Mots-clés</label>
+            <input type="text" class="form-input" id="watch-query" placeholder="ex : emploi chômage licenciement">
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end">
+            <button class="btn-primary" onclick="saveWatchlist()">Créer</button>
+            <button class="btn-ghost" onclick="toggleNewWatchPanel()">Annuler</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="watchlists-grid" id="watchlists-grid">
+        <div class="state-loading"><div class="spinner"></div>Chargement…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PAGE WATCH ARTICLES ══════ -->
+  <div class="page" id="page-watch-articles">
+    <div class="watch-articles-page">
+      <div class="back-btn" onclick="showPage('watchlists', document.getElementById('nav-watchlists'))">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
+        </svg>
+        Retour aux veilles
+      </div>
+      <div class="feed-header">
+        <div class="feed-title" id="watch-articles-title">Veille</div>
+        <div class="feed-count" id="watch-articles-count"></div>
+      </div>
+      <div class="articles-grid" id="watch-articles-list">
+        <div class="state-loading"><div class="spinner"></div>Chargement…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PAGE SOURCES ══════ -->
+  <div class="page" id="page-sources">
+    <div class="sources-page-content">
+
+      <div class="sources-stats">
+        <div class="src-stat"><div class="src-stat-label">Total sources</div><div class="src-stat-value" id="src-stat-total">—</div></div>
+        <div class="src-stat"><div class="src-stat-label">Actives</div><div class="src-stat-value" style="color:#065F46" id="src-stat-active">—</div></div>
+        <div class="src-stat"><div class="src-stat-label">En erreur</div><div class="src-stat-value" style="color:#BE123C" id="src-stat-err">—</div></div>
+        <div class="src-stat"><div class="src-stat-label">Désactivées</div><div class="src-stat-value" style="color:var(--text3)" id="src-stat-off">—</div></div>
+      </div>
+
+      <div class="add-source-form">
+        <div class="form-header" onclick="toggleAddForm(this)">
+          <div class="form-header-title">+ Ajouter une source</div>
+          <svg class="form-header-chevron" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+          </svg>
+        </div>
+        <div class="form-body" id="add-form-body">
+          <div class="add-form-grid">
+            <div class="form-field"><label class="form-label">Nom</label><input type="text" class="form-input" id="add-name" placeholder="Le Monde"></div>
+            <div class="form-field"><label class="form-label">URL RSS</label><input type="text" class="form-input" id="add-url" placeholder="https://…"></div>
+            <div class="form-field"><label class="form-label">Catégorie</label>
+              <select class="form-input" id="add-cat">
+                <option>PQN</option><option>PQR</option><option>TV</option>
+                <option>Radio</option><option>Magazine</option><option>Agence</option>
+                <option>Natif</option><option>International</option>
+              </select>
+            </div>
+            <div class="form-field"><label class="form-label">Fréquence</label>
+              <select class="form-input" id="add-int">
+                <option value="5">5 min</option><option value="15">15 min</option>
+                <option value="30" selected>30 min</option><option value="60">1h</option>
+                <option value="360">6h</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn-ghost" onclick="testUrl()">Tester le flux</button>
+            <button class="btn-primary" onclick="addSource()">Ajouter la source</button>
+          </div>
+          <div class="test-result-bar" id="test-result"></div>
+        </div>
+      </div>
+
+      <div class="sources-table-wrap">
+        <div class="src-filter-bar">
+          <div class="chip active" onclick="setSrcFilter(this,'all')">Toutes</div>
+          <div class="chip" onclick="setSrcFilter(this,'PQN')">PQN</div>
+          <div class="chip" onclick="setSrcFilter(this,'PQR')">PQR</div>
+          <div class="chip" onclick="setSrcFilter(this,'TV')">TV</div>
+          <div class="chip" onclick="setSrcFilter(this,'Radio')">Radio</div>
+          <div class="chip" onclick="setSrcFilter(this,'Magazine')">Magazine</div>
+          <div class="chip" onclick="setSrcFilter(this,'errors')">En erreur</div>
+          <input type="text" class="src-search-input" placeholder="Rechercher…" oninput="srcSearchFn(this.value)">
+        </div>
+        <div id="sources-table"><div class="state-loading"><div class="spinner"></div>Chargement…</div></div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /main -->
 
 <script>
 const API = 'http://128.140.41.234:8000';
 let currentCategory = null;
-let currentQuery = '';
-let currentWatchlistId = null;
 let allSources = [];
 let srcFilter = 'all';
 let srcSearchVal = '';
 
-// ── Tabs ─────────────────────────────────────────────────────
-function showTab(name, el) {
+const PAGE_TITLES = {
+  flux: 'Actualité',
+  search: 'Recherche',
+  watchlists: 'Mes veilles',
+  'watch-articles': 'Veille',
+  sources: 'Sources'
+};
+
+// ── Navigation ────────────────────────────────────────────────
+function showPage(name, navEl) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
-  el.classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  document.getElementById('topbar-title').textContent = PAGE_TITLES[name] || name;
   if (name === 'sources') loadSources();
+  if (name === 'watchlists') loadWatchlists();
 }
 
-// ── Stats ────────────────────────────────────────────────────
+// ── Stats ─────────────────────────────────────────────────────
 async function loadStats() {
   try {
     const d = await fetch(`${API}/stats`).then(r => r.json());
-    document.getElementById('stat-today').textContent = (d.articles_today||0).toLocaleString('fr');
-    document.getElementById('stat-total').textContent = (d.articles_total||0).toLocaleString('fr');
-    document.getElementById('stat-sources').textContent = d.sources_active||0;
-    document.getElementById('stat-errors').textContent = d.feeds_in_error||0;
-    document.getElementById('live-status').textContent = 'En direct';
-  } catch(e) { document.getElementById('live-status').textContent = 'Connexion…'; }
+    document.getElementById('chip-today').textContent = (d.articles_today||0).toLocaleString('fr');
+    document.getElementById('chip-total').textContent = (d.articles_total||0).toLocaleString('fr');
+    document.getElementById('chip-sources').textContent = d.sources_active||0;
+    document.getElementById('live-text').textContent = 'En direct';
+  } catch(e) {
+    document.getElementById('live-text').textContent = 'Hors ligne';
+  }
 }
 
-// ── Helpers ──────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────
 function timeAgo(d) {
   if (!d) return '';
   const s = (Date.now() - new Date(d)) / 1000;
@@ -278,108 +1253,130 @@ function timeAgo(d) {
   return `il y a ${Math.floor(s/86400)}j`;
 }
 
-function renderArticles(articles) {
-  const list = document.getElementById('articles-list');
-  if (!articles || !articles.length) {
-    list.innerHTML = '<div class="loading">Aucun article trouvé.</div>';
-    return;
-  }
-  list.innerHTML = articles.map(a => `
-    <div class="article" onclick="window.open('${a.url}','_blank')">
-      <div class="article-meta">
-        <span class="badge badge-${(a.category||'PQN').replace(/\s/g,'')}">${a.category||'PQN'}</span>
-        <span class="source-name">${a.source_name||''}</span>
-        <span class="article-time">${timeAgo(a.collected_at)}</span>
+function renderArticleCard(a) {
+  return `
+    <div class="article-card" onclick="window.open('${a.url}','_blank')">
+      <div class="card-meta">
+        <span class="source-badge badge-${(a.category||'PQN').replace(/\s/g,'')}">${a.category||'PQN'}</span>
+        <span class="card-source-name">${a.source_name||''}</span>
+        <span class="card-time">${timeAgo(a.collected_at)}</span>
       </div>
-      <div class="article-title">${a.title}</div>
-      ${a.summary ? `<div class="article-summary">${a.summary}</div>` : ''}
+      <div class="card-title">${a.title}</div>
+      ${a.summary ? `<div class="card-summary">${a.summary}</div>` : ''}
     </div>
-  `).join('');
+  `;
 }
 
-// ── Flux ─────────────────────────────────────────────────────
+function renderArticleList(articles, containerId) {
+  const el = document.getElementById(containerId);
+  if (!articles || !articles.length) {
+    el.innerHTML = '<div class="state-empty"><div class="empty-state-icon">📭</div><div class="empty-state-title">Aucun article</div><div class="empty-state-sub">Essayez d\'autres filtres</div></div>';
+    return;
+  }
+  el.innerHTML = articles.map(renderArticleCard).join('');
+}
+
+// ── Flux ──────────────────────────────────────────────────────
 async function loadArticles() {
-  currentWatchlistId = null;
-  document.querySelectorAll('.watchlist-item').forEach(e => e.classList.remove('active'));
-  document.getElementById('articles-list').innerHTML = '<div class="loading">Chargement…</div>';
+  document.getElementById('articles-list').innerHTML = '<div class="state-loading"><div class="spinner"></div>Chargement…</div>';
   try {
     let url = `${API}/articles?limit=50`;
     if (currentCategory) url += `&category=${currentCategory}`;
     const data = await fetch(url).then(r => r.json());
-    document.getElementById('result-info').textContent = `${data.length} articles`;
-    renderArticles(data);
+    document.getElementById('feed-count').textContent = `${data.length} articles`;
+    document.getElementById('feed-title').textContent = currentCategory ? `${currentCategory} — Derniers articles` : 'Derniers articles';
+    renderArticleList(data, 'articles-list');
   } catch(e) {
-    document.getElementById('articles-list').innerHTML = '<div class="loading">Erreur de connexion.</div>';
+    document.getElementById('articles-list').innerHTML = '<div class="state-empty"><div class="empty-state-icon">⚠️</div><div class="empty-state-title">Erreur de connexion</div></div>';
   }
 }
 
-async function doSearch() {
-  const q = document.getElementById('search-input').value.trim();
-  if (!q) { loadArticles(); return; }
-  currentQuery = q;
-  currentWatchlistId = null;
-  document.querySelectorAll('.watchlist-item').forEach(e => e.classList.remove('active'));
-  document.getElementById('articles-list').innerHTML = '<div class="loading">Recherche…</div>';
-  try {
-    let url = `${API}/search?q=${encodeURIComponent(q)}&limit=50`;
-    if (currentCategory) url += `&category=${currentCategory}`;
-    const data = await fetch(url).then(r => r.json());
-    document.getElementById('result-info').textContent = `${data.total} résultat${data.total>1?'s':''} pour "${q}"`;
-    renderArticles(data.results);
-  } catch(e) {
-    document.getElementById('articles-list').innerHTML = '<div class="loading">Erreur.</div>';
-  }
-}
-
-function setFilter(btn, category) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+function setFilter(chip, category) {
+  document.querySelectorAll('.filter-bar .chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
   currentCategory = category;
-  if (currentWatchlistId) loadWatchlistArticles(currentWatchlistId);
-  else if (currentQuery) doSearch();
-  else loadArticles();
+  loadArticles();
 }
 
-// ── Veilles ──────────────────────────────────────────────────
+function quickSearch(q) {
+  if (!q.trim()) return;
+  showPage('search', document.getElementById('nav-search'));
+  document.getElementById('search-main-input').value = q;
+  doMainSearch();
+}
+
+// ── Search ────────────────────────────────────────────────────
+async function doMainSearch() {
+  const q = document.getElementById('search-main-input').value.trim();
+  if (!q) return;
+  document.getElementById('search-results-list').innerHTML = '<div class="state-loading"><div class="spinner"></div>Recherche…</div>';
+  try {
+    const data = await fetch(`${API}/search?q=${encodeURIComponent(q)}&limit=50`).then(r => r.json());
+    const el = document.getElementById('search-results-list');
+    if (!data.results || !data.results.length) {
+      el.innerHTML = `<div class="state-empty"><div class="empty-state-icon">🔍</div><div class="empty-state-title">Aucun résultat pour "${q}"</div><div class="empty-state-sub">Essayez d'autres mots-clés</div></div>`;
+      return;
+    }
+    el.innerHTML = `<div class="feed-header" style="margin-bottom:12px"><div class="feed-title">${data.total} résultats pour "${q}"</div></div>` + data.results.map(renderArticleCard).join('');
+  } catch(e) {
+    document.getElementById('search-results-list').innerHTML = '<div class="state-empty"><div class="empty-state-icon">⚠️</div><div class="empty-state-title">Erreur</div></div>';
+  }
+}
+
+// ── Watchlists ────────────────────────────────────────────────
 async function loadWatchlists() {
   try {
     const data = await fetch(`${API}/watchlists`).then(r => r.json());
-    const c = document.getElementById('watchlists-list');
+    const grid = document.getElementById('watchlists-grid');
+    const totalNew = data.reduce((s, w) => s + (w.new_articles||0), 0);
+    const badge = document.getElementById('watch-nav-badge');
+    if (totalNew > 0) { badge.style.display = ''; badge.textContent = totalNew; }
+    else badge.style.display = 'none';
+
     if (!data.length) {
-      c.innerHTML = '<div class="no-items">Aucune veille.<br>Cliquez sur + pour en créer une.</div>';
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">📋</div>
+          <div class="empty-state-title">Aucune veille</div>
+          <div class="empty-state-sub">Créez votre première veille pour suivre un sujet en continu</div>
+        </div>`;
       return;
     }
-    c.innerHTML = data.map(w => `
-      <div class="watchlist-item" id="watch-${w.id}" onclick="loadWatchlistArticles(${w.id})">
-        <div class="watchlist-name">${w.name}</div>
-        <div class="watchlist-query">${w.query}</div>
-        ${w.new_articles > 0 ? `<span class="watchlist-badge">${w.new_articles}</span>` : ''}
-        <button class="watchlist-delete" onclick="event.stopPropagation();removeWatchlist(${w.id})">Supprimer</button>
+
+    grid.innerHTML = data.map(w => `
+      <div class="watch-card" onclick="loadWatchArticles(${w.id}, '${w.name}')">
+        <div class="watch-card-header">
+          <div class="watch-card-name">${w.name}</div>
+          <div class="watch-actions" onclick="event.stopPropagation()">
+            <button class="watch-action-btn danger" onclick="deleteWatch(${w.id})" title="Supprimer">✕</button>
+          </div>
+        </div>
+        <div class="watch-card-query">${w.query}</div>
+        <div class="watch-card-footer">
+          ${w.new_articles > 0 ? `<span class="watch-new-badge">+${w.new_articles} nouveaux</span>` : '<span style="font-size:11px;color:var(--text3)">À jour</span>'}
+          <span class="watch-updated">${w.last_viewed ? 'Vu ' + timeAgo(w.last_viewed) : 'Jamais consulté'}</span>
+        </div>
       </div>
     `).join('');
   } catch(e) {}
 }
 
-async function loadWatchlistArticles(id) {
-  currentWatchlistId = id;
-  document.querySelectorAll('.watchlist-item').forEach(e => e.classList.remove('active'));
-  const el = document.getElementById(`watch-${id}`);
-  if (el) el.classList.add('active');
-  document.getElementById('articles-list').innerHTML = '<div class="loading">Chargement…</div>';
+async function loadWatchArticles(id, name) {
+  showPage('watch-articles', null);
+  document.getElementById('nav-watchlists').classList.add('active');
+  document.getElementById('watch-articles-title').textContent = name;
+  document.getElementById('watch-articles-list').innerHTML = '<div class="state-loading"><div class="spinner"></div>Chargement…</div>';
   try {
     const data = await fetch(`${API}/watchlists/${id}/articles`).then(r => r.json());
-    document.getElementById('result-info').textContent = `${data.total} articles — veille "${data.watchlist.name}"`;
-    document.getElementById('search-input').value = data.watchlist.query;
-    renderArticles(data.articles);
+    document.getElementById('watch-articles-count').textContent = `${data.total} articles`;
+    renderArticleList(data.articles, 'watch-articles-list');
     setTimeout(loadWatchlists, 500);
-  } catch(e) {
-    document.getElementById('articles-list').innerHTML = '<div class="loading">Erreur.</div>';
-  }
+  } catch(e) {}
 }
 
-function toggleWatchForm() {
-  const f = document.getElementById('new-watch-form');
-  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+function toggleNewWatchPanel() {
+  const p = document.getElementById('new-watch-panel');
+  p.classList.toggle('visible');
 }
 
 async function saveWatchlist() {
@@ -389,33 +1386,37 @@ async function saveWatchlist() {
   await fetch(`${API}/watchlists?name=${encodeURIComponent(name)}&query=${encodeURIComponent(query)}`, {method:'POST'});
   document.getElementById('watch-name').value = '';
   document.getElementById('watch-query').value = '';
-  document.getElementById('new-watch-form').style.display = 'none';
+  document.getElementById('new-watch-panel').classList.remove('visible');
   loadWatchlists();
 }
 
-async function removeWatchlist(id) {
+async function deleteWatch(id) {
   if (!confirm('Supprimer cette veille ?')) return;
   await fetch(`${API}/watchlists/${id}`, {method:'DELETE'});
-  if (currentWatchlistId === id) loadArticles();
   loadWatchlists();
 }
 
-// ── Sources ──────────────────────────────────────────────────
+// ── Sources ───────────────────────────────────────────────────
 async function loadSources() {
   try {
     const data = await fetch(`${API}/sources`).then(r => r.json());
     allSources = data.sources || [];
+    const active = allSources.filter(s => s.active);
+    const errors = active.filter(s => s.last_status && ![200,301,302,304].includes(s.last_status));
+    const off = allSources.filter(s => !s.active);
+    document.getElementById('src-stat-total').textContent = allSources.length;
+    document.getElementById('src-stat-active').textContent = active.length;
+    document.getElementById('src-stat-err').textContent = errors.length;
+    document.getElementById('src-stat-off').textContent = off.length;
     renderSources();
-  } catch(e) {
-    document.getElementById('sources-table').innerHTML = '<div class="loading">Erreur de connexion.</div>';
-  }
+  } catch(e) {}
 }
 
 function getStatus(s) {
-  if (!s.active) return {cls:'status-off', dot:'dot-off', label:'Désactivée'};
-  if (!s.last_status) return {cls:'status-ok', dot:'dot-ok', label:'En attente'};
-  if ([200,301,302,304].includes(s.last_status)) return {cls:'status-ok', dot:'dot-ok', label:'En ligne'};
-  return {cls:'status-err', dot:'dot-err', label:`Erreur ${s.last_status}`};
+  if (!s.active) return {cls:'off', label:'Désactivée'};
+  if (!s.last_status) return {cls:'ok', label:'En attente'};
+  if ([200,301,302,304].includes(s.last_status)) return {cls:'ok', label:'En ligne'};
+  return {cls:'err', label:`Erreur ${s.last_status}`};
 }
 
 function renderSources() {
@@ -429,7 +1430,7 @@ function renderSources() {
     s = s.filter(x => x.name.toLowerCase().includes(q) || x.url.toLowerCase().includes(q));
   }
   if (!s.length) {
-    document.getElementById('sources-table').innerHTML = '<div class="loading">Aucune source.</div>';
+    document.getElementById('sources-table').innerHTML = '<div class="state-empty" style="padding:30px"><div class="empty-state-icon">🔍</div><div class="empty-state-title">Aucune source</div></div>';
     return;
   }
   document.getElementById('sources-table').innerHTML = `
@@ -443,31 +1444,31 @@ function renderSources() {
           const st = getStatus(x);
           return `
             <tr class="src-row" id="srow-${x.id}">
-              <td><div class="src-name">${x.name}</div></td>
-              <td><div class="src-url" title="${x.url}">${x.url}</div></td>
-              <td><span class="badge badge-${x.category}">${x.category}</span></td>
-              <td><div class="${st.cls}"><div class="dot ${st.dot}"></div>${st.label}</div></td>
+              <td><div class="src-name-cell">${x.name}</div></td>
+              <td><div class="src-url-cell" title="${x.url}">${x.url}</div></td>
+              <td><span class="source-badge badge-${x.category}">${x.category}</span></td>
+              <td><span class="status-pill ${st.cls}"><span class="status-dot"></span>${st.label}</span></td>
               <td>${x.articles_today||0}</td>
               <td>
-                <div class="acts">
+                <div class="row-actions">
                   <label class="toggle-sw" title="${x.active?'Désactiver':'Activer'}">
                     <input type="checkbox" ${x.active?'checked':''} onchange="toggleSrc('${x.id}',this.checked)">
                     <span class="toggle-sl"></span>
                   </label>
-                  <button class="btn-sm" onclick="showEditSrc('${x.id}')">Éditer</button>
-                  <button class="btn-sm btn-sm-danger" onclick="deleteSrc('${x.id}','${x.name}')">Suppr.</button>
+                  <button class="row-btn" onclick="showEditSrc('${x.id}')">Éditer</button>
+                  <button class="row-btn danger" onclick="deleteSrc('${x.id}','${x.name}')">Suppr.</button>
                 </div>
               </td>
             </tr>
             <tr class="edit-row" id="sedit-${x.id}">
               <td colspan="6">
-                <div class="edit-grid">
-                  <input id="en-${x.id}" value="${x.name}" placeholder="Nom">
-                  <input id="eu-${x.id}" value="${x.url}" placeholder="URL">
+                <div class="edit-inline-grid">
+                  <input id="en-${x.id}" value="${x.name}">
+                  <input id="eu-${x.id}" value="${x.url}">
                   <select id="ec-${x.id}">${['PQN','PQR','TV','Radio','Magazine','Agence','Natif','International'].map(c=>`<option ${c===x.category?'selected':''}>${c}</option>`).join('')}</select>
                   <select id="ei-${x.id}">${[5,15,30,60,360].map(v=>`<option value="${v}" ${v===x.interval_min?'selected':''}>${v<60?v+' min':(v/60)+'h'}</option>`).join('')}</select>
-                  <button class="btn btn-success" onclick="saveEditSrc('${x.id}')">Sauvegarder</button>
-                  <button class="btn" onclick="hideEditSrc('${x.id}')">Annuler</button>
+                  <button class="btn-primary" style="height:30px;font-size:11px;padding:0 10px" onclick="saveEditSrc('${x.id}')">Sauvegarder</button>
+                  <button class="btn-ghost" style="height:30px;font-size:11px;padding:0 10px" onclick="hideEditSrc('${x.id}')">Annuler</button>
                 </div>
               </td>
             </tr>
@@ -478,14 +1479,20 @@ function renderSources() {
   `;
 }
 
-function setSrcFilter(btn, f) {
-  document.querySelectorAll('.src-filters .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+function setSrcFilter(chip, f) {
+  document.querySelectorAll('.src-filter-bar .chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
   srcFilter = f;
   renderSources();
 }
 
-function srcSearch(v) { srcSearchVal = v; renderSources(); }
+function srcSearchFn(v) { srcSearchVal = v; renderSources(); }
+
+function toggleAddForm(header) {
+  header.classList.toggle('open');
+  const body = document.getElementById('add-form-body');
+  body.classList.toggle('visible');
+}
 
 function showEditSrc(id) {
   const r = document.getElementById(`sedit-${id}`);
@@ -521,12 +1528,12 @@ async function testUrl() {
   const url = document.getElementById('add-url').value.trim();
   if (!url) { alert('Entrez une URL.'); return; }
   const d = document.getElementById('test-result');
-  d.style.display = 'block'; d.className = 'test-result'; d.textContent = 'Test en cours…';
+  d.className = 'test-result-bar'; d.style.display = 'block'; d.textContent = 'Test en cours…';
   try {
     const data = await fetch(`${API}/sources/test?url=${encodeURIComponent(url)}`).then(r => r.json());
-    d.className = `test-result ${data.ok ? 'test-ok' : 'test-err'}`;
+    d.className = `test-result-bar ${data.ok ? 'test-ok' : 'test-err'}`;
     d.textContent = data.message;
-  } catch(e) { d.className = 'test-result test-err'; d.textContent = 'Erreur de connexion.'; }
+  } catch(e) { d.className = 'test-result-bar test-err'; d.textContent = 'Erreur de connexion.'; }
 }
 
 async function addSource() {
@@ -540,11 +1547,10 @@ async function addSource() {
   document.getElementById('add-name').value = '';
   document.getElementById('add-url').value = '';
   document.getElementById('test-result').style.display = 'none';
-  loadSources();
-  loadStats();
+  loadSources(); loadStats();
 }
 
-// ── Init ─────────────────────────────────────────────────────
+// ── Init ──────────────────────────────────────────────────────
 loadStats();
 loadArticles();
 loadWatchlists();
