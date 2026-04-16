@@ -1532,9 +1532,15 @@ function removeSharePopup(){const p=document.getElementById('share-popup');if(p)
 function copyShareUrl(){
   const inp=document.getElementById('share-url-input');
   inp.select();
-  navigator.clipboard.writeText(inp.value).then(()=>{
+  inp.setSelectionRange(0,99999);
+  try{
+    document.execCommand('copy');
     document.getElementById('share-copied').style.display='block';
-  }).catch(()=>{document.execCommand('copy');document.getElementById('share-copied').style.display='block'});
+  }catch(e){
+    navigator.clipboard.writeText(inp.value).then(()=>{
+      document.getElementById('share-copied').style.display='block';
+    }).catch(()=>alert('Copiez manuellement : '+inp.value));
+  }
 }
 
 async function revokeShareLink(){
