@@ -1194,22 +1194,52 @@ function renderWatchAnalytics(s,articles){
   const topWords=s.top_words||[];
   const maxWc=topWords.length?topWords[0].count:1;
   const timeline=s.timeline||[];
+  const timelinePrev=s.timeline_prev||[];
   const regions=s.regional_coverage||[];
   const maxReg=regions.length?regions[0].count:1;
   const entities=buildEntities(articles);
 
+  // Premier signal & dernière mention
+  const sorted=[...articles].sort((a,b)=>new Date(a.collected_at)-new Date(b.collected_at));
+  const firstSignal=sorted.length?sorted[0]:null;
+  const lastMention=sorted.length?sorted[sorted.length-1]:null;
+
+  // Comparaison J-1
+  const totalPrev=s.total_prev||0;
+  const diff=s.total-(totalPrev||0);
+  const diffSign=diff>0?'+':'';
+  const diffColor=diff>0?'#059669':diff<0?'#DC2626':'#9CA3AF';
+
   content.innerHTML=`
     <div class="wa-metrics">
-      <div class="wam"><div class="wam-v">${s.total||0}</div><div class="wam-l">articles · ${periodLbl}</div></div>
+      <div class="wam">
+        <div class="wam-v">${s.total||0}</div>
+        <div class="wam-l">articles · ${periodLbl}</div>
+        <div style="font-size:11px;font-weight:500;color:${diffColor};margin-top:2px">${diffSign}${diff} vs période préc.</div>
+      </div>
       <div class="wam"><div class="wam-v">${s.distinct_sources||0}</div><div class="wam-l">médias distincts</div></div>
-      <div class="wam"><div class="wam-v">${s.regions_covered||0}</div><div class="wam-l">régions couvertes</div></div>
-      <div class="wam"><div class="wam-v">${s.distinct_source_types||0}</div><div class="wam-l">types de sources</div></div>
+      <div class="wam">
+        <div class="wam-l" style="margin-bottom:3px">Premier signal</div>
+        <div style="font-size:12px;font-weight:600;color:var(--text)">${firstSignal?ago(firstSignal.collected_at):'—'}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${firstSignal?firstSignal.source_name+' · '+firstSignal.title.substring(0,50)+'…':'Aucun article'}</div>
+      </div>
+      <div class="wam">
+        <div class="wam-l" style="margin-bottom:3px">Dernière mention</div>
+        <div style="font-size:12px;font-weight:600;color:var(--text)">${lastMention?ago(lastMention.collected_at):'—'}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${lastMention?lastMention.source_name+' · '+lastMention.title.substring(0,50)+'…':'Aucun article'}</div>
+      </div>
     </div>
 
     <div class="wa-charts">
       <div class="wac-box wa-chart-full">
-        <div class="wac-ttl">Occurrences dans le temps</div>
-        <div style="position:relative;height:120px"><canvas id="timeline-chart" role="img" aria-label="Occurrences dans le temps"></canvas></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="wac-ttl" style="margin-bottom:0">Occurrences dans le temps</div>
+          ${timelinePrev.length?`<div style="display:flex;gap:12px;font-size:11px;color:var(--text3)">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:16px;height:2px;background:#2563EB;border-radius:1px"></span>Période actuelle</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:16px;height:2px;background:#D1D5DB;border-radius:1px;border-top:1px dashed #9CA3AF"></span>Période préc.</span>
+          </div>`:''}
+        </div>
+        <div style="position:relative;height:130px"><canvas id="timeline-chart" role="img" aria-label="Occurrences dans le temps"></canvas></div>
       </div>
     </div>
 
@@ -1287,12 +1317,12 @@ function renderWatchAnalytics(s,articles){
   `;
 
   renderArts(articles,'wa-arts-list');
-  drawTimeline(timeline,s.timeline_bucket_minutes||60,currentWatchHours);
+  drawTimeline(timeline,timelinePrev,s.timeline_bucket_minutes||60,currentWatchHours);
   drawDoughnut(byTypeEntries,typeColors);
   window._waRegions=regions;window._waMaxReg=maxReg;
 }
 
-function drawTimeline(timeline,bucketMin,hours){
+function drawTimeline(timeline,timelinePrev,bucketMin,hours){
   const canvas=document.getElementById('timeline-chart');
   if(!canvas)return;
   const step=Math.max(1,Math.ceil(timeline.length/8));
@@ -1302,10 +1332,47 @@ function drawTimeline(timeline,bucketMin,hours){
     return 'J-'+Math.round((timeline.length-i)*bucketMin/60/24);
   });
   if(window._timelineChart)window._timelineChart.destroy();
+  const datasets=[{
+    label:'Période actuelle',
+    data:timeline.map(t=>t.count),
+    borderColor:'#2563EB',
+    backgroundColor:'rgba(37,99,235,0.06)',
+    borderWidth:2,
+    fill:true,
+    tension:0.4,
+    pointRadius:0,
+    pointHoverRadius:4,
+    pointHoverBackgroundColor:'#2563EB',
+  }];
+  if(timelinePrev&&timelinePrev.length){
+    datasets.push({
+      label:'Période préc.',
+      data:timelinePrev.map(t=>t.count),
+      borderColor:'#D1D5DB',
+      borderWidth:1.5,
+      borderDash:[4,3],
+      fill:false,
+      tension:0.4,
+      pointRadius:0,
+      pointHoverRadius:3,
+      pointHoverBackgroundColor:'#9CA3AF',
+    });
+  }
   window._timelineChart=new Chart(canvas,{
-    type:'bar',
-    data:{labels,datasets:[{data:timeline.map(t=>t.count),backgroundColor:'#BFDBFE',borderColor:'#2563EB',borderWidth:1,borderRadius:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw} article${c.raw>1?'s':''}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},color:'#9CA3AF',maxRotation:0}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},color:'#9CA3AF',stepSize:1}}}}
+    type:'line',
+    data:{labels,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>`${c.dataset.label} : ${c.raw} article${c.raw>1?'s':''}`}}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10},color:'#9CA3AF',maxRotation:0}},
+        y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},color:'#9CA3AF',stepSize:1},beginAtZero:true}
+      }
+    }
   });
 }
 
