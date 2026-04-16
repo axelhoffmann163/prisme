@@ -1001,6 +1001,9 @@ function renderWatchlists(watchlists){
       <div class="wc-info">
         <div class="wcn">${w.name}</div>
         <div class="wcq">${w.query}</div>
+        ${(w.folder_ids&&w.folder_ids.length)?`<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap">
+          ${w.folder_ids.map(fid=>{const f=allFolders.find(x=>x.id===fid);return f?`<span style="font-size:10px;padding:1px 7px;border-radius:10px;background:${f.color}22;color:${f.color};font-weight:500">${f.name}</span>`:''}).join('')}
+        </div>`:''}
       </div>
       <div class="wc-right">
         <div class="wstat"><div class="wsv">${w.new_articles||0}</div><div class="wsl">nouveaux</div></div>
@@ -1009,10 +1012,42 @@ function renderWatchlists(watchlists){
           <div style="font-size:11px;color:var(--text3)">${w.last_viewed?'Vu '+ago(w.last_viewed):'Jamais consulté'}</div>
         </div>
         <div class="wc-actions" onclick="event.stopPropagation()">
+          <button class="wab" onclick="showFolderPicker(${w.id},this)" title="Ajouter à un dossier">
+            <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v8.25"/></svg>
+          </button>
           <button class="wab danger" onclick="delW(${w.id})" title="Supprimer">✕</button>
         </div>
       </div>
     </div>`).join('');
+}
+
+let _fpWid=null;
+function showFolderPicker(wid,btn){
+  _fpWid=wid;
+  let existing=document.getElementById('folder-picker-popup');
+  if(existing)existing.remove();
+  if(!allFolders.length){alert('Créez d\'abord un dossier.');return}
+  const popup=document.createElement('div');
+  popup.id='folder-picker-popup';
+  popup.style.cssText='position:fixed;z-index:9999;background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);padding:6px;min-width:180px';
+  const rect=btn.getBoundingClientRect();
+  popup.style.top=(rect.bottom+4)+'px';
+  popup.style.right=(window.innerWidth-rect.right)+'px';
+  popup.innerHTML=`<div style="font-size:10px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:.6px;padding:4px 10px 8px">Ajouter au dossier</div>`+
+    allFolders.map(f=>`<div onclick="addToFolderFromPicker(${f.id})" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;font-size:13px;cursor:pointer;color:#6B7280;transition:background .15s" onmouseover="this.style.background='#F7F6F3'" onmouseout="this.style.background=''">
+      <span style="width:8px;height:8px;border-radius:50%;background:${f.color}"></span>${f.name}
+    </div>`).join('');
+  document.body.appendChild(popup);
+  setTimeout(()=>document.addEventListener('click',removeFolderPicker,{once:true}),0);
+}
+
+function removeFolderPicker(){const p=document.getElementById('folder-picker-popup');if(p)p.remove();}
+
+async function addToFolderFromPicker(folderId){
+  removeFolderPicker();
+  if(!_fpWid)return;
+  await fetch(`${API}/folders/${folderId}/watchlists/${_fpWid}`,{method:'POST'});
+  _fpWid=null;loadWL();
 }
 
 async function saveWL(){
@@ -1066,25 +1101,102 @@ async function loadWatchAnalytics(){
   }
 }
 
+// ── ENTITÉS — dictionnaire étendu ────────────────────────────
+const ENTITY_DB = {
+  // Syndicats
+  'CFDT':['Organisation','syndicat'],'CGT':['Organisation','syndicat'],'FO':['Organisation','syndicat'],
+  'CFE-CGC':['Organisation','syndicat'],'CFTC':['Organisation','syndicat'],'UNSA':['Organisation','syndicat'],
+  'FSU':['Organisation','syndicat'],'Solidaires':['Organisation','syndicat'],
+  // Organisations patronales
+  'MEDEF':['Organisation','patronat'],'CPME':['Organisation','patronat'],'U2P':['Organisation','patronat'],
+  // Partis politiques
+  'Renaissance':['Organisation','parti'],'RN':['Organisation','parti'],'LFI':['Organisation','parti'],
+  'PS':['Organisation','parti'],'LR':['Organisation','parti'],'EELV':['Organisation','parti'],
+  'PCF':['Organisation','parti'],'Horizons':['Organisation','parti'],'MoDem':['Organisation','parti'],
+  // Institutions
+  'Élysée':['Institution',''],'Matignon':['Institution',''],'Bercy':['Institution',''],
+  'Sénat':['Institution',''],'Assemblée nationale':['Institution',''],
+  'Conseil constitutionnel':['Institution',''],'Conseil d\'État':['Institution',''],
+  'Cour de cassation':['Institution',''],'INSEE':['Institution',''],
+  'Banque de France':['Institution',''],'Cour des comptes':['Institution',''],
+  // Entreprises fréquentes
+  'Michelin':['Entreprise',''],'Renault':['Entreprise',''],'PSA':['Entreprise',''],
+  'Stellantis':['Entreprise',''],'Total':['Entreprise',''],'TotalEnergies':['Entreprise',''],
+  'Orange':['Entreprise',''],'EDF':['Entreprise',''],'Engie':['Entreprise',''],
+  'Air France':['Entreprise',''],'SNCF':['Entreprise',''],'RATP':['Entreprise',''],
+  'Carrefour':['Entreprise',''],'BNP Paribas':['Entreprise',''],'Société Générale':['Entreprise',''],
+  'Amazon':['Entreprise',''],'Google':['Entreprise',''],'Apple':['Entreprise',''],
+  'Meta':['Entreprise',''],'OpenAI':['Entreprise',''],
+  // Politiques — gouvernement
+  'Macron':['Personne','politique'],'Emmanuel Macron':['Personne','politique'],
+  'François Bayrou':['Personne','politique'],'Bayrou':['Personne','politique'],
+  'Marine Le Pen':['Personne','politique'],'Jean-Luc Mélenchon':['Personne','politique'],
+  'Édouard Philippe':['Personne','politique'],'Gabriel Attal':['Personne','politique'],
+  'Élisabeth Borne':['Personne','politique'],'Bruno Le Maire':['Personne','politique'],
+  'Michel Barnier':['Personne','politique'],
+  // Lieux principaux
+  'Paris':['Lieu',''],'Lyon':['Lieu',''],'Marseille':['Lieu',''],'Toulouse':['Lieu',''],
+  'Bordeaux':['Lieu',''],'Lille':['Lieu',''],'Nice':['Lieu',''],'Nantes':['Lieu',''],
+  'Strasbourg':['Lieu',''],'Bruxelles':['Lieu',''],'Berlin':['Lieu',''],
+  'Washington':['Lieu',''],'Moscou':['Lieu',''],'Pékin':['Lieu',''],
+  'Ukraine':['Lieu',''],'Russie':['Lieu',''],'Gaza':['Lieu',''],
+};
+
+const ENTITY_IGNORE = new Set([
+  'Le','La','Les','Un','Une','Des','Du','Au','Aux','Ce','Cet','Cette','Ces',
+  'En','Par','Pour','Dans','Sur','Sous','Avec','Sans','Selon','Après','Avant',
+  'Mais','Donc','Car','Ni','Et','Ou','Si','Plus','Très','Bien','Même',
+  'France','Français','Française','Européen','International','National',
+  'Premier','Ministre','Président','Gouvernement','État','Loi','Projet',
+  'Rapport','Accord','Plan','Hausse','Baisse','Crise','Covid',
+]);
+
+function buildEntities(articles){
+  const counts={};
+  const types={};
+  const allText=articles.map(a=>(a.title||'')+' '+(a.summary||'')).join(' ');
+
+  // 1. Cherche d'abord les entités connues du dictionnaire
+  Object.entries(ENTITY_DB).forEach(([name,[type]])=>{
+    const re=new RegExp('\\b'+name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','g');
+    const matches=allText.match(re);
+    if(matches&&matches.length>=1){
+      counts[name]=(counts[name]||0)+matches.length;
+      types[name]=type;
+    }
+  });
+
+  // 2. Cherche les noms propres inconnus (Prénom Nom — 2 mots capitalisés consécutifs)
+  const nameRe=/\b([A-ZÀ-Ü][a-zà-ü]{2,})\s+([A-ZÀ-Ü][a-zà-ü]{2,})\b/g;
+  let m;
+  while((m=nameRe.exec(allText))!==null){
+    const full=m[0];
+    if(ENTITY_IGNORE.has(m[1])||ENTITY_IGNORE.has(m[2]))continue;
+    if(counts[full]!==undefined)continue; // déjà dans le dico
+    counts[full]=(counts[full]||0)+1;
+    if(!types[full])types[full]='Personne';
+  }
+
+  return Object.entries(counts)
+    .filter(([,c])=>c>=2)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,10)
+    .map(([name,count])=>({name,count,type:types[name]||'Organisation'}));
+}
+
 function renderWatchAnalytics(s,articles){
   const content=document.getElementById('wa-content');
   const periodLbl=currentWatchHours<24?currentWatchHours+'h':currentWatchHours===24?'24h':Math.round(currentWatchHours/24)+'j';
-
-  const byTypeEntries=Object.entries(s.by_type||{}).sort((a,b)=>b[1]-a[1]);
-  const maxType=byTypeEntries.length?byTypeEntries[0][1]:1;
   const typeColors={'PQN':'#2563EB','PQR':'#059669','TV':'#C2410C','Radio':'#9333EA','Magazine':'#0369A1','Agence':'#BE123C','Natif':'#065F46','International':'#475569'};
-
+  const byTypeEntries=Object.entries(s.by_type||{}).sort((a,b)=>b[1]-a[1]);
   const bySourceEntries=Object.entries(s.by_source||{}).sort((a,b)=>b[1]-a[1]).slice(0,8);
   const maxSrc=bySourceEntries.length?bySourceEntries[0][1]:1;
-
   const topWords=s.top_words||[];
   const maxWc=topWords.length?topWords[0].count:1;
-
   const timeline=s.timeline||[];
-  const maxT=timeline.length?Math.max(...timeline.map(t=>t.count),1):1;
-
   const regions=s.regional_coverage||[];
   const maxReg=regions.length?regions[0].count:1;
+  const entities=buildEntities(articles);
 
   content.innerHTML=`
     <div class="wa-metrics">
@@ -1097,22 +1209,25 @@ function renderWatchAnalytics(s,articles){
     <div class="wa-charts">
       <div class="wac-box wa-chart-full">
         <div class="wac-ttl">Occurrences dans le temps</div>
-        <div style="position:relative;height:120px"><canvas id="timeline-chart" role="img" aria-label="Timeline des occurrences"></canvas></div>
+        <div style="position:relative;height:120px"><canvas id="timeline-chart" role="img" aria-label="Occurrences dans le temps"></canvas></div>
       </div>
-      <div class="wac-box">
-        <div class="wac-ttl">Par type de source</div>
-        ${byTypeEntries.map(([type,cnt])=>`
-          <div class="rb-row" style="margin-bottom:6px">
-            <span class="rb-lbl">${type}</span>
-            <div class="rb-track"><div class="rb-fill" style="width:${Math.round(cnt/maxType*100)}%;background:${typeColors[type]||'#888'}"></div></div>
-            <span class="rb-val">${cnt}</span>
-          </div>`).join('')}
+    </div>
+
+    <div class="wa-charts">
+      <div class="wac-box" style="display:flex;flex-direction:column;align-items:center">
+        <div class="wac-ttl" style="width:100%">Répartition par type</div>
+        <div style="position:relative;height:180px;width:180px">
+          <canvas id="type-chart" role="img" aria-label="Répartition par type de source"></canvas>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;justify-content:center">
+          ${byTypeEntries.map(([t,c])=>`<span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2)"><span style="width:9px;height:9px;border-radius:2px;background:${typeColors[t]||'#888'};flex-shrink:0"></span>${t} ${c}</span>`).join('')}
+        </div>
       </div>
       <div class="wac-box">
         <div class="wac-ttl">Par média</div>
         ${bySourceEntries.map(([name,cnt])=>`
           <div class="rb-row" style="margin-bottom:6px">
-            <span class="rb-lbl" style="width:120px;font-size:11px">${name}</span>
+            <span class="rb-lbl" style="width:120px;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</span>
             <div class="rb-track"><div class="rb-fill" style="width:${Math.round(cnt/maxSrc*100)}%;background:#2563EB"></div></div>
             <span class="rb-val">${cnt}</span>
           </div>`).join('')}
@@ -1125,21 +1240,21 @@ function renderWatchAnalytics(s,articles){
         <div class="words-cloud">
           ${topWords.slice(0,18).map(w=>{
             const ratio=w.count/maxWc;
-            const size=Math.round(10+ratio*6);
-            const alpha=0.3+ratio*0.7;
-            return`<span class="wword" style="font-size:${size}px;opacity:${alpha.toFixed(2)}">${w.word} <span style="font-size:10px;color:var(--text3);margin-left:3px">${w.count}</span></span>`;
+            const size=Math.round(10+ratio*5);
+            const alpha=0.35+ratio*0.65;
+            return`<span class="wword" style="font-size:${size}px;opacity:${alpha.toFixed(2)}">${w.word}<span style="font-size:9px;color:var(--text3);margin-left:3px">${w.count}</span></span>`;
           }).join('')}
         </div>
       </div>
       <div class="wac-box">
         <div class="wac-ttl">Entités co-citées</div>
         <div class="entity-list">
-          ${buildEntities(articles).map(e=>`
+          ${entities.length?entities.map(e=>`
             <div class="ent">
               <span class="ent-name">${e.name}</span>
               <span class="ent-type">${e.type}</span>
               <span class="ent-cnt">${e.count}</span>
-            </div>`).join('')||'<div style="font-size:12px;color:var(--text3);padding:8px 0">Pas assez de données</div>'}
+            </div>`).join(''):'<div style="font-size:12px;color:var(--text3);padding:8px 0">Pas assez de données</div>'}
         </div>
       </div>
     </div>
@@ -1161,7 +1276,7 @@ function renderWatchAnalytics(s,articles){
           </div>`).join(''):'<div style="font-size:12px;color:var(--text3);padding:8px 0">Aucune source PQR pour cette veille</div>'}
       </div>
       <div id="region-map-view" style="display:none">
-        <div id="france-map" style="width:100%;max-width:500px;margin:0 auto"></div>
+        <div id="france-map" style="width:100%;max-width:520px;margin:0 auto;min-height:300px"></div>
       </div>
     </div>
 
@@ -1172,43 +1287,39 @@ function renderWatchAnalytics(s,articles){
   `;
 
   renderArts(articles,'wa-arts-list');
-  drawTimeline(timeline,maxT,s.timeline_bucket_minutes||60,currentWatchHours);
+  drawTimeline(timeline,s.timeline_bucket_minutes||60,currentWatchHours);
+  drawDoughnut(byTypeEntries,typeColors);
   window._waRegions=regions;window._waMaxReg=maxReg;
 }
 
-function buildEntities(articles){
-  // Extraction simple de noms propres (mots capitalisés qui reviennent)
-  const counts={};
-  const typeHints={'CFDT':'Organisation','CGT':'Organisation','FO':'Organisation','MEDEF':'Organisation',
-    'France':'Lieu','Paris':'Lieu','Lyon':'Lieu','Marseille':'Lieu','Bruxelles':'Lieu',
-    'Macron':'Personne','Premier ministre':'Personne'};
-  articles.forEach(a=>{
-    const text=(a.title||'')+(a.summary||'');
-    const matches=text.match(/[A-ZÀ-Ü][a-zà-ü]+(?:\s+[A-ZÀ-Ü][a-zà-ü]+)*/g)||[];
-    matches.forEach(m=>{
-      if(m.length<3||['Les','Des','Une','Sur','Pour'].includes(m))return;
-      counts[m]=(counts[m]||0)+1;
-    });
-  });
-  return Object.entries(counts)
-    .filter(([,c])=>c>=2)
-    .sort((a,b)=>b[1]-a[1])
-    .slice(0,8)
-    .map(([name,count])=>({name,count,type:typeHints[name]||(name.includes(' ')?'Personne':'Organisation')}));
-}
-
-function drawTimeline(timeline,maxT,bucketMin,hours){
+function drawTimeline(timeline,bucketMin,hours){
   const canvas=document.getElementById('timeline-chart');
   if(!canvas)return;
+  const step=Math.max(1,Math.ceil(timeline.length/8));
   const labels=timeline.map((_,i)=>{
-    if(hours<=24){return i%Math.ceil(timeline.length/6)===0?(-hours+i*bucketMin/60).toFixed(0)+'h':'';}
-    return i%Math.ceil(timeline.length/6)===0?'J-'+Math.round((timeline.length-i)*bucketMin/60/24):'';
+    if(i%step!==0)return'';
+    if(hours<=24){const h=Math.round(-hours+(i*bucketMin/60));return h+'h';}
+    return 'J-'+Math.round((timeline.length-i)*bucketMin/60/24);
   });
   if(window._timelineChart)window._timelineChart.destroy();
   window._timelineChart=new Chart(canvas,{
     type:'bar',
     data:{labels,datasets:[{data:timeline.map(t=>t.count),backgroundColor:'#BFDBFE',borderColor:'#2563EB',borderWidth:1,borderRadius:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw} article${c.raw>1?'s':''}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},color:'#9CA3AF'}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},color:'#9CA3AF',stepSize:1}}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw} article${c.raw>1?'s':''}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},color:'#9CA3AF',maxRotation:0}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},color:'#9CA3AF',stepSize:1}}}}
+  });
+}
+
+function drawDoughnut(entries,colors){
+  const canvas=document.getElementById('type-chart');
+  if(!canvas||!entries.length)return;
+  if(window._doughnutChart)window._doughnutChart.destroy();
+  window._doughnutChart=new Chart(canvas,{
+    type:'doughnut',
+    data:{
+      labels:entries.map(([t])=>t),
+      datasets:[{data:entries.map(([,c])=>c),backgroundColor:entries.map(([t])=>colors[t]||'#888'),borderWidth:2,borderColor:'#fff',hoverOffset:4}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label} : ${c.raw} article${c.raw>1?'s':''}`}}}}
   });
 }
 
@@ -1217,7 +1328,7 @@ function switchRegionView(v){
   document.getElementById('region-map-view').style.display=v==='map'?'block':'none';
   document.getElementById('rv-bars').classList.toggle('active',v==='bars');
   document.getElementById('rv-map').classList.toggle('active',v==='map');
-  if(v==='map')drawFranceMap(window._waRegions||[],window._waMaxReg||1);
+  if(v==='map'&&!window._mapDrawn){window._mapDrawn=true;drawFranceMap(window._waRegions||[],window._waMaxReg||1);}
 }
 
 function drawFranceMap(regions,maxReg){
@@ -1225,41 +1336,62 @@ function drawFranceMap(regions,maxReg){
   if(!mapEl)return;
   const regionData={};
   regions.forEach(r=>{regionData[r.key]=r.count});
-  // Carte SVG des régions françaises simplifiée
-  const paths={
-    'hauts-de-france':'M295,85 L340,80 L360,100 L350,130 L310,135 L285,115 Z',
-    'normandie':'M200,110 L285,115 L290,145 L260,165 L210,160 L185,140 Z',
-    'ile-de-france':'M310,135 L350,130 L355,160 L320,170 L300,155 Z',
-    'grand-est':'M360,100 L410,90 L430,115 L420,155 L375,165 L355,160 L350,130 Z',
-    'bretagne':'M130,165 L185,140 L200,170 L190,200 L150,210 L120,190 Z',
-    'pays-de-la-loire':'M185,165 L260,165 L270,195 L250,220 L200,225 L175,200 Z',
-    'centre-val-de-loire':'M260,165 L320,170 L330,200 L310,230 L270,235 L250,220 Z',
-    'bourgogne-franche-comté':'M355,160 L420,155 L425,200 L400,235 L360,235 L340,210 L330,200 Z',
-    'auvergne-rhône-alpes':'M330,200 L400,235 L405,280 L370,310 L330,300 L305,265 L310,230 Z',
-    'nouvelle-aquitaine':'M175,200 L250,220 L260,280 L235,315 L185,320 L155,290 L150,250 Z',
-    'occitanie':'M250,280 L305,265 L320,295 L300,335 L255,340 L235,315 Z',
-    'paca':'M370,310 L420,300 L430,325 L400,345 L365,340 L355,320 Z',
-    'corse':'M430,330 L445,325 L450,345 L440,360 L425,355 Z',
+  const getColor=v=>{
+    if(!v)return'#EFEDE8';
+    const i=v/maxReg;
+    if(i>0.75)return'#14532D';
+    if(i>0.5)return'#15803D';
+    if(i>0.25)return'#4ADE80';
+    return'#BBF7D0';
   };
-  const getColor=(key)=>{
-    const v=regionData[key]||0;
-    if(!v)return'#F1EFE8';
-    const intensity=v/maxReg;
-    if(intensity>0.7)return'#15803D';
-    if(intensity>0.4)return'#4ADE80';
-    if(intensity>0.1)return'#86EFAC';
-    return'#DCFCE7';
-  };
-  const svgPaths=Object.entries(paths).map(([key,d])=>{
-    const r=regions.find(x=>x.key===key);
-    const label=r?r.region:key;
-    const cnt=regionData[key]||0;
-    return`<path d="${d}" fill="${getColor(key)}" stroke="white" stroke-width="1.5" stroke-linejoin="round"><title>${label}${cnt?': '+cnt+' article'+(cnt>1?'s':''):''}</title></path>`;
-  }).join('');
-  mapEl.innerHTML=`<svg viewBox="100 70 380 310" width="100%" style="display:block">
-    <rect x="100" y="70" width="380" height="310" fill="none"/>
-    ${svgPaths}
-  </svg>`;
+  // Chargement GeoJSON via jsdelivr (gregoiredavid/france-geojson)
+  const url='https://cdn.jsdelivr.net/npm/france-geojson@2.0.1/regions.geojson';
+  Promise.all([
+    fetch(url).then(r=>r.json()),
+    import('https://cdn.jsdelivr.net/npm/d3@7/+esm'),
+  ]).then(([geojson,d3])=>{
+    const W=mapEl.offsetWidth||480,H=320;
+    mapEl.innerHTML='';
+    const svg=d3.select(mapEl).append('svg').attr('viewBox',`0 0 ${W} ${H}`).attr('width','100%');
+    const proj=d3.geoConicConformal().center([2.454071,46.279229]).scale(W*3.2).translate([W/2,H/2]);
+    const path=d3.geoPath().projection(proj);
+
+    // Map GeoJSON region names to our keys
+    const nameToKey={
+      'Hauts-de-France':'hauts-de-france','Normandie':'normandie','Île-de-France':'ile-de-france',
+      'Grand Est':'grand-est','Bretagne':'bretagne','Pays de la Loire':'pays-de-la-loire',
+      'Centre-Val de Loire':'centre-val-de-loire','Bourgogne-Franche-Comté':'bourgogne-franche-comté',
+      'Auvergne-Rhône-Alpes':'auvergne-rhône-alpes','Nouvelle-Aquitaine':'nouvelle-aquitaine',
+      'Occitanie':'occitanie','Provence-Alpes-Côte d\'Azur':'paca','Corse':'corse',
+    };
+
+    svg.selectAll('path')
+      .data(geojson.features)
+      .join('path')
+      .attr('d',path)
+      .attr('fill',d=>{
+        const key=nameToKey[d.properties.nom]||'';
+        return getColor(regionData[key]||0);
+      })
+      .attr('stroke','white')
+      .attr('stroke-width',0.8)
+      .append('title')
+      .text(d=>{
+        const key=nameToKey[d.properties.nom]||'';
+        const cnt=regionData[key]||0;
+        return d.properties.nom+(cnt?` : ${cnt} article${cnt>1?'s':''}`:'');
+      });
+
+    // Légende
+    const legend=svg.append('g').attr('transform',`translate(8,${H-60})`);
+    const steps=[{c:'#EFEDE8',l:'Aucun'},{c:'#BBF7D0',l:'Faible'},{c:'#4ADE80',l:'Moyen'},{c:'#15803D',l:'Fort'}];
+    steps.forEach((s,i)=>{
+      legend.append('rect').attr('x',0).attr('y',i*14).attr('width',10).attr('height',10).attr('fill',s.c).attr('rx',2);
+      legend.append('text').attr('x',14).attr('y',i*14+9).attr('font-size',10).attr('fill','#6B7280').text(s.l);
+    });
+  }).catch(()=>{
+    mapEl.innerHTML='<div style="padding:20px;font-size:12px;color:#9CA3AF;text-align:center">Carte non disponible (hors ligne)</div>';
+  });
 }
 
 // ── SOURCES ───────────────────────────────────────────────────
