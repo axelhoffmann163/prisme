@@ -291,7 +291,9 @@ input:checked+.tsl:before{transform:translateX(16px)}
 .wa-topbar{display:flex;align-items:center;gap:12px;padding:12px 24px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0}
 .wa-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer;padding:5px 10px;border-radius:8px;transition:all var(--t)}
 .wa-back:hover{background:var(--bg2);color:var(--text)}
-.wa-name{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-0.2px}
+.wa-name{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-0.2px;cursor:default}
+.wa-name:hover ~ #rename-btn, #rename-btn:hover{opacity:1!important}
+.wa-name-input{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-0.2px;border:1.5px solid var(--accent);border-radius:8px;padding:2px 8px;font-family:inherit;outline:none;background:var(--white);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
 .wa-query{font-size:12px;color:var(--text3)}
 .wa-periods{display:flex;gap:4px;margin-left:auto}
 .wap-chip{display:inline-flex;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text2);transition:all var(--t)}
@@ -580,7 +582,12 @@ input:checked+.tsl:before{transform:translateX(16px)}
         Mes veilles
       </div>
       <div>
-        <div class="wa-name" id="wa-name">Veille</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="wa-name" id="wa-name" title="Double-cliquer pour renommer" ondblclick="startRename()">Veille</div>
+          <button onclick="startRename()" style="opacity:0;width:18px;height:18px;border:none;background:none;cursor:pointer;color:var(--text3);padding:0;transition:opacity var(--t)" id="rename-btn" title="Renommer">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+          </button>
+        </div>
         <div class="wa-query" id="wa-query"></div>
       </div>
       <div class="wa-periods" id="wa-periods">
@@ -1488,6 +1495,55 @@ function drawFranceMap(regions,maxReg){
   mapEl.innerHTML=`<svg viewBox="0 0 600 530" width="100%" style="display:block">${shapes}${leg}</svg>`;
 }
 
+// ── RENOMMER UNE VEILLE ───────────────────────────────────────
+function startRename(){
+  const el=document.getElementById('wa-name');
+  const current=el.textContent.trim();
+  const input=document.createElement('input');
+  input.type='text';
+  input.value=current;
+  input.className='wa-name-input';
+  input.style.width=Math.max(120,current.length*9)+'px';
+  el.replaceWith(input);
+  document.getElementById('rename-btn').style.display='none';
+  input.focus();
+  input.select();
+  const save=async()=>{
+    const newName=input.value.trim();
+    if(!newName||newName===current){
+      cancelRename(current);return;
+    }
+    await fetch(`${API}/watchlists/${currentWatchId}/rename?name=${encodeURIComponent(newName)}`,{method:'PATCH'});
+    const span=document.createElement('div');
+    span.id='wa-name';span.className='wa-name';
+    span.title='Double-cliquer pour renommer';
+    span.ondblclick=startRename;
+    span.textContent=newName;
+    input.replaceWith(span);
+    document.getElementById('rename-btn').style.display='';
+    // Met à jour la liste des veilles
+    loadWL();
+  };
+  const cancel=()=>cancelRename(current);
+  input.addEventListener('blur',save);
+  input.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();input.removeEventListener('blur',save);save();}
+    if(e.key==='Escape'){e.preventDefault();input.removeEventListener('blur',save);cancel();}
+  });
+}
+
+function cancelRename(name){
+  const input=document.querySelector('.wa-name-input');
+  if(!input)return;
+  const span=document.createElement('div');
+  span.id='wa-name';span.className='wa-name';
+  span.title='Double-cliquer pour renommer';
+  span.ondblclick=startRename;
+  span.textContent=name;
+  input.replaceWith(span);
+  document.getElementById('rename-btn').style.display='';
+}
+
 // ── PDF & PARTAGE ─────────────────────────────────────────────
 function downloadPDF(){
   if(!currentWatchId)return;
@@ -1515,15 +1571,50 @@ function downloadPDF(){
 async function shareWatchlist(){
   if(!currentWatchId)return;
   const btn=document.getElementById('share-btn');
+  // Affiche d'abord le choix de durée
+  showExpireChoice(btn);
+}
+
+function showExpireChoice(anchor){
+  let pop=document.getElementById('share-popup');
+  if(pop)pop.remove();
+  pop=document.createElement('div');
+  pop.id='share-popup';
+  pop.style.cssText='position:fixed;z-index:9999;background:white;border:1px solid rgba(0,0,0,.07);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);padding:16px;width:280px';
+  const rect=anchor.getBoundingClientRect();
+  pop.style.top=(rect.bottom+6)+'px';
+  pop.style.right=(window.innerWidth-rect.right)+'px';
+  pop.innerHTML=`
+    <div style="font-size:12px;font-weight:600;color:#111827;margin-bottom:8px">Créer un lien de partage</div>
+    <div style="font-size:11px;color:#6B7280;margin-bottom:12px">Le lien donnera un accès en lecture seule, mis à jour en temps réel.</div>
+    <div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:8px">Durée de validité</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
+      <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#374151;cursor:pointer"><input type="radio" name="exp" value="7"> 7 jours</label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#374151;cursor:pointer"><input type="radio" name="exp" value="30" checked> 30 jours</label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#374151;cursor:pointer"><input type="radio" name="exp" value="90"> 90 jours</label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#374151;cursor:pointer"><input type="radio" name="exp" value="0"> Illimité</label>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="createShareLink()" style="flex:1;height:34px;background:#2563EB;color:white;border:none;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer">Générer le lien</button>
+      <button onclick="removeSharePopup()" style="height:34px;padding:0 12px;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:12px;color:#6B7280;background:white;cursor:pointer">Annuler</button>
+    </div>
+  `;
+  document.body.appendChild(pop);
+  setTimeout(()=>document.addEventListener('click',removeSharePopup,{once:true}),0);
+}
+
+async function createShareLink(){
+  const expDays=parseInt(document.querySelector('input[name="exp"]:checked')?.value||'30');
+  removeSharePopup();
+  const btn=document.getElementById('share-btn');
   try{
-    const data=await fetch(`${API}/watchlists/${currentWatchId}/share`,{method:'POST'}).then(r=>r.json());
+    const data=await fetch(`${API}/watchlists/${currentWatchId}/share?expire_days=${expDays}`,{method:'POST'}).then(r=>r.json());
     const shareUrl=`http://prisme.axelhoffmann.fr:8081/share/${data.token}`;
-    // Affiche une popup avec le lien
-    showSharePopup(shareUrl,btn);
+    showSharePopup(shareUrl,btn,data.expires_at);
   }catch(e){alert('Erreur lors de la création du lien de partage')}
 }
 
-function showSharePopup(url,anchor){
+function showSharePopup(url,anchor,expiresAt){
   let pop=document.getElementById('share-popup');
   if(pop)pop.remove();
   pop=document.createElement('div');
@@ -1532,9 +1623,10 @@ function showSharePopup(url,anchor){
   const rect=anchor.getBoundingClientRect();
   pop.style.top=(rect.bottom+6)+'px';
   pop.style.right=(window.innerWidth-rect.right)+'px';
+  const expLbl=expiresAt?`Expire le ${new Date(expiresAt).toLocaleDateString('fr-FR')}`:'Illimité';
   pop.innerHTML=`
-    <div style="font-size:12px;font-weight:600;color:#111827;margin-bottom:8px">Lien de partage</div>
-    <div style="font-size:11px;color:#6B7280;margin-bottom:10px">Ce lien donne un accès en lecture seule à cette veille, mis à jour en temps réel.</div>
+    <div style="font-size:12px;font-weight:600;color:#111827;margin-bottom:4px">Lien de partage créé</div>
+    <div style="font-size:11px;color:#6B7280;margin-bottom:10px">${expLbl}</div>
     <div style="display:flex;gap:6px">
       <input id="share-url-input" value="${url}" readonly style="flex:1;height:32px;padding:0 8px;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:11px;font-family:monospace;background:#F9FAFB;color:#374151;outline:none">
       <button onclick="copyShareUrl()" style="height:32px;padding:0 12px;background:#2563EB;color:white;border:none;border-radius:8px;font-size:11px;font-weight:500;cursor:pointer">Copier</button>
