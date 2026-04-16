@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prisme — Veille partagée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F7F6F3;--bg2:#EFEDE8;--accent:#2563EB;--text:#1A1A1A;--text2:#6B7280;--text3:#9CA3AF;--border:rgba(0,0,0,0.07);--white:#fff;--shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 16px rgba(0,0,0,0.04);--r:12px;--t:180ms ease}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.header{background:var(--text);padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white}
+.logo-text{font-size:14px;font-weight:600;color:white}
+.logo-sub{font-size:9px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px}
+.readonly-badge{display:flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(255,255,255,0.1);border-radius:20px;font-size:11px;color:rgba(255,255,255,0.6)}
+.readonly-dot{width:6px;height:6px;border-radius:50%;background:#F59E0B}
+.container{max-width:900px;margin:0 auto;padding:24px 20px}
+.watch-header{background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:20px 24px;margin-bottom:16px;box-shadow:var(--shadow)}
+.watch-name{font-size:22px;font-weight:600;color:var(--text);letter-spacing:-0.5px;margin-bottom:6px}
+.watch-meta{display:flex;gap:8px;flex-wrap:wrap}
+.meta-chip{display:inline-flex;padding:3px 10px;background:var(--bg2);border-radius:20px;font-size:11px;color:var(--text2)}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.metric{background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:14px 16px;box-shadow:var(--shadow)}
+.metric-v{font-size:24px;font-weight:600;color:var(--text);margin-bottom:2px}
+.metric-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.metric-d{font-size:11px;font-weight:500;margin-top:2px}
+.section{background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.section-title{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.art-card{background:var(--bg);border-radius:10px;padding:12px 14px;border:1px solid var(--border);margin-bottom:7px;cursor:pointer;transition:all var(--t)}
+.art-card:hover{background:var(--white);border-color:rgba(37,99,235,.12);box-shadow:var(--shadow)}
+.card-meta{display:flex;align-items:center;gap:7px;margin-bottom:6px;flex-wrap:wrap}
+.sbadge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;text-transform:uppercase}
+.badge-PQN{background:#EFF6FF;color:#1D4ED8}.badge-PQR{background:#F0FDF4;color:#15803D}
+.badge-TV{background:#FFF7ED;color:#C2410C}.badge-Radio{background:#FDF4FF;color:#9333EA}
+.badge-Magazine{background:#F0F9FF;color:#0369A1}.badge-Agence{background:#FFF1F2;color:#BE123C}
+.badge-Natif{background:#ECFDF5;color:#065F46}.badge-International{background:#F8FAFC;color:#475569}
+.tp{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--bg2);color:var(--text2)}
+.card-src{font-size:12px;font-weight:500;color:var(--text2)}
+.card-time{font-size:11px;color:var(--text3);margin-left:auto}
+.card-title{font-size:13.5px;font-weight:600;color:var(--text);line-height:1.45}
+.rb-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.rb-lbl{font-size:11px;color:var(--text2);width:100px;text-align:right;flex-shrink:0}
+.rb-track{flex:1;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.rb-fill{height:100%;border-radius:3px;background:#2563EB}
+.rb-val{font-size:11px;color:var(--text3);width:24px}
+.words-cloud{display:flex;flex-wrap:wrap;gap:6px}
+.wword{display:inline-flex;padding:4px 10px;border-radius:20px;font-size:12px;border:1px solid var(--border);color:var(--text2);background:var(--white)}
+.ent{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.04)}
+.ent:last-child{border-bottom:none}
+.ent-name{font-size:13px;font-weight:500;color:var(--text);flex:1}
+.ent-type{font-size:10px;padding:2px 6px;border-radius:10px;background:var(--bg2);color:var(--text3)}
+.ent-cnt{font-size:13px;font-weight:600;color:var(--text);width:24px;text-align:right}
+.spinner{width:32px;height:32px;border:3px solid var(--bg2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:60px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error{text-align:center;padding:60px 20px;color:var(--text3)}
+.error-icon{font-size:40px;margin-bottom:12px;opacity:.4}
+.error-title{font-size:16px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.footer{text-align:center;padding:20px;font-size:11px;color:var(--text3);border-top:1px solid var(--border);margin-top:20px}
+@media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">P</div>
+    <div><div class="logo-text">Prisme</div><div class="logo-sub">Veille presse</div></div>
+  </div>
+  <div class="readonly-badge"><div class="readonly-dot"></div>Lecture seule</div>
+</div>
+
+<div class="container" id="app">
+  <div class="spinner"></div>
+</div>
+
+<script>
+const API='http://128.140.41.234:8000';
+const token=location.pathname.split('/').pop();
+
+function ago(d){
+  if(!d)return'';
+  const s=(Date.now()-new Date(d))/1000;
+  if(s<60)return'à l\'instant';
+  if(s<3600)return`il y a ${Math.floor(s/60)} min`;
+  if(s<86400)return`il y a ${Math.floor(s/3600)}h`;
+  return`il y a ${Math.floor(s/86400)}j`;
+}
+
+function barsSvg(data,color='#2563EB'){
+  const entries=Object.entries(data||{}).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const max=entries[0]?.[1]||1;
+  return entries.map(([k,v])=>`
+    <div class="rb-row">
+      <span class="rb-lbl">${k.length>14?k.substring(0,13)+'…':k}</span>
+      <div class="rb-track"><div class="rb-fill" style="width:${Math.round(v/max*100)}%;background:${color}"></div></div>
+      <span class="rb-val">${v}</span>
+    </div>`).join('');
+}
+
+async function load(){
+  try{
+    const data=await fetch(`${API}/share/${token}`).then(r=>{
+      if(!r.ok)throw new Error(r.status);
+      return r.json();
+    });
+    render(data);
+  }catch(e){
+    document.getElementById('app').innerHTML=`
+      <div class="error">
+        <div class="error-icon">🔗</div>
+        <div class="error-title">Lien invalide ou expiré</div>
+        <div>Ce lien de partage n'est plus actif.</div>
+      </div>`;
+  }
+}
+
+function render(d){
+  const s=d.stats||{};
+  const arts=d.articles||[];
+  const diff=(s.total||0)-(s.total_prev||0);
+  const diffColor=diff>0?'#059669':diff<0?'#DC2626':'#9CA3AF';
+  const typeColors={PQN:'#2563EB',PQR:'#059669',TV:'#C2410C',Radio:'#9333EA',Magazine:'#0369A1',Agence:'#BE123C'};
+
+  const topWords=s.top_words||[];
+  const maxWc=topWords[0]?.count||1;
+
+  document.title=`Prisme — ${d.name}`;
+  document.getElementById('app').innerHTML=`
+    <div class="watch-header">
+      <div class="watch-name">${d.name}</div>
+      <div class="watch-meta">
+        <span class="meta-chip">Requête : ${d.query}</span>
+        <span class="meta-chip">24 dernières heures</span>
+        <span class="meta-chip">Mis à jour ${ago(new Date())}</span>
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric"><div class="metric-v">${s.total||0}</div><div class="metric-l">Articles</div><div class="metric-d" style="color:${diffColor}">${diff>0?'+':''}${diff} vs période préc.</div></div>
+      <div class="metric"><div class="metric-v">${s.distinct_sources||0}</div><div class="metric-l">Médias distincts</div></div>
+      <div class="metric"><div class="metric-v">${s.regions_covered||0}</div><div class="metric-l">Régions couvertes</div></div>
+      <div class="metric"><div class="metric-v">${s.distinct_source_types||0}</div><div class="metric-l">Types de sources</div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="section">
+        <div class="section-title">Par type de source</div>
+        ${barsSvg(s.by_type,'#2563EB')}
+      </div>
+      <div class="section">
+        <div class="section-title">Par média</div>
+        ${barsSvg(s.by_source,'#059669')}
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="section">
+        <div class="section-title">Mots les plus fréquents</div>
+        <div class="words-cloud">
+          ${topWords.slice(0,15).map(w=>{
+            const ratio=w.count/maxWc;
+            const sz=10+Math.round(ratio*4);
+            return`<span class="wword" style="font-size:${sz}px;opacity:${(0.4+ratio*0.6).toFixed(2)}">${w.word} <span style="font-size:9px;color:var(--text3)">${w.count}</span></span>`;
+          }).join('')}
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">Couverture régionale (PQR)</div>
+        ${barsSvg(Object.fromEntries((s.regional_coverage||[]).map(r=>[r.region,r.count])),'#15803D')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Articles · ${arts.length} résultats</div>
+      ${arts.map(a=>{
+        const cat=a.category||a.source_category||'PQN';
+        return`<div class="art-card" onclick="window.open('${a.url}','_blank')">
+          <div class="card-meta">
+            <span class="sbadge badge-${cat.replace(/\s/g,'')}">${cat}</span>
+            ${a.topic?`<span class="tp">${a.topic}</span>`:''}
+            <span class="card-src">${a.source_name||''}</span>
+            <span class="card-time">${ago(a.collected_at)}</span>
+          </div>
+          <div class="card-title">${a.title}</div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div class="footer">Partagé depuis Prisme · Veille presse · Ministère du Travail et des Solidarités</div>
+  `;
+}
+
+load();
+</script>
+</body>
+</html>
