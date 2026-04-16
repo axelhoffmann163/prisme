@@ -5,7 +5,36 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from database.connection import get_conn
-from api.watchlist import get_watchlist_stats, get_watchlist_articles, STOPWORDS, ENTITY_DB
+from api.watchlist import get_watchlist_stats, get_watchlist_articles
+
+STOPWORDS = {
+    "le","la","les","un","une","des","de","du","en","et","est","au","aux",
+    "ce","qui","que","se","sa","son","ses","sur","par","pour","dans","avec",
+    "à","il","elle","ils","elles","on","nous","vous","je","tu","l","d","s",
+    "plus","très","aussi","mais","ou","donc","or","ni","car","ne","pas","tout",
+    "cette","ces","leur","leurs","avoir","être","fait","faire","tout","bien",
+    "après","avant","entre","selon","dont","lors","même","comme","contre",
+    "depuis","sans","sous","chez","via","face","alors","ainsi","dont","quand",
+}
+
+ENTITY_DB = {
+    "CFDT": ["Organisation","syndicat"], "CGT": ["Organisation","syndicat"],
+    "FO": ["Organisation","syndicat"], "CFE-CGC": ["Organisation","syndicat"],
+    "MEDEF": ["Organisation","patronat"], "CPME": ["Organisation","patronat"],
+    "Renaissance": ["Organisation","parti"], "RN": ["Organisation","parti"],
+    "LFI": ["Organisation","parti"], "PS": ["Organisation","parti"],
+    "LR": ["Organisation","parti"], "EELV": ["Organisation","parti"],
+    "Sénat": ["Institution",""], "Matignon": ["Institution",""],
+    "Élysée": ["Institution",""], "Bercy": ["Institution",""],
+    "SNCF": ["Entreprise",""], "RATP": ["Entreprise",""],
+    "EDF": ["Entreprise",""], "Renault": ["Entreprise",""],
+    "Michelin": ["Entreprise",""], "Air France": ["Entreprise",""],
+    "Macron": ["Personne","politique"], "Emmanuel Macron": ["Personne","politique"],
+    "François Bayrou": ["Personne","politique"], "Bayrou": ["Personne","politique"],
+    "Marine Le Pen": ["Personne","politique"],
+    "Paris": ["Lieu",""], "Lyon": ["Lieu",""], "Marseille": ["Lieu",""],
+    "Bruxelles": ["Lieu",""], "Berlin": ["Lieu",""], "Washington": ["Lieu",""],
+}
 
 
 def _ago(dt) -> str:
