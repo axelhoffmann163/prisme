@@ -18,4 +18,4 @@ python-dateutil==2.9.0
 tqdm==4.66.4
 fastapi==0.111.0
 uvicorn==0.29.0
-weasyprint==62.3
+weasyprint==60.2
