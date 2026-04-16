@@ -1,6 +1,9 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Response, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from typing import Optional
+import io
+
 from database.connection import init_pool, close_pool
 from database.repository import get_recent_articles, get_stats
 from api.search import search_articles
@@ -9,13 +12,15 @@ from api.sources import (
     toggle_source, delete_source, test_feed_url, get_trends
 )
 from api.watchlist import (
-    get_watchlists, create_watchlist, delete_watchlist, get_watchlist_articles,
-    get_watchlist_stats,
+    get_watchlists, create_watchlist, delete_watchlist,
+    get_watchlist_articles, get_watchlist_stats,
     get_folders, create_folder, delete_folder, update_folder,
     add_watchlist_to_folder, remove_watchlist_from_folder, get_folder_watchlists,
 )
+from api.share import generate_share_token, revoke_share_token, get_watchlist_by_token
+from api.pdf_report import generate_watchlist_pdf
 
-app = FastAPI(title="PressWatch API", version="2.0")
+app = FastAPI(title="PressWatch API", version="2.1")
 
 app.add_middleware(
     CORSMiddleware,
@@ -34,29 +39,20 @@ def shutdown():
 
 @app.get("/")
 def root():
-    return {"status": "ok", "app": "PressWatch API v2.0"}
+    return {"status": "ok", "app": "PressWatch API v2.1"}
 
 @app.get("/stats")
 def stats():
     return get_stats()
 
 @app.get("/articles")
-def articles(
-    limit: int = Query(50, ge=1, le=200),
-    category: Optional[str] = None,
-    topic: Optional[str] = None,
-):
+def articles(limit: int = Query(50, ge=1, le=200), category: Optional[str] = None, topic: Optional[str] = None):
     return get_recent_articles(limit=limit, category=category, topic=topic)
 
 @app.get("/search")
-def search(
-    q: str = Query(..., min_length=1),
-    limit: int = Query(50, ge=1, le=200),
-    category: Optional[str] = None,
-    topic: Optional[str] = None,
-    days: int = Query(7, ge=1, le=60),
-    source_id: Optional[str] = None,
-):
+def search(q: str = Query(..., min_length=1), limit: int = Query(50, ge=1, le=200),
+           category: Optional[str] = None, topic: Optional[str] = None,
+           days: int = Query(7, ge=1, le=60), source_id: Optional[str] = None):
     return search_articles(q=q, limit=limit, category=category, topic=topic, days=days, source_id=source_id)
 
 @app.get("/trends")
@@ -73,7 +69,8 @@ def create_source(name: str, url: str, category: str, subcategory: Optional[str]
     return add_source(name=name, url=url, category=category, subcategory=subcategory, interval_min=interval_min)
 
 @app.put("/sources/{source_id}")
-def edit_source(source_id: str, name: Optional[str] = None, url: Optional[str] = None, category: Optional[str] = None, interval_min: Optional[int] = None):
+def edit_source(source_id: str, name: Optional[str] = None, url: Optional[str] = None,
+                category: Optional[str] = None, interval_min: Optional[int] = None):
     return update_source(source_id=source_id, name=name, url=url, category=category, interval_min=interval_min)
 
 @app.patch("/sources/{source_id}/toggle")
@@ -137,3 +134,35 @@ def watchlist_articles(watchlist_id: int, limit: int = Query(50, ge=1, le=200)):
 @app.get("/watchlists/{watchlist_id}/stats")
 def watchlist_stats(watchlist_id: int, hours: int = Query(24, ge=1, le=336)):
     return get_watchlist_stats(watchlist_id=watchlist_id, hours=hours)
+
+# ── PDF ───────────────────────────────────────────────────────
+@app.get("/watchlists/{watchlist_id}/pdf")
+def watchlist_pdf(watchlist_id: int, hours: int = Query(24, ge=1, le=336)):
+    try:
+        pdf_bytes = generate_watchlist_pdf(watchlist_id=watchlist_id, hours=hours)
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename=prisme-veille-{watchlist_id}.pdf"}
+        )
+    except ImportError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+# ── Partage ───────────────────────────────────────────────────
+@app.post("/watchlists/{watchlist_id}/share")
+def share_watchlist(watchlist_id: int):
+    token = generate_share_token(watchlist_id=watchlist_id)
+    return {"token": token, "url": f"/share/{token}"}
+
+@app.delete("/watchlists/{watchlist_id}/share")
+def revoke_share(watchlist_id: int):
+    return {"revoked": revoke_share_token(watchlist_id=watchlist_id)}
+
+@app.get("/share/{token}")
+def get_shared(token: str):
+    data = get_watchlist_by_token(token=token)
+    if not data:
+        raise HTTPException(status_code=404, detail="Lien invalide ou expiré")
+    return data
