@@ -583,6 +583,16 @@ input:checked+.tsl:before{transform:translateX(16px)}
         <div class="wap-chip" onclick="setWAPeriod(this,72)">3j</div>
         <div class="wap-chip" onclick="setWAPeriod(this,336)">14j</div>
       </div>
+      <div style="display:flex;gap:6px;margin-left:12px">
+        <button class="btng" onclick="downloadPDF()" title="Télécharger le rapport PDF" style="gap:5px">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+          PDF
+        </button>
+        <button class="btng" id="share-btn" onclick="shareWatchlist()" title="Partager cette veille" style="gap:5px">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"/></svg>
+          Partager
+        </button>
+      </div>
     </div>
     <div class="wa-full">
       <div class="wa-content" id="wa-content">
@@ -1457,7 +1467,82 @@ function drawFranceMap(regions,maxReg){
   mapEl.innerHTML=`<svg viewBox="0 0 600 530" width="100%" style="display:block">${shapes}${leg}</svg>`;
 }
 
-// ── SOURCES ───────────────────────────────────────────────────
+// ── PDF & PARTAGE ─────────────────────────────────────────────
+function downloadPDF(){
+  if(!currentWatchId)return;
+  const btn=document.querySelector('[onclick="downloadPDF()"]');
+  const orig=btn.innerHTML;
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/></svg> Génération…';
+  btn.disabled=true;
+  fetch(`${API}/watchlists/${currentWatchId}/pdf?hours=${currentWatchHours}`)
+    .then(r=>{
+      if(!r.ok)throw new Error('Erreur '+r.status);
+      return r.blob();
+    })
+    .then(blob=>{
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;
+      a.download=`prisme-veille-${currentWatchId}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    })
+    .catch(e=>alert('Erreur lors de la génération du PDF : '+e.message))
+    .finally(()=>{btn.innerHTML=orig;btn.disabled=false});
+}
+
+async function shareWatchlist(){
+  if(!currentWatchId)return;
+  const btn=document.getElementById('share-btn');
+  try{
+    const data=await fetch(`${API}/watchlists/${currentWatchId}/share`,{method:'POST'}).then(r=>r.json());
+    const shareUrl=`${window.location.origin}/share/${data.token}`;
+    // Affiche une popup avec le lien
+    showSharePopup(shareUrl,btn);
+  }catch(e){alert('Erreur lors de la création du lien de partage')}
+}
+
+function showSharePopup(url,anchor){
+  let pop=document.getElementById('share-popup');
+  if(pop)pop.remove();
+  pop=document.createElement('div');
+  pop.id='share-popup';
+  pop.style.cssText='position:fixed;z-index:9999;background:white;border:1px solid rgba(0,0,0,.07);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);padding:16px;width:340px';
+  const rect=anchor.getBoundingClientRect();
+  pop.style.top=(rect.bottom+6)+'px';
+  pop.style.right=(window.innerWidth-rect.right)+'px';
+  pop.innerHTML=`
+    <div style="font-size:12px;font-weight:600;color:#111827;margin-bottom:8px">Lien de partage</div>
+    <div style="font-size:11px;color:#6B7280;margin-bottom:10px">Ce lien donne un accès en lecture seule à cette veille, mis à jour en temps réel.</div>
+    <div style="display:flex;gap:6px">
+      <input id="share-url-input" value="${url}" readonly style="flex:1;height:32px;padding:0 8px;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:11px;font-family:monospace;background:#F9FAFB;color:#374151;outline:none">
+      <button onclick="copyShareUrl()" style="height:32px;padding:0 12px;background:#2563EB;color:white;border:none;border-radius:8px;font-size:11px;font-weight:500;cursor:pointer">Copier</button>
+    </div>
+    <div id="share-copied" style="font-size:11px;color:#059669;margin-top:6px;display:none">✓ Lien copié dans le presse-papier</div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.06);display:flex;justify-content:flex-end">
+      <button onclick="revokeShareLink()" style="font-size:11px;color:#DC2626;border:none;background:none;cursor:pointer">Révoquer le lien</button>
+    </div>
+  `;
+  document.body.appendChild(pop);
+  setTimeout(()=>document.addEventListener('click',removeSharePopup,{once:true}),0);
+}
+
+function removeSharePopup(){const p=document.getElementById('share-popup');if(p)p.remove()}
+
+function copyShareUrl(){
+  const inp=document.getElementById('share-url-input');
+  inp.select();
+  navigator.clipboard.writeText(inp.value).then(()=>{
+    document.getElementById('share-copied').style.display='block';
+  }).catch(()=>{document.execCommand('copy');document.getElementById('share-copied').style.display='block'});
+}
+
+async function revokeShareLink(){
+  if(!confirm('Révoquer ce lien ? Il ne fonctionnera plus.'))return;
+  removeSharePopup();
+  await fetch(`${API}/watchlists/${currentWatchId}/share`,{method:'DELETE'});
+  alert('Lien révoqué.');
+}
 async function loadSrc(){
   try{
     const data=await fetch(`${API}/sources`).then(r=>r.json());
