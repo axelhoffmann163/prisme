@@ -70,7 +70,8 @@ CREATE TABLE IF NOT EXISTS watchlists (
     category    TEXT,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     last_viewed TIMESTAMPTZ,
-    new_since_last INTEGER  DEFAULT 0
+    new_since_last INTEGER  DEFAULT 0,
+    share_token TEXT        UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS folders (
