@@ -252,9 +252,9 @@ def get_watchlist_stats(watchlist_id: int, hours: int = 24):
 
     if not articles:
         return {
-            "total": 0, "distinct_sources": 0, "distinct_source_types": 0,
+            "total": 0, "total_prev": 0, "distinct_sources": 0, "distinct_source_types": 0,
             "by_type": {}, "by_source": {}, "top_words": [],
-            "timeline": [], "regional_coverage": {}, "topics": {}
+            "timeline": [], "timeline_prev": [], "regional_coverage": {}, "topics": {}
         }
 
     # Métriques de base
@@ -319,8 +319,43 @@ def get_watchlist_stats(watchlist_id: int, hours: int = 24):
         for r, c in region_counts.most_common()
     ]
 
+    # Période précédente (même durée, décalée dans le passé)
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT COUNT(*) FROM articles a
+                WHERE a.collected_at >= NOW() - (%s || ' hours')::INTERVAL * 2
+                  AND a.collected_at < NOW() - (%s || ' hours')::INTERVAL
+                  AND (lower(a.title) LIKE lower(%s)
+                       OR lower(coalesce(a.summary,'')) LIKE lower(%s))
+            """, (str(hours), str(hours), f"%{keyword}%", f"%{keyword}%"))
+            total_prev = cur.fetchone()[0]
+
+            cur.execute("""
+                SELECT a.collected_at
+                FROM articles a
+                WHERE a.collected_at >= NOW() - (%s || ' hours')::INTERVAL * 2
+                  AND a.collected_at < NOW() - (%s || ' hours')::INTERVAL
+                  AND (lower(a.title) LIKE lower(%s)
+                       OR lower(coalesce(a.summary,'')) LIKE lower(%s))
+                ORDER BY a.collected_at ASC
+            """, (str(hours), str(hours), f"%{keyword}%", f"%{keyword}%"))
+            prev_timestamps = [r[0] for r in cur.fetchall()]
+
+    # Timeline période précédente — mêmes buckets
+    buckets_prev = [0] * n_buckets
+    start_prev = start - timedelta(hours=hours)
+    for ts in prev_timestamps:
+        if hasattr(ts, "tzinfo") and ts.tzinfo is None:
+            ts = ts.replace(tzinfo=timezone.utc)
+        idx = int((ts - start_prev).total_seconds() / (bucket_minutes * 60))
+        if 0 <= idx < n_buckets:
+            buckets_prev[idx] += 1
+    timeline_prev = [{"bucket": i, "count": buckets_prev[i]} for i in range(n_buckets)]
+
     return {
         "total": total,
+        "total_prev": int(total_prev),
         "distinct_sources": len(sources_seen),
         "distinct_source_types": len(type_counts),
         "regions_covered": len(region_counts),
@@ -328,6 +363,7 @@ def get_watchlist_stats(watchlist_id: int, hours: int = 24):
         "by_source": {v["name"]: v["count"] for v in sorted(sources_seen.values(), key=lambda x: -x["count"])[:10]},
         "top_words": top_words,
         "timeline": timeline,
+        "timeline_prev": timeline_prev,
         "timeline_bucket_minutes": bucket_minutes,
         "regional_coverage": regional_coverage,
         "topics": dict(topic_counts.most_common()),
