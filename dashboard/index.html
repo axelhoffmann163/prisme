@@ -7,184 +7,200 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#F7F6F3; --bg2:#EFEDE8; --sidebar:#0D1117;
-  --accent:#2563EB; --accent2:#1D4ED8;
-  --text:#1A1A1A; --text2:#6B7280; --text3:#9CA3AF;
-  --border:rgba(0,0,0,0.07); --white:#FFFFFF;
-  --shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 16px rgba(0,0,0,0.04);
-  --shadow-hover:0 4px 12px rgba(0,0,0,0.10),0 8px 32px rgba(0,0,0,0.06);
-  --r:14px; --r-sm:8px; --t:180ms cubic-bezier(0.4,0,0.2,1);
-}
+:root{--bg:#F7F6F3;--bg2:#EFEDE8;--sidebar:#0D1117;--accent:#2563EB;--accent2:#1D4ED8;--text:#1A1A1A;--text2:#6B7280;--text3:#9CA3AF;--border:rgba(0,0,0,0.07);--white:#FFFFFF;--shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 16px rgba(0,0,0,0.04);--shadow-h:0 4px 12px rgba(0,0,0,0.10),0 8px 32px rgba(0,0,0,0.06);--r:14px;--rs:8px;--t:180ms cubic-bezier(0.4,0,0.2,1)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden}
 
 /* SIDEBAR */
 .sidebar{width:220px;flex-shrink:0;background:var(--sidebar);display:flex;flex-direction:column;padding:20px 0;position:relative;z-index:10}
 .sidebar::after{content:'';position:absolute;top:0;right:0;width:1px;height:100%;background:linear-gradient(to bottom,transparent,rgba(255,255,255,0.06) 30%,rgba(255,255,255,0.06) 70%,transparent)}
-.s-logo{padding:0 18px 24px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:16px}
-.s-mark{display:flex;align-items:center;gap:10px}
-.s-icon{width:30px;height:30px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.s-name{font-size:15px;font-weight:600;color:white;letter-spacing:-0.3px}
-.s-sub{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.5px;text-transform:uppercase;margin-top:1px}
-.s-section{padding:0 10px;margin-bottom:6px}
-.s-label{font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:0.8px;text-transform:uppercase;padding:0 8px;margin-bottom:4px;margin-top:16px}
+.sl{padding:0 18px 24px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:16px}
+.sm{display:flex;align-items:center;gap:10px}
+.si{width:30px;height:30px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.sn{font-size:15px;font-weight:600;color:white;letter-spacing:-0.3px}
+.ss{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.5px;text-transform:uppercase;margin-top:1px}
+.sc{padding:0 10px;margin-bottom:6px}
+.slb{font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:0.8px;text-transform:uppercase;padding:0 8px;margin-bottom:4px;margin-top:16px}
 .nav{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;transition:all var(--t);color:rgba(255,255,255,0.5);font-size:13px;font-weight:500;position:relative;user-select:none}
 .nav:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.85)}
 .nav.active{background:rgba(37,99,235,0.15);color:white}
 .nav.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--accent);border-radius:0 3px 3px 0}
-.nav-ic{width:18px;height:18px;opacity:0.7;flex-shrink:0}
-.nav.active .nav-ic{opacity:1}
-.nav-badge{margin-left:auto;background:var(--accent);color:white;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600}
-.s-footer{margin-top:auto;padding:16px 18px 0;border-top:1px solid rgba(255,255,255,0.06)}
-.live{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,0.35)}
-.live-dot{width:6px;height:6px;border-radius:50%;background:#10B981;animation:lp 2s infinite;flex-shrink:0}
+.ni{width:18px;height:18px;opacity:0.7;flex-shrink:0}
+.nav.active .ni{opacity:1}
+.nb{margin-left:auto;background:var(--accent);color:white;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600}
+.sf{margin-top:auto;padding:16px 18px 0;border-top:1px solid rgba(255,255,255,0.06)}
+.li{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,0.35)}
+.ld{width:6px;height:6px;border-radius:50%;background:#10B981;animation:lp 2s infinite;flex-shrink:0}
 @keyframes lp{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(16,185,129,0.4)}50%{opacity:.7;box-shadow:0 0 0 4px rgba(16,185,129,0)}}
 
 /* MAIN */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-
-/* TOPBAR */
 .topbar{display:flex;align-items:center;gap:12px;padding:12px 24px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0}
-.t-title{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-0.2px;white-space:nowrap}
-.t-search{flex:1;max-width:380px;margin:0 auto;position:relative}
-.t-search input{width:100%;height:34px;padding:0 14px 0 34px;border:1px solid var(--border);border-radius:20px;font-size:13px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;transition:all var(--t)}
-.t-search input:focus{border-color:var(--accent);background:var(--white);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
-.t-search input::placeholder{color:var(--text3)}
-.t-si{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
-.stats{display:flex;gap:6px;margin-left:auto}
-.sc{display:flex;align-items:center;gap:5px;padding:4px 10px;background:var(--bg);border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--text2)}
-.sc strong{font-size:12px;font-weight:600;color:var(--text)}
+.tt{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-0.2px;white-space:nowrap}
+.ts{flex:1;max-width:380px;margin:0 auto;position:relative}
+.ts input{width:100%;height:34px;padding:0 14px 0 34px;border:1px solid var(--border);border-radius:20px;font-size:13px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;transition:all var(--t)}
+.ts input:focus{border-color:var(--accent);background:var(--white);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
+.ts input::placeholder{color:var(--text3)}
+.tsi{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+.stc{display:flex;gap:6px;margin-left:auto}
+.scc{display:flex;align-items:center;gap:5px;padding:4px 10px;background:var(--bg);border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--text2)}
+.scc strong{font-size:12px;font-weight:600;color:var(--text)}
 
 /* PAGES */
 .page{display:none;flex:1;overflow:hidden}
 .page.active{display:flex;flex-direction:column}
 
 /* FILTER BAR */
-.filter-bar{display:flex;align-items:center;gap:6px;padding:10px 24px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto}
-.filter-bar::-webkit-scrollbar{display:none}
+.fbar{display:flex;align-items:center;gap:6px;padding:10px 24px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto}
+.fbar::-webkit-scrollbar{display:none}
 .fl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;white-space:nowrap;margin-right:2px}
-.fdiv{width:1px;height:18px;background:var(--border);margin:0 6px;flex-shrink:0}
-
-/* Chips */
+.fdv{width:1px;height:18px;background:var(--border);margin:0 6px;flex-shrink:0}
 .chip{display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text2);white-space:nowrap;transition:all var(--t);user-select:none;flex-shrink:0}
 .chip:hover{border-color:var(--accent);color:var(--accent);background:rgba(37,99,235,0.04)}
 .chip.active{background:var(--accent);color:white;border-color:var(--accent);box-shadow:0 2px 8px rgba(37,99,235,0.25)}
 
-/* Dropdown — z-index élevé, position fixed pour éviter le clipping */
-.dd-wrap{position:relative;flex-shrink:0}
-.dd-btn{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text2);white-space:nowrap;transition:all var(--t);user-select:none}
-.dd-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(37,99,235,0.04)}
-.dd-btn.active{background:var(--accent);color:white;border-color:var(--accent);box-shadow:0 2px 8px rgba(37,99,235,0.25)}
-.dd-btn.active svg{filter:brightness(10)}
-.dd-btn svg{transition:transform var(--t);color:var(--text3)}
-.dd-btn.open svg{transform:rotate(180deg)}
-.dd-menu{
-  position:fixed;
-  z-index:9999;
-  background:var(--white);
-  border:1px solid var(--border);
-  border-radius:12px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.12),0 2px 8px rgba(0,0,0,0.06);
-  min-width:210px;
-  padding:6px;
-  display:none;
-}
-.dd-menu.open{display:block;animation:ddIn 0.15s ease}
-@keyframes ddIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.dd-hdr{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;padding:4px 10px 8px}
-.dd-item{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;font-size:13px;cursor:pointer;color:var(--text2);transition:all var(--t);gap:8px}
-.dd-item:hover{background:var(--bg);color:var(--text)}
-.dd-item.active{background:rgba(37,99,235,0.07);color:var(--accent);font-weight:500}
-.dd-left{display:flex;align-items:center;gap:8px}
+/* DROPDOWN */
+.ddw{position:relative;flex-shrink:0}
+.ddb{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text2);white-space:nowrap;transition:all var(--t);user-select:none}
+.ddb:hover{border-color:var(--accent);color:var(--accent);background:rgba(37,99,235,0.04)}
+.ddb.active{background:var(--accent);color:white;border-color:var(--accent);box-shadow:0 2px 8px rgba(37,99,235,0.25)}
+.ddb svg{transition:transform var(--t);color:var(--text3)}
+.ddb.open svg{transform:rotate(180deg)}
+.ddm{position:fixed;z-index:9999;background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.12),0 2px 8px rgba(0,0,0,0.06);min-width:210px;padding:6px;display:none}
+.ddm.open{display:block;animation:ddi 0.15s ease}
+@keyframes ddi{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.ddh{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;padding:4px 10px 8px}
+.ddi{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;font-size:13px;cursor:pointer;color:var(--text2);transition:all var(--t);gap:8px}
+.ddi:hover{background:var(--bg);color:var(--text)}
+.ddi.active{background:rgba(37,99,235,0.07);color:var(--accent);font-weight:500}
+.ddil{display:flex;align-items:center;gap:8px}
 .tdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.dd-cnt{font-size:11px;color:var(--text3);background:var(--bg2);padding:1px 6px;border-radius:10px}
+.ddc{font-size:11px;color:var(--text3);background:var(--bg2);padding:1px 6px;border-radius:10px}
 
-/* View toggle */
+/* VIEW TOGGLE */
 .vt{display:flex;gap:2px;margin-left:auto;flex-shrink:0}
-.vbtn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid var(--border);background:var(--white);cursor:pointer;color:var(--text3);transition:all var(--t)}
-.vbtn:hover{background:var(--bg);color:var(--text2)}
-.vbtn.active{background:var(--accent);color:white;border-color:var(--accent)}
+.vb{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid var(--border);background:var(--white);cursor:pointer;color:var(--text3);transition:all var(--t)}
+.vb:hover{background:var(--bg);color:var(--text2)}
+.vb.active{background:var(--accent);color:white;border-color:var(--accent)}
 
 /* FEED */
-.feed-wrap{flex:1;overflow-y:auto;padding:16px 24px}
-.feed-wrap::-webkit-scrollbar{width:4px}
-.feed-wrap::-webkit-scrollbar-thumb{background:var(--bg2);border-radius:4px}
-.feed-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.feed-title{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px}
-.feed-cnt{font-size:12px;color:var(--text3)}
+.fw{flex:1;overflow-y:auto;padding:16px 24px}
+.fw::-webkit-scrollbar{width:4px}
+.fw::-webkit-scrollbar-thumb{background:var(--bg2);border-radius:4px}
+.fh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.fht{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px}
+.fhc{font-size:12px;color:var(--text3)}
 
-/* LIST */
-.art-list{display:flex;flex-direction:column;gap:7px}
-.art-card{background:var(--white);border-radius:12px;padding:14px 16px;border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;transition:all var(--t);animation:fiu 0.25s ease both}
-.art-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-1px);border-color:rgba(37,99,235,0.12)}
+/* ARTICLE CARDS */
+.al{display:flex;flex-direction:column;gap:7px}
+.ac{background:var(--white);border-radius:12px;padding:14px 16px;border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;transition:all var(--t);animation:fiu .25s ease both}
+.ac:hover{box-shadow:var(--shadow-h);transform:translateY(-1px);border-color:rgba(37,99,235,0.12)}
 @keyframes fiu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.art-card:nth-child(1){animation-delay:0ms}.art-card:nth-child(2){animation-delay:25ms}.art-card:nth-child(3){animation-delay:50ms}.art-card:nth-child(4){animation-delay:75ms}.art-card:nth-child(5){animation-delay:100ms}
-.card-meta{display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-wrap:wrap}
-.sbadge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:6px;letter-spacing:0.3px;text-transform:uppercase}
+.ac:nth-child(1){animation-delay:0ms}.ac:nth-child(2){animation-delay:25ms}.ac:nth-child(3){animation-delay:50ms}.ac:nth-child(4){animation-delay:75ms}.ac:nth-child(5){animation-delay:100ms}
+.cm{display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-wrap:wrap}
+.sb{font-size:10px;font-weight:600;padding:2px 7px;border-radius:6px;letter-spacing:.3px;text-transform:uppercase}
 .badge-PQN{background:#EFF6FF;color:#1D4ED8}.badge-PQR{background:#F0FDF4;color:#15803D}
 .badge-TV{background:#FFF7ED;color:#C2410C}.badge-Radio{background:#FDF4FF;color:#9333EA}
 .badge-Magazine{background:#F0F9FF;color:#0369A1}.badge-Agence{background:#FFF1F2;color:#BE123C}
 .badge-Natif{background:#ECFDF5;color:#065F46}.badge-International{background:#F8FAFC;color:#475569}
-.tpill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;background:var(--bg2);color:var(--text2)}
-.card-src{font-size:12px;font-weight:500;color:var(--text2)}
-.card-time{font-size:11px;color:var(--text3);margin-left:auto}
-.card-title{font-size:14px;font-weight:600;color:var(--text);line-height:1.45;margin-bottom:4px;letter-spacing:-0.1px}
-.card-summary{font-size:12.5px;color:var(--text2);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tp{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;background:var(--bg2);color:var(--text2)}
+.cs{font-size:12px;font-weight:500;color:var(--text2)}
+.ct{font-size:11px;color:var(--text3);margin-left:auto}
+.ctl{font-size:14px;font-weight:600;color:var(--text);line-height:1.45;margin-bottom:4px;letter-spacing:-0.1px}
+.ctl mark{background:#FFF7ED;color:#C2410C;border-radius:3px;padding:0 2px}
+.csu{font-size:12.5px;color:var(--text2);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
 /* GRID */
-.art-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
-.grid-card{background:var(--white);border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;transition:all var(--t);animation:fiu 0.25s ease both;overflow:hidden;display:flex;flex-direction:column}
-.grid-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);border-color:rgba(37,99,235,0.12)}
-.grid-card:nth-child(1){animation-delay:0ms}.grid-card:nth-child(2){animation-delay:20ms}.grid-card:nth-child(3){animation-delay:40ms}.grid-card:nth-child(4){animation-delay:60ms}.grid-card:nth-child(5){animation-delay:80ms}
-.grid-img{width:100%;height:130px;object-fit:cover;background:var(--bg2);display:block;flex-shrink:0}
-.grid-img-placeholder{width:100%;height:80px;background:linear-gradient(135deg,var(--bg2) 0%,var(--bg) 100%);flex-shrink:0}
-.grid-body{padding:12px;display:flex;flex-direction:column;gap:6px;flex:1}
-.grid-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.grid-title{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.grid-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:4px}
-.grid-src{font-size:10px;color:var(--text3);font-weight:500}
-.grid-time{font-size:10px;color:var(--text3)}
+.ag{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.gc{background:var(--white);border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;transition:all var(--t);animation:fiu .25s ease both;overflow:hidden;display:flex;flex-direction:column}
+.gc:hover{box-shadow:var(--shadow-h);transform:translateY(-2px);border-color:rgba(37,99,235,0.12)}
+.gi{width:100%;height:100px;background:var(--bg2);flex-shrink:0;object-fit:cover}
+.gb{padding:11px 13px;display:flex;flex-direction:column;gap:5px;flex:1}
+.gm{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.gtl{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.gft{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:4px}
+.gsrc{font-size:10px;color:var(--text3);font-weight:500}
+.gtm{font-size:10px;color:var(--text3)}
 
-/* States */
-.s-load,.s-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--text3);font-size:13px;gap:10px;text-align:center}
-.spinner{width:24px;height:24px;border:2px solid var(--bg2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+/* STATES */
+.sl2,.se{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--text3);font-size:13px;gap:10px;text-align:center}
+.sp2{width:24px;height:24px;border:2px solid var(--bg2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .ei{font-size:32px;opacity:.4}
 
-/* SEARCH */
-.search-page{flex:1;overflow-y:auto;padding:32px 24px}
-.s-hero{max-width:600px;margin:0 auto 32px;text-align:center}
-.s-hero h2{font-family:'Instrument Serif',serif;font-size:28px;color:var(--text);margin-bottom:16px;letter-spacing:-0.5px}
-.s-box{position:relative}
-.s-box input{width:100%;height:50px;padding:0 50px 0 18px;border:1.5px solid var(--border);border-radius:14px;font-size:15px;font-family:inherit;background:var(--white);color:var(--text);outline:none;transition:all var(--t);box-shadow:var(--shadow)}
-.s-box input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(37,99,235,0.08),var(--shadow)}
-.s-box button{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:38px;height:38px;background:var(--accent);border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:white;transition:all var(--t)}
-.s-box button:hover{background:var(--accent2)}
-.s-results{max-width:800px;margin:0 auto}
+/* ═══════════════ SEARCH PAGE ═══════════════ */
+.srp{flex:1;overflow-y:auto;padding:20px 24px}
+.sr-top{background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.sr-row1{display:flex;gap:8px;margin-bottom:12px}
+.sr-input{flex:1;height:44px;padding:0 16px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;color:var(--text);background:var(--white);outline:none;transition:all var(--t)}
+.sr-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
+.sr-btn{height:44px;padding:0 20px;background:var(--accent);color:white;border:none;border-radius:10px;font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;white-space:nowrap;transition:all var(--t);flex-shrink:0}
+.sr-btn:hover{background:var(--accent2)}
+.sr-row2{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sr-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap}
+.sr-chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text2);white-space:nowrap;transition:all var(--t);user-select:none}
+.sr-chip:hover{border-color:var(--accent);color:var(--accent)}
+.sr-chip.active{background:var(--accent);color:white;border-color:var(--accent)}
+.sr-sel{height:32px;padding:0 10px;border:1px solid var(--border);border-radius:20px;font-size:12px;font-family:inherit;color:var(--text2);background:var(--white);cursor:pointer;outline:none;transition:all var(--t)}
+.sr-sel:focus{border-color:var(--accent)}
+.sr-div{width:1px;height:16px;background:var(--border);flex-shrink:0}
+
+/* Syntax hint */
+.sh{display:flex;align-items:center;gap:10px;background:#EFF6FF;border:1px solid #B5D4F4;border-radius:9px;padding:9px 14px;margin-bottom:14px;font-size:12px;color:#1D4ED8}
+.sh-t{font-weight:600;margin-right:4px;color:#0C447C;flex-shrink:0}
+.sh-tags{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.sh-tag{background:#E6F1FB;color:#0C447C;padding:2px 7px;border-radius:5px;font-family:monospace;font-size:11px}
+.sh-sep{color:#B5D4F4;font-size:10px}
+
+/* Historique */
+.hist-box{background:var(--white);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow)}
+.hist-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border)}
+.hist-ttl{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
+.hist-clr{font-size:11px;color:var(--text3);cursor:pointer;transition:color var(--t)}
+.hist-clr:hover{color:#DC2626}
+.hist-item{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid rgba(0,0,0,0.04);cursor:pointer;transition:background var(--t)}
+.hist-item:last-child{border-bottom:none}
+.hist-item:hover{background:#FAFAF9}
+.hist-ic{width:14px;height:14px;color:var(--text3);flex-shrink:0}
+.hist-q{font-size:13px;color:var(--text);flex:1;font-weight:500}
+.hist-meta{display:flex;align-items:center;gap:8px}
+.hist-cnt{font-size:11px;color:var(--text2);background:var(--bg2);padding:1px 7px;border-radius:10px}
+.hist-time{font-size:11px;color:var(--text3)}
+.hist-run{font-size:11px;color:var(--accent);opacity:0;transition:opacity var(--t);white-space:nowrap}
+.hist-item:hover .hist-run{opacity:1}
+.hist-del{font-size:11px;color:var(--text3);opacity:0;transition:opacity var(--t);cursor:pointer;padding:2px 4px}
+.hist-item:hover .hist-del{opacity:1}
+.hist-del:hover{color:#DC2626}
+.hist-empty{padding:20px 16px;text-align:center;font-size:13px;color:var(--text3)}
+
+/* Résultats recherche */
+.sr-res-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sr-res-t{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
+.sr-save-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:var(--accent);color:white;border:none;border-radius:8px;font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;transition:all var(--t)}
+.sr-save-btn:hover{background:var(--accent2)}
 
 /* WATCHLISTS */
-.wl-page{flex:1;overflow-y:auto;padding:24px}
+.wlp{flex:1;overflow-y:auto;padding:24px}
 .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
 .ph h2{font-size:18px;font-weight:600;letter-spacing:-0.3px}
-.btn-p{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--accent);color:white;border:none;border-radius:10px;font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;transition:all var(--t)}
-.btn-p:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,0.25)}
-.btn-g{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:10px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all var(--t)}
-.btn-g:hover{background:var(--bg2);color:var(--text)}
+.btnp{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--accent);color:white;border:none;border-radius:10px;font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;transition:all var(--t)}
+.btnp:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,0.25)}
+.btng{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:10px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all var(--t)}
+.btng:hover{background:var(--bg2);color:var(--text)}
 .nwp{background:var(--white);border:1.5px solid var(--accent);border-radius:var(--r);padding:18px;margin-bottom:16px;display:none;box-shadow:0 4px 16px rgba(37,99,235,0.08)}
 .nwp.v{display:block;animation:fiu .2s ease}
 .wfg{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
 .ff{display:flex;flex-direction:column;gap:5px}
-.flbl{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
-.fi{height:38px;padding:0 12px;border:1px solid var(--border);border-radius:9px;font-size:13px;font-family:inherit;color:var(--text);background:var(--bg);outline:none;transition:all var(--t)}
-.fi:focus{border-color:var(--accent);background:var(--white);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
-.wl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.ffl{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.ffi{height:38px;padding:0 12px;border:1px solid var(--border);border-radius:9px;font-size:13px;font-family:inherit;color:var(--text);background:var(--bg);outline:none;transition:all var(--t)}
+.ffi:focus{border-color:var(--accent);background:var(--white);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
+.wlg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
 .wc{background:var(--white);border-radius:var(--r);padding:18px;border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;transition:all var(--t)}
-.wc:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);border-color:rgba(37,99,235,0.15)}
-.wc-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
-.wc-name{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-0.2px}
-.wc-q{font-size:12px;color:var(--text2);margin-bottom:14px}
-.wc-ft{display:flex;align-items:center;justify-content:space-between}
+.wc:hover{box-shadow:var(--shadow-h);transform:translateY(-2px);border-color:rgba(37,99,235,0.15)}
+.wch{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.wcn{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-0.2px}
+.wcq{font-size:12px;color:var(--text2);margin-bottom:14px}
+.wcf{display:flex;align-items:center;justify-content:space-between}
 .wnb{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;background:var(--accent);color:white;border-radius:20px;font-size:11px;font-weight:600}
 .wu{font-size:11px;color:var(--text3)}
 .wa{display:flex;gap:4px;opacity:0;transition:opacity var(--t)}
@@ -193,27 +209,27 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
 .wab.danger:hover{color:#DC2626;border-color:#FECACA}
 
 /* WATCH ARTICLES */
-.wa-page{flex:1;overflow-y:auto;padding:24px}
+.wap{flex:1;overflow-y:auto;padding:24px}
 .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer;margin-bottom:16px;padding:6px 10px;border-radius:8px;transition:all var(--t)}
 .back:hover{background:var(--bg2);color:var(--text)}
 
 /* SOURCES */
-.src-page{flex:1;overflow-y:auto;padding:24px}
-.src-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
-.ss{background:var(--white);border-radius:var(--r-sm);padding:14px 16px;border:1px solid var(--border)}
-.ss-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
-.ss-v{font-size:24px;font-weight:600;color:var(--text)}
+.spg{flex:1;overflow-y:auto;padding:24px}
+.srcst{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.sst{background:var(--white);border-radius:var(--rs);padding:14px 16px;border:1px solid var(--border)}
+.sstl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.sstv{font-size:24px;font-weight:600;color:var(--text)}
 .asf{background:var(--white);border-radius:var(--r);border:1px solid var(--border);margin-bottom:16px;overflow:hidden}
 .fhdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;user-select:none;border-bottom:1px solid transparent;transition:all var(--t)}
 .fhdr:hover{background:var(--bg)}
 .fhdr.open{border-bottom-color:var(--border)}
-.fhdr-t{font-size:13px;font-weight:600}
-.fhdr-ch{color:var(--text3);transition:transform var(--t)}
-.fhdr.open .fhdr-ch{transform:rotate(180deg)}
+.fhdrt{font-size:13px;font-weight:600}
+.fhdrc{color:var(--text3);transition:transform var(--t)}
+.fhdr.open .fhdrc{transform:rotate(180deg)}
 .fbdy{display:none;padding:16px 18px}
 .fbdy.v{display:block;animation:fiu .2s ease}
 .afg{display:grid;grid-template-columns:1fr 2fr 120px 90px;gap:10px;margin-bottom:12px}
-.fa{display:flex;gap:8px}
+.fa2{display:flex;gap:8px}
 .trb{padding:8px 12px;border-radius:8px;font-size:12px;margin-top:10px;display:none}
 .tok{background:#ECFDF5;color:#065F46;display:block}.terr{background:#FFF1F2;color:#BE123C;display:block}
 .stw{background:var(--white);border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
@@ -224,17 +240,17 @@ table{width:100%;border-collapse:collapse}
 th{padding:9px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;background:var(--bg);border-bottom:1px solid var(--border)}
 td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,0.04);font-size:13px;vertical-align:middle}
 tr:last-child td{border-bottom:none}
-tr.sr:hover td{background:#FAFAF9}
+tr.sr2:hover td{background:#FAFAF9}
 .snc{font-weight:500}.suc{font-size:11px;color:var(--accent);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sp{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
-.sp.ok{background:#ECFDF5;color:#065F46}.sp.err{background:#FFF1F2;color:#BE123C}.sp.off{background:var(--bg2);color:var(--text3)}
+.spp{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
+.spp.ok{background:#ECFDF5;color:#065F46}.spp.err{background:#FFF1F2;color:#BE123C}.spp.off{background:var(--bg2);color:var(--text3)}
 .sdot{width:5px;height:5px;border-radius:50%;background:currentColor}
 .tsw{position:relative;width:34px;height:18px;display:inline-block}
 .tsw input{opacity:0;width:0;height:0}
 .tsl{position:absolute;cursor:pointer;inset:0;background:#D1D5DB;border-radius:18px;transition:.2s}
 .tsl:before{position:absolute;content:"";height:12px;width:12px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.2s}
-input:checked + .tsl{background:var(--accent)}
-input:checked + .tsl:before{transform:translateX(16px)}
+input:checked+.tsl{background:var(--accent)}
+input:checked+.tsl:before{transform:translateX(16px)}
 .ra{display:flex;gap:4px}
 .rb{height:26px;padding:0 9px;border:1px solid var(--border);border-radius:6px;font-size:11px;font-family:inherit;background:var(--white);color:var(--text2);cursor:pointer;transition:all var(--t)}
 .rb:hover{background:var(--bg);color:var(--text)}
@@ -245,180 +261,226 @@ input:checked + .tsl:before{transform:translateX(16px)}
 .eig input,.eig select{height:30px;padding:0 8px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:inherit;background:var(--white);color:var(--text);outline:none}
 .eig input:focus,.eig select:focus{border-color:var(--accent)}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg2);border-radius:4px}
-@media(max-width:768px){.sidebar{width:60px}.s-name,.s-sub,.nav span,.s-label,.live span{display:none}.src-stats{grid-template-columns:repeat(2,1fr)}.stats{display:none}}
+@media(max-width:768px){.sidebar{width:60px}.sn,.ss,.nav span,.slb,.li span{display:none}.srcst{grid-template-columns:repeat(2,1fr)}.stc{display:none}}
 </style>
 </head>
 <body>
 
 <nav class="sidebar">
-  <div class="s-logo"><div class="s-mark"><div class="s-icon">🗞</div><div><div class="s-name">Prisme</div><div class="s-sub">Veille presse</div></div></div></div>
-  <div class="s-section">
-    <div class="s-label">Navigation</div>
+  <div class="sl"><div class="sm"><div class="si">🗞</div><div><div class="sn">Prisme</div><div class="ss">Veille presse</div></div></div></div>
+  <div class="sc">
+    <div class="slb">Navigation</div>
     <div class="nav active" onclick="showPage('flux',this)" id="nav-flux">
-      <svg class="nav-ic" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg>
+      <svg class="ni" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg>
       <span>Actualité</span>
     </div>
     <div class="nav" onclick="showPage('search',this)" id="nav-search">
-      <svg class="nav-ic" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+      <svg class="ni" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
       <span>Recherche</span>
     </div>
     <div class="nav" onclick="showPage('watchlists',this)" id="nav-watchlists">
-      <svg class="nav-ic" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25"/></svg>
+      <svg class="ni" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25"/></svg>
       <span>Mes veilles</span>
-      <span class="nav-badge" id="watch-nav-badge" style="display:none">0</span>
+      <span class="nb" id="wnb" style="display:none">0</span>
     </div>
   </div>
-  <div class="s-section">
-    <div class="s-label">Administration</div>
+  <div class="sc">
+    <div class="slb">Administration</div>
     <div class="nav" onclick="showPage('sources',this)" id="nav-sources">
-      <svg class="nav-ic" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
+      <svg class="ni" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
       <span>Sources</span>
     </div>
   </div>
-  <div class="s-footer"><div class="live"><div class="live-dot"></div><span id="live-text">En direct</span></div></div>
+  <div class="sf"><div class="li"><div class="ld"></div><span id="lt">En direct</span></div></div>
 </nav>
 
 <div class="main">
   <div class="topbar">
-    <div class="t-title" id="topbar-title">Actualité</div>
-    <div class="t-search">
-      <svg class="t-si" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
-      <input type="text" placeholder="Recherche rapide…" id="topbar-search-input" onkeydown="if(event.key==='Enter'){quickSearch(this.value)}">
+    <div class="tt" id="tbt">Actualité</div>
+    <div class="ts">
+      <svg class="tsi" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+      <input type="text" placeholder="Recherche rapide…" id="tsi" onkeydown="if(event.key==='Enter'){quickSearch(this.value)}">
     </div>
-    <div class="stats">
-      <div class="sc"><strong id="chip-today">—</strong> aujourd'hui</div>
-      <div class="sc"><strong id="chip-total">—</strong> total</div>
-      <div class="sc"><strong id="chip-sources">—</strong> sources</div>
+    <div class="stc">
+      <div class="scc"><strong id="ct">—</strong> aujourd'hui</div>
+      <div class="scc"><strong id="ctt">—</strong> total</div>
+      <div class="scc"><strong id="cs">—</strong> sources</div>
     </div>
   </div>
 
   <!-- PAGE FLUX -->
   <div class="page active" id="page-flux">
-    <div class="filter-bar">
+    <div class="fbar">
       <span class="fl">Type</span>
-      <div class="chip active" onclick="setSrcF(this,null)">Tout</div>
-      <div class="chip" onclick="setSrcF(this,'PQN')">PQN</div>
-      <div class="chip" onclick="setSrcF(this,'PQR')">PQR</div>
-      <div class="chip" onclick="setSrcF(this,'TV')">TV/Radio</div>
-      <div class="chip" onclick="setSrcF(this,'Magazine')">Magazine</div>
-      <div class="chip" onclick="setSrcF(this,'Agence')">Agence</div>
-      <div class="chip" onclick="setSrcF(this,'International')">Intl.</div>
-      <div class="fdiv"></div>
-      <!-- DROPDOWN CATÉGORIE -->
-      <div class="dd-wrap" id="ddw">
-        <div class="dd-btn" id="ddbtn" onclick="toggleDD(event)">
-          <span id="ddlbl">Catégorie</span>
+      <div class="chip active" onclick="setSF(this,null)">Tout</div>
+      <div class="chip" onclick="setSF(this,'PQN')">PQN</div>
+      <div class="chip" onclick="setSF(this,'PQR')">PQR</div>
+      <div class="chip" onclick="setSF(this,'TV')">TV/Radio</div>
+      <div class="chip" onclick="setSF(this,'Magazine')">Magazine</div>
+      <div class="chip" onclick="setSF(this,'Agence')">Agence</div>
+      <div class="chip" onclick="setSF(this,'International')">Intl.</div>
+      <div class="fdv"></div>
+      <div class="ddw" id="ddw">
+        <div class="ddb" id="ddb" onclick="toggleDD(event)">
+          <span id="ddl">Catégorie</span>
           <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
         </div>
-        <div class="dd-menu" id="ddmenu">
-          <div class="dd-hdr">Thématiques</div>
-          <div class="dd-item active" onclick="setTopicF(this,null,'Catégorie')"><div class="dd-left"><span>Toutes</span></div></div>
-          <div class="dd-item" onclick="setTopicF(this,'Politique','Politique')"><div class="dd-left"><div class="tdot" style="background:#7C3AED"></div><span>Politique</span></div><span class="dd-cnt" id="cnt-Politique">—</span></div>
-          <div class="dd-item" onclick="setTopicF(this,'Économie','Économie')"><div class="dd-left"><div class="tdot" style="background:#0891B2"></div><span>Économie</span></div><span class="dd-cnt" id="cnt-Economie">—</span></div>
-          <div class="dd-item" onclick="setTopicF(this,'Social','Social')"><div class="dd-left"><div class="tdot" style="background:#D97706"></div><span>Social</span></div><span class="dd-cnt" id="cnt-Social">—</span></div>
-          <div class="dd-item" onclick="setTopicF(this,'Justice','Justice')"><div class="dd-left"><div class="tdot" style="background:#DC2626"></div><span>Justice</span></div><span class="dd-cnt" id="cnt-Justice">—</span></div>
-          <div class="dd-item" onclick="setTopicF(this,'International','International')"><div class="dd-left"><div class="tdot" style="background:#059669"></div><span>International</span></div><span class="dd-cnt" id="cnt-International">—</span></div>
-          <div class="dd-item" onclick="setTopicF(this,'Société','Société')"><div class="dd-left"><div class="tdot" style="background:#DB2777"></div><span>Société</span></div><span class="dd-cnt" id="cnt-Societe">—</span></div>
-          <div class="dd-item" onclick="setTopicF(this,'Santé','Santé')"><div class="dd-left"><div class="tdot" style="background:#16A34A"></div><span>Santé</span></div><span class="dd-cnt" id="cnt-Sante">—</span></div>
-          <div class="dd-item" onclick="setTopicF(this,'Environnement','Environnement')"><div class="dd-left"><div class="tdot" style="background:#15803D"></div><span>Environnement</span></div><span class="dd-cnt" id="cnt-Environnement">—</span></div>
-          <div class="dd-item" onclick="setTopicF(this,'Science & Tech','Science & Tech')"><div class="dd-left"><div class="tdot" style="background:#1D4ED8"></div><span>Science & Tech</span></div><span class="dd-cnt" id="cnt-ScienceTech">—</span></div>
-          <div class="dd-item" onclick="setTopicF(this,'Culture','Culture')"><div class="dd-left"><div class="tdot" style="background:#9333EA"></div><span>Culture</span></div><span class="dd-cnt" id="cnt-Culture">—</span></div>
-          <div class="dd-item" onclick="setTopicF(this,'Sport','Sport')"><div class="dd-left"><div class="tdot" style="background:#EA580C"></div><span>Sport</span></div><span class="dd-cnt" id="cnt-Sport">—</span></div>
-          <div class="dd-item" onclick="setTopicF(this,'Faits divers','Faits divers')"><div class="dd-left"><div class="tdot" style="background:#475569"></div><span>Faits divers</span></div><span class="dd-cnt" id="cnt-Faitsdivers">—</span></div>
+        <div class="ddm" id="ddm">
+          <div class="ddh">Thématiques</div>
+          <div class="ddi active" onclick="setTF(this,null,'Catégorie')"><div class="ddil"><span>Toutes</span></div></div>
+          <div class="ddi" onclick="setTF(this,'Politique','Politique')"><div class="ddil"><div class="tdot" style="background:#7C3AED"></div><span>Politique</span></div><span class="ddc" id="cnt-Politique">—</span></div>
+          <div class="ddi" onclick="setTF(this,'Économie','Économie')"><div class="ddil"><div class="tdot" style="background:#0891B2"></div><span>Économie</span></div><span class="ddc" id="cnt-Economie">—</span></div>
+          <div class="ddi" onclick="setTF(this,'Social','Social')"><div class="ddil"><div class="tdot" style="background:#D97706"></div><span>Social</span></div><span class="ddc" id="cnt-Social">—</span></div>
+          <div class="ddi" onclick="setTF(this,'Justice','Justice')"><div class="ddil"><div class="tdot" style="background:#DC2626"></div><span>Justice</span></div><span class="ddc" id="cnt-Justice">—</span></div>
+          <div class="ddi" onclick="setTF(this,'International','International')"><div class="ddil"><div class="tdot" style="background:#059669"></div><span>International</span></div><span class="ddc" id="cnt-International">—</span></div>
+          <div class="ddi" onclick="setTF(this,'Société','Société')"><div class="ddil"><div class="tdot" style="background:#DB2777"></div><span>Société</span></div><span class="ddc" id="cnt-Societe">—</span></div>
+          <div class="ddi" onclick="setTF(this,'Santé','Santé')"><div class="ddil"><div class="tdot" style="background:#16A34A"></div><span>Santé</span></div><span class="ddc" id="cnt-Sante">—</span></div>
+          <div class="ddi" onclick="setTF(this,'Environnement','Environnement')"><div class="ddil"><div class="tdot" style="background:#15803D"></div><span>Environnement</span></div><span class="ddc" id="cnt-Environnement">—</span></div>
+          <div class="ddi" onclick="setTF(this,'Science & Tech','Science & Tech')"><div class="ddil"><div class="tdot" style="background:#1D4ED8"></div><span>Science & Tech</span></div><span class="ddc" id="cnt-ScienceTech">—</span></div>
+          <div class="ddi" onclick="setTF(this,'Culture','Culture')"><div class="ddil"><div class="tdot" style="background:#9333EA"></div><span>Culture</span></div><span class="ddc" id="cnt-Culture">—</span></div>
+          <div class="ddi" onclick="setTF(this,'Sport','Sport')"><div class="ddil"><div class="tdot" style="background:#EA580C"></div><span>Sport</span></div><span class="ddc" id="cnt-Sport">—</span></div>
+          <div class="ddi" onclick="setTF(this,'Faits divers','Faits divers')"><div class="ddil"><div class="tdot" style="background:#475569"></div><span>Faits divers</span></div><span class="ddc" id="cnt-Faitsdivers">—</span></div>
         </div>
       </div>
-      <!-- VIEW TOGGLE -->
       <div class="vt">
-        <div class="vbtn active" id="vl" onclick="setView('list')" title="Liste">
-          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm0 5.25h.007v.008H3.75V12Zm0 5.25h.007v.008H3.75v-.008Z"/></svg>
-        </div>
-        <div class="vbtn" id="vg" onclick="setView('grid')" title="Grille">
-          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>
-        </div>
+        <div class="vb active" id="vl" onclick="setView('list')" title="Liste"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm0 5.25h.007v.008H3.75V12Zm0 5.25h.007v.008H3.75v-.008Z"/></svg></div>
+        <div class="vb" id="vg" onclick="setView('grid')" title="Grille"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg></div>
       </div>
     </div>
-    <div class="feed-wrap">
-      <div class="feed-hdr"><div class="feed-title" id="feed-title">Derniers articles</div><div class="feed-cnt" id="feed-cnt"></div></div>
-      <div id="art-list" class="art-list"><div class="s-load"><div class="spinner"></div>Chargement…</div></div>
+    <div class="fw">
+      <div class="fh"><div class="fht" id="ftt">Derniers articles</div><div class="fhc" id="fc"></div></div>
+      <div id="al" class="al"><div class="sl2"><div class="sp2"></div>Chargement…</div></div>
     </div>
   </div>
 
   <!-- PAGE SEARCH -->
   <div class="page" id="page-search">
-    <div class="search-page">
-      <div class="s-hero"><h2>Rechercher dans la presse</h2>
-        <div class="s-box">
-          <input type="text" id="search-main-input" placeholder="emploi, dialogue social, retraites…" onkeydown="if(event.key==='Enter') doSearch()">
-          <button onclick="doSearch()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg></button>
+    <div class="srp">
+      <div class="sr-top">
+        <div class="sr-row1">
+          <input type="text" class="sr-input" id="sri" placeholder="emploi ET syndicat, &quot;dialogue social&quot;, retraites -sport…" onkeydown="if(event.key==='Enter') doSearch()">
+          <button class="sr-btn" onclick="doSearch()">Rechercher</button>
+        </div>
+        <div class="sr-row2">
+          <span class="sr-lbl">Période</span>
+          <div class="sr-chip active" onclick="setPeriod(this,1)" data-days="1">24h</div>
+          <div class="sr-chip" onclick="setPeriod(this,0.5)" data-days="0.5">12h</div>
+          <div class="sr-chip" onclick="setPeriod(this,3)" data-days="3">3 jours</div>
+          <div class="sr-chip" onclick="setPeriod(this,7)" data-days="7">7 jours</div>
+          <div class="sr-chip" onclick="setPeriod(this,30)" data-days="30">1 mois</div>
+          <div class="sr-div"></div>
+          <span class="sr-lbl">Source</span>
+          <select class="sr-sel" id="src-sel" onchange="doSearch()">
+            <option value="">Toutes</option>
+          </select>
+          <div class="sr-div"></div>
+          <span class="sr-lbl">Thème</span>
+          <select class="sr-sel" id="topic-sel" onchange="doSearch()">
+            <option value="">Tous</option>
+            <option>Politique</option><option>Économie</option><option>Social</option>
+            <option>Justice</option><option>International</option><option>Société</option>
+            <option>Santé</option><option>Environnement</option><option>Science & Tech</option>
+            <option>Culture</option><option>Sport</option><option>Faits divers</option>
+          </select>
         </div>
       </div>
-      <div class="s-results"><div class="art-list" id="search-list"></div></div>
+
+      <div class="sh">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#1D4ED8" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+        <span class="sh-t">Syntaxe :</span>
+        <div class="sh-tags">
+          <span class="sh-tag">ET</span><span class="sh-sep">·</span>
+          <span class="sh-tag">OU</span><span class="sh-sep">·</span>
+          <span class="sh-tag">-mot</span> exclure<span class="sh-sep">·</span>
+          <span class="sh-tag">"phrase exacte"</span><span class="sh-sep">·</span>
+          <span class="sh-tag">(groupe)</span>
+        </div>
+      </div>
+
+      <div class="hist-box" id="hist-box">
+        <div class="hist-hdr">
+          <span class="hist-ttl">Historique</span>
+          <span class="hist-clr" onclick="clearHistory()">Tout effacer</span>
+        </div>
+        <div id="hist-list"></div>
+      </div>
+
+      <div id="sr-results-wrap" style="display:none">
+        <div class="sr-res-hdr">
+          <div class="sr-res-t" id="sr-res-t"></div>
+          <button class="sr-save-btn" id="sr-save-btn" onclick="saveCurrentSearch()">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Créer une veille
+          </button>
+        </div>
+        <div class="al" id="sr-list"></div>
+      </div>
     </div>
   </div>
 
   <!-- PAGE WATCHLISTS -->
   <div class="page" id="page-watchlists">
-    <div class="wl-page">
+    <div class="wlp">
       <div class="ph"><h2>Mes veilles</h2>
-        <button class="btn-p" onclick="toggleNWP()"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Nouvelle veille</button>
+        <button class="btnp" onclick="toggleNWP()"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Nouvelle veille</button>
       </div>
       <div class="nwp" id="nwp">
         <div class="wfg">
-          <div class="ff"><label class="flbl">Nom</label><input type="text" class="fi" id="wn" placeholder="ex : Emploi"></div>
-          <div class="ff"><label class="flbl">Mots-clés</label><input type="text" class="fi" id="wq" placeholder="ex : emploi chômage"></div>
-          <div style="display:flex;gap:8px;align-items:flex-end"><button class="btn-p" onclick="saveWL()">Créer</button><button class="btn-g" onclick="toggleNWP()">Annuler</button></div>
+          <div class="ff"><label class="ffl">Nom</label><input type="text" class="ffi" id="wn" placeholder="ex : Emploi"></div>
+          <div class="ff"><label class="ffl">Mots-clés</label><input type="text" class="ffi" id="wq" placeholder="ex : emploi chômage"></div>
+          <div style="display:flex;gap:8px;align-items:flex-end"><button class="btnp" onclick="saveWL()">Créer</button><button class="btng" onclick="toggleNWP()">Annuler</button></div>
         </div>
       </div>
-      <div class="wl-grid" id="wl-grid"><div class="s-load"><div class="spinner"></div>Chargement…</div></div>
+      <div class="wlg" id="wlg"><div class="sl2"><div class="sp2"></div>Chargement…</div></div>
     </div>
   </div>
 
   <!-- PAGE WATCH ARTICLES -->
   <div class="page" id="page-watch-articles">
-    <div class="wa-page">
+    <div class="wap">
       <div class="back" onclick="showPage('watchlists',document.getElementById('nav-watchlists'))"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>Retour aux veilles</div>
-      <div class="feed-hdr"><div class="feed-title" id="wa-title">Veille</div><div class="feed-cnt" id="wa-cnt"></div></div>
-      <div class="art-list" id="wa-list"><div class="s-load"><div class="spinner"></div>Chargement…</div></div>
+      <div class="fh"><div class="fht" id="wat">Veille</div><div class="fhc" id="wac"></div></div>
+      <div class="al" id="wal"><div class="sl2"><div class="sp2"></div>Chargement…</div></div>
     </div>
   </div>
 
   <!-- PAGE SOURCES -->
   <div class="page" id="page-sources">
-    <div class="src-page">
-      <div class="src-stats">
-        <div class="ss"><div class="ss-l">Total</div><div class="ss-v" id="ss-total">—</div></div>
-        <div class="ss"><div class="ss-l">Actives</div><div class="ss-v" style="color:#065F46" id="ss-active">—</div></div>
-        <div class="ss"><div class="ss-l">En erreur</div><div class="ss-v" style="color:#BE123C" id="ss-err">—</div></div>
-        <div class="ss"><div class="ss-l">Désactivées</div><div class="ss-v" style="color:var(--text3)" id="ss-off">—</div></div>
+    <div class="spg">
+      <div class="srcst">
+        <div class="sst"><div class="sstl">Total</div><div class="sstv" id="sst">—</div></div>
+        <div class="sst"><div class="sstl">Actives</div><div class="sstv" style="color:#065F46" id="ssa">—</div></div>
+        <div class="sst"><div class="sstl">En erreur</div><div class="sstv" style="color:#BE123C" id="sse">—</div></div>
+        <div class="sst"><div class="sstl">Désactivées</div><div class="sstv" style="color:var(--text3)" id="sso">—</div></div>
       </div>
       <div class="asf">
         <div class="fhdr" onclick="toggleAF(this)">
-          <div class="fhdr-t">+ Ajouter une source</div>
-          <svg class="fhdr-ch" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+          <div class="fhdrt">+ Ajouter une source</div>
+          <svg class="fhdrc" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
         </div>
         <div class="fbdy" id="afb">
           <div class="afg">
-            <div class="ff"><label class="flbl">Nom</label><input type="text" class="fi" id="an" placeholder="Le Monde"></div>
-            <div class="ff"><label class="flbl">URL RSS</label><input type="text" class="fi" id="au" placeholder="https://…"></div>
-            <div class="ff"><label class="flbl">Catégorie</label><select class="fi" id="ac"><option>PQN</option><option>PQR</option><option>TV</option><option>Radio</option><option>Magazine</option><option>Agence</option><option>Natif</option><option>International</option></select></div>
-            <div class="ff"><label class="flbl">Fréquence</label><select class="fi" id="ai"><option value="5">5 min</option><option value="15">15 min</option><option value="30" selected>30 min</option><option value="60">1h</option><option value="360">6h</option></select></div>
+            <div class="ff"><label class="ffl">Nom</label><input type="text" class="ffi" id="an" placeholder="Le Monde"></div>
+            <div class="ff"><label class="ffl">URL RSS</label><input type="text" class="ffi" id="au" placeholder="https://…"></div>
+            <div class="ff"><label class="ffl">Catégorie</label><select class="ffi" id="ac"><option>PQN</option><option>PQR</option><option>TV</option><option>Radio</option><option>Magazine</option><option>Agence</option><option>Natif</option><option>International</option></select></div>
+            <div class="ff"><label class="ffl">Fréquence</label><select class="ffi" id="ai"><option value="5">5 min</option><option value="15">15 min</option><option value="30" selected>30 min</option><option value="60">1h</option><option value="360">6h</option></select></div>
           </div>
-          <div class="fa"><button class="btn-g" onclick="testUrl()">Tester</button><button class="btn-p" onclick="addSrc()">Ajouter</button></div>
+          <div class="fa2"><button class="btng" onclick="testUrl()">Tester</button><button class="btnp" onclick="addSrc()">Ajouter</button></div>
           <div class="trb" id="tr"></div>
         </div>
       </div>
       <div class="stw">
         <div class="sfb">
-          <div class="chip active" onclick="setSF(this,'all')">Toutes</div>
-          <div class="chip" onclick="setSF(this,'PQN')">PQN</div>
-          <div class="chip" onclick="setSF(this,'PQR')">PQR</div>
-          <div class="chip" onclick="setSF(this,'TV')">TV</div>
-          <div class="chip" onclick="setSF(this,'Radio')">Radio</div>
-          <div class="chip" onclick="setSF(this,'Magazine')">Magazine</div>
-          <div class="chip" onclick="setSF(this,'errors')">En erreur</div>
-          <input type="text" class="ssi" placeholder="Rechercher…" oninput="sSearch(this.value)">
+          <div class="chip active" onclick="setSrcTF(this,'all')">Toutes</div>
+          <div class="chip" onclick="setSrcTF(this,'PQN')">PQN</div>
+          <div class="chip" onclick="setSrcTF(this,'PQR')">PQR</div>
+          <div class="chip" onclick="setSrcTF(this,'TV')">TV</div>
+          <div class="chip" onclick="setSrcTF(this,'Radio')">Radio</div>
+          <div class="chip" onclick="setSrcTF(this,'Magazine')">Magazine</div>
+          <div class="chip" onclick="setSrcTF(this,'errors')">En erreur</div>
+          <input type="text" class="ssi" placeholder="Rechercher…" oninput="sSrch(this.value)">
         </div>
-        <div id="src-tbl"><div class="s-load"><div class="spinner"></div>Chargement…</div></div>
+        <div id="src-tbl"><div class="sl2"><div class="sp2"></div>Chargement…</div></div>
       </div>
     </div>
   </div>
@@ -426,27 +488,30 @@ input:checked + .tsl:before{transform:translateX(16px)}
 
 <script>
 const API='http://128.140.41.234:8000';
+const HIST_KEY='prisme_search_history';
 let srcCat=null,topic=null,view='list',allSrc=[],srcTF='all',srcSV='';
+let srDays=1,srSrc='',srTopic='',lastQuery='',lastResults=0;
 const PT={flux:'Actualité',search:'Recherche',watchlists:'Mes veilles','watch-articles':'Veille',sources:'Sources'};
 
 function showPage(n,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));
   document.getElementById('page-'+n).classList.add('active');
   if(el)el.classList.add('active');
-  document.getElementById('topbar-title').textContent=PT[n]||n;
+  document.getElementById('tbt').textContent=PT[n]||n;
   if(n==='sources')loadSrc();
   if(n==='watchlists')loadWL();
+  if(n==='search'){renderHist();loadSrcList()}
 }
 
 async function loadStats(){
   try{
     const d=await fetch(`${API}/stats`).then(r=>r.json());
-    document.getElementById('chip-today').textContent=(d.articles_today||0).toLocaleString('fr');
-    document.getElementById('chip-total').textContent=(d.articles_total||0).toLocaleString('fr');
-    document.getElementById('chip-sources').textContent=d.sources_active||0;
-    document.getElementById('live-text').textContent='En direct';
-  }catch(e){document.getElementById('live-text').textContent='Hors ligne'}
+    document.getElementById('ct').textContent=(d.articles_today||0).toLocaleString('fr');
+    document.getElementById('ctt').textContent=(d.articles_total||0).toLocaleString('fr');
+    document.getElementById('cs').textContent=d.sources_active||0;
+    document.getElementById('lt').textContent='En direct';
+  }catch(e){document.getElementById('lt').textContent='Hors ligne'}
 }
 
 function ago(d){
@@ -458,46 +523,38 @@ function ago(d){
   return`il y a ${Math.floor(s/86400)}j`;
 }
 
-function listCard(a){
+function highlight(text,q){
+  if(!text||!q)return text||'';
+  const words=q.replace(/["""()\-+]/g,' ').split(/\s+/).filter(w=>w.length>2&&!['ET','OU','AND','OR'].includes(w.toUpperCase()));
+  let r=text;
+  words.forEach(w=>{try{r=r.replace(new RegExp(`(${w})`, 'gi'),'<mark>$1</mark>')}catch(e){}});
+  return r;
+}
+
+function listCard(a,q=''){
   const cat=a.category||a.source_category||'PQN';
-  return`<div class="art-card" onclick="window.open('${a.url}','_blank')">
-    <div class="card-meta">
-      <span class="sbadge badge-${cat.replace(/\s/g,'')}">${cat}</span>
-      ${a.topic?`<span class="tpill">${a.topic}</span>`:''}
-      <span class="card-src">${a.source_name||''}</span>
-      <span class="card-time">${ago(a.collected_at)}</span>
-    </div>
-    <div class="card-title">${a.title}</div>
-    ${a.summary?`<div class="card-summary">${a.summary}</div>`:''}
+  return`<div class="ac" onclick="window.open('${a.url}','_blank')">
+    <div class="cm"><span class="sb badge-${cat.replace(/\s/g,'')}">${cat}</span>${a.topic?`<span class="tp">${a.topic}</span>`:''}<span class="cs">${a.source_name||''}</span><span class="ct">${ago(a.collected_at)}</span></div>
+    <div class="ctl">${highlight(a.title,q)}</div>
+    ${a.summary?`<div class="csu">${a.summary}</div>`:''}
   </div>`;
 }
 
 function gridCard(a){
   const cat=a.category||a.source_category||'PQN';
-  const img=a.image_url?`<img class="grid-img" src="${a.image_url}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">`:'';
-  const ph=a.image_url?`<div class="grid-img-placeholder" style="display:none"></div>`:`<div class="grid-img-placeholder"></div>`;
-  return`<div class="grid-card" onclick="window.open('${a.url}','_blank')">
-    ${img}${ph}
-    <div class="grid-body">
-      <div class="grid-meta">
-        <span class="sbadge badge-${cat.replace(/\s/g,'')}">${cat}</span>
-        ${a.topic?`<span class="tpill">${a.topic}</span>`:''}
-      </div>
-      <div class="grid-title">${a.title}</div>
-      <div class="grid-footer"><span class="grid-src">${a.source_name||''}</span><span class="grid-time">${ago(a.collected_at)}</span></div>
-    </div>
+  return`<div class="gc" onclick="window.open('${a.url}','_blank')">
+    <div class="gi" style="background:var(--bg2)"></div>
+    <div class="gb"><div class="gm"><span class="sb badge-${cat.replace(/\s/g,'')}">${cat}</span>${a.topic?`<span class="tp">${a.topic}</span>`:''}</div>
+    <div class="gtl">${a.title}</div>
+    <div class="gft"><span class="gsrc">${a.source_name||''}</span><span class="gtm">${ago(a.collected_at)}</span></div></div>
   </div>`;
 }
 
-function renderArts(arts,id){
+function renderArts(arts,id,q=''){
   const el=document.getElementById(id);
-  if(!arts||!arts.length){el.innerHTML='<div class="s-empty"><div class="ei">📭</div>Aucun article</div>';return}
-  if(id==='art-list'){
-    el.className=view==='grid'?'art-grid':'art-list';
-    el.innerHTML=arts.map(view==='grid'?gridCard:listCard).join('');
-  }else{
-    el.innerHTML=arts.map(listCard).join('');
-  }
+  if(!arts||!arts.length){el.innerHTML='<div class="se"><div class="ei">📭</div>Aucun article</div>';return}
+  if(id==='al'){el.className=view==='grid'?'ag':'al';el.innerHTML=arts.map(view==='grid'?gridCard:a=>listCard(a,q)).join('')}
+  else{el.innerHTML=arts.map(a=>listCard(a,q)).join('')}
 }
 
 function setView(v){
@@ -507,110 +564,185 @@ function setView(v){
   loadArts();
 }
 
-// Dropdown — position fixed calculée
 function toggleDD(e){
   e.stopPropagation();
-  const btn=document.getElementById('ddbtn');
-  const menu=document.getElementById('ddmenu');
+  const btn=document.getElementById('ddb'),menu=document.getElementById('ddm');
   const isOpen=menu.classList.contains('open');
-  if(!isOpen){
-    const rect=btn.getBoundingClientRect();
-    menu.style.top=(rect.bottom+6)+'px';
-    menu.style.left=rect.left+'px';
-  }
-  btn.classList.toggle('open',!isOpen);
-  menu.classList.toggle('open',!isOpen);
+  if(!isOpen){const r=btn.getBoundingClientRect();menu.style.top=(r.bottom+6)+'px';menu.style.left=r.left+'px'}
+  btn.classList.toggle('open',!isOpen);menu.classList.toggle('open',!isOpen);
 }
+document.addEventListener('click',e=>{if(!document.getElementById('ddw').contains(e.target)){document.getElementById('ddb').classList.remove('open');document.getElementById('ddm').classList.remove('open')}});
 
-document.addEventListener('click',e=>{
-  if(!document.getElementById('ddw').contains(e.target)){
-    document.getElementById('ddbtn').classList.remove('open');
-    document.getElementById('ddmenu').classList.remove('open');
-  }
-});
-
-function setTopicF(item,t,lbl){
-  document.querySelectorAll('.dd-item').forEach(i=>i.classList.remove('active'));
-  item.classList.add('active');
-  topic=t;
-  document.getElementById('ddlbl').textContent=lbl;
-  const btn=document.getElementById('ddbtn');
-  btn.classList.toggle('active',t!==null);
-  btn.classList.remove('open');
-  document.getElementById('ddmenu').classList.remove('open');
+function setTF(item,t,lbl){
+  document.querySelectorAll('.ddi').forEach(i=>i.classList.remove('active'));
+  item.classList.add('active');topic=t;
+  document.getElementById('ddl').textContent=lbl;
+  document.getElementById('ddb').classList.toggle('active',t!==null);
+  document.getElementById('ddb').classList.remove('open');
+  document.getElementById('ddm').classList.remove('open');
   loadArts();
 }
 
 async function loadTopicCounts(){
   try{
     const d=await fetch(`${API}/articles?limit=500`).then(r=>r.json());
-    const c={};
-    d.forEach(a=>{if(a.topic)c[a.topic]=(c[a.topic]||0)+1});
-    const m={'Politique':'Politique','Économie':'Economie','Social':'Social','Justice':'Justice',
-      'International':'International','Société':'Societe','Santé':'Sante',
-      'Environnement':'Environnement','Science & Tech':'ScienceTech',
-      'Culture':'Culture','Sport':'Sport','Faits divers':'Faitsdivers'};
-    Object.entries(m).forEach(([t,k])=>{
-      const el=document.getElementById(`cnt-${k}`);
-      if(el)el.textContent=c[t]||0;
-    });
+    const c={};d.forEach(a=>{if(a.topic)c[a.topic]=(c[a.topic]||0)+1});
+    const m={'Politique':'Politique','Économie':'Economie','Social':'Social','Justice':'Justice','International':'International','Société':'Societe','Santé':'Sante','Environnement':'Environnement','Science & Tech':'ScienceTech','Culture':'Culture','Sport':'Sport','Faits divers':'Faitsdivers'};
+    Object.entries(m).forEach(([t,k])=>{const el=document.getElementById(`cnt-${k}`);if(el)el.textContent=c[t]||0});
   }catch(e){}
 }
 
 async function loadArts(){
-  const el=document.getElementById('art-list');
-  el.className=view==='grid'?'art-grid':'art-list';
-  el.innerHTML='<div class="s-load"><div class="spinner"></div>Chargement…</div>';
+  const el=document.getElementById('al');
+  el.className=view==='grid'?'ag':'al';
+  el.innerHTML='<div class="sl2"><div class="sp2"></div>Chargement…</div>';
   try{
     let url=`${API}/articles?limit=50`;
     if(srcCat)url+=`&category=${srcCat}`;
     if(topic)url+=`&topic=${encodeURIComponent(topic)}`;
     const data=await fetch(url).then(r=>r.json());
-    document.getElementById('feed-cnt').textContent=`${data.length} articles`;
-    renderArts(data,'art-list');
-  }catch(e){
-    el.innerHTML='<div class="s-empty"><div class="ei">⚠️</div>Erreur de connexion</div>';
-  }
+    document.getElementById('fc').textContent=`${data.length} articles`;
+    renderArts(data,'al');
+  }catch(e){el.innerHTML='<div class="se"><div class="ei">⚠️</div>Erreur de connexion</div>'}
 }
 
-function setSrcF(chip,cat){
-  document.querySelectorAll('.filter-bar .chip').forEach(c=>c.classList.remove('active'));
-  chip.classList.add('active');
-  srcCat=cat;
-  loadArts();
+function setSF(chip,cat){
+  document.querySelectorAll('.fbar .chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');srcCat=cat;loadArts();
 }
 
 function quickSearch(q){
   if(!q.trim())return;
   showPage('search',document.getElementById('nav-search'));
-  document.getElementById('search-main-input').value=q;
-  doSearch();
+  document.getElementById('sri').value=q;doSearch();
+}
+
+// ── SEARCH avec syntaxe avancée ────────────────────────────────
+function parseQuery(q){
+  // Transforme la syntaxe Prisme en SQL-compatible
+  // ET → AND, OU → OR, -mot → NOT mot, "exact" → "exact", (groupe) → (groupe)
+  return q
+    .replace(/\bET\b/gi,' ')
+    .replace(/\bOU\b/gi,' ')
+    .replace(/\bAND\b/gi,' ')
+    .replace(/\bOR\b/gi,' ')
+    .replace(/-(\w+)/g,' -$1')
+    .trim();
+}
+
+function setPeriod(chip,days){
+  document.querySelectorAll('.sr-chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');srDays=days;
+}
+
+async function loadSrcList(){
+  try{
+    const data=await fetch(`${API}/sources`).then(r=>r.json());
+    const sel=document.getElementById('src-sel');
+    const current=sel.value;
+    sel.innerHTML='<option value="">Toutes les sources</option>';
+    (data.sources||[]).forEach(s=>{
+      const opt=document.createElement('option');
+      opt.value=s.id;opt.textContent=s.name;
+      if(s.id===current)opt.selected=true;
+      sel.appendChild(opt);
+    });
+  }catch(e){}
 }
 
 async function doSearch(){
-  const q=document.getElementById('search-main-input').value.trim();
-  if(!q)return;
-  const el=document.getElementById('search-list');
-  el.innerHTML='<div class="s-load"><div class="spinner"></div>Recherche…</div>';
+  const raw=document.getElementById('sri').value.trim();
+  if(!raw)return;
+  srSrc=document.getElementById('src-sel').value;
+  srTopic=document.getElementById('topic-sel').value;
+  const q=parseQuery(raw);
+  lastQuery=raw;
+  const el=document.getElementById('sr-list');
+  document.getElementById('sr-results-wrap').style.display='block';
+  document.getElementById('hist-box').style.display='none';
+  el.innerHTML='<div class="sl2"><div class="sp2"></div>Recherche…</div>';
   try{
-    const data=await fetch(`${API}/search?q=${encodeURIComponent(q)}&limit=50`).then(r=>r.json());
-    if(!data.results||!data.results.length){el.innerHTML=`<div class="s-empty"><div class="ei">🔍</div>Aucun résultat pour "${q}"</div>`;return}
-    el.innerHTML=`<div class="feed-hdr" style="margin-bottom:12px"><div class="feed-title">${data.total} résultats pour "${q}"</div></div>`+data.results.map(listCard).join('');
-  }catch(e){el.innerHTML='<div class="s-empty"><div class="ei">⚠️</div>Erreur</div>'}
+    let url=`${API}/search?q=${encodeURIComponent(q)}&limit=50&days=${Math.max(1,Math.ceil(srDays))}`;
+    if(srSrc)url+=`&source_id=${srSrc}`;
+    if(srTopic)url+=`&topic=${encodeURIComponent(srTopic)}`;
+    const data=await fetch(url).then(r=>r.json());
+    lastResults=data.total||0;
+    document.getElementById('sr-res-t').textContent=`${lastResults} résultat${lastResults>1?'s':''} · ${srDays<1?srDays*24+'h':srDays+' jour'+(srDays>1?'s':'')} · "${raw}"`;
+    renderArts(data.results,'sr-list',raw);
+    addToHistory(raw,lastResults);
+  }catch(e){el.innerHTML='<div class="se"><div class="ei">⚠️</div>Erreur</div>'}
 }
 
+// ── HISTORIQUE (localStorage) ─────────────────────────────────
+function getHistory(){try{return JSON.parse(localStorage.getItem(HIST_KEY)||'[]')}catch(e){return[]}}
+function saveHistory(h){try{localStorage.setItem(HIST_KEY,JSON.stringify(h))}catch(e){}}
+
+function addToHistory(q,count){
+  const h=getHistory().filter(x=>x.q!==q);
+  h.unshift({q,count,ts:Date.now()});
+  saveHistory(h.slice(0,20));
+  renderHist();
+}
+
+function renderHist(){
+  const h=getHistory();
+  const box=document.getElementById('hist-box');
+  const list=document.getElementById('hist-list');
+  if(!h.length){
+    list.innerHTML='<div class="hist-empty">Aucune recherche récente</div>';
+    box.style.display='block';
+    return;
+  }
+  box.style.display='block';
+  list.innerHTML=h.map((x,i)=>`
+    <div class="hist-item" onclick="rerunSearch('${x.q.replace(/'/g,"\\'")}')">
+      <svg class="hist-ic" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+      <span class="hist-q">${x.q}</span>
+      <div class="hist-meta">
+        <span class="hist-cnt">${x.count} résultats</span>
+        <span class="hist-time">${ago(new Date(x.ts))}</span>
+        <span class="hist-run">Relancer →</span>
+        <span class="hist-del" onclick="event.stopPropagation();delHistItem(${i})">✕</span>
+      </div>
+    </div>`).join('');
+}
+
+function rerunSearch(q){
+  document.getElementById('sri').value=q;
+  doSearch();
+}
+
+function delHistItem(i){
+  const h=getHistory();h.splice(i,1);saveHistory(h);renderHist();
+}
+
+function clearHistory(){
+  saveHistory([]);renderHist();
+  document.getElementById('sr-results-wrap').style.display='none';
+}
+
+async function saveCurrentSearch(){
+  if(!lastQuery){alert('Lancez d\'abord une recherche.');return}
+  const name=prompt(`Nom de la veille pour "${lastQuery}" :`);
+  if(!name)return;
+  await fetch(`${API}/watchlists?name=${encodeURIComponent(name)}&query=${encodeURIComponent(lastQuery)}`,{method:'POST'});
+  alert(`Veille "${name}" créée !`);
+  loadWL();
+}
+
+// ── WATCHLISTS ────────────────────────────────────────────────
 async function loadWL(){
   try{
     const data=await fetch(`${API}/watchlists`).then(r=>r.json());
-    const g=document.getElementById('wl-grid');
+    const g=document.getElementById('wlg');
     const tn=data.reduce((s,w)=>s+(w.new_articles||0),0);
-    const b=document.getElementById('watch-nav-badge');
+    const b=document.getElementById('wnb');
     b.style.display=tn>0?'':'none';if(tn>0)b.textContent=tn;
-    if(!data.length){g.innerHTML='<div class="s-empty" style="grid-column:1/-1"><div class="ei">📋</div><div style="font-weight:600;color:var(--text2)">Aucune veille</div><div>Créez votre première veille</div></div>';return}
+    if(!data.length){g.innerHTML='<div class="se" style="grid-column:1/-1"><div class="ei">📋</div><div style="font-weight:600;color:var(--text2)">Aucune veille</div><div>Créez votre première veille</div></div>';return}
     g.innerHTML=data.map(w=>`<div class="wc" onclick="loadWA(${w.id},'${w.name}')">
-      <div class="wc-hdr"><div class="wc-name">${w.name}</div><div class="wa" onclick="event.stopPropagation()"><button class="wab danger" onclick="delW(${w.id})">✕</button></div></div>
-      <div class="wc-q">${w.query}</div>
-      <div class="wc-ft">${w.new_articles>0?`<span class="wnb">+${w.new_articles} nouveaux</span>`:'<span style="font-size:11px;color:var(--text3)">À jour</span>'}<span class="wu">${w.last_viewed?'Vu '+ago(w.last_viewed):'Jamais consulté'}</span></div>
+      <div class="wch"><div class="wcn">${w.name}</div><div class="wa" onclick="event.stopPropagation()"><button class="wab danger" onclick="delW(${w.id})">✕</button></div></div>
+      <div class="wcq">${w.query}</div>
+      <div class="wcf">${w.new_articles>0?`<span class="wnb">+${w.new_articles} nouveaux</span>`:'<span style="font-size:11px;color:var(--text3)">À jour</span>'}<span class="wu">${w.last_viewed?'Vu '+ago(w.last_viewed):'Jamais consulté'}</span></div>
     </div>`).join('');
   }catch(e){}
 }
@@ -618,40 +750,36 @@ async function loadWL(){
 async function loadWA(id,name){
   showPage('watch-articles',null);
   document.getElementById('nav-watchlists').classList.add('active');
-  document.getElementById('wa-title').textContent=name;
-  document.getElementById('wa-list').innerHTML='<div class="s-load"><div class="spinner"></div>Chargement…</div>';
+  document.getElementById('wat').textContent=name;
+  document.getElementById('wal').innerHTML='<div class="sl2"><div class="sp2"></div>Chargement…</div>';
   try{
     const data=await fetch(`${API}/watchlists/${id}/articles`).then(r=>r.json());
-    document.getElementById('wa-cnt').textContent=`${data.total} articles`;
-    renderArts(data.articles,'wa-list');
-    setTimeout(loadWL,500);
+    document.getElementById('wac').textContent=`${data.total} articles`;
+    renderArts(data.articles,'wal');setTimeout(loadWL,500);
   }catch(e){}
 }
 
 function toggleNWP(){document.getElementById('nwp').classList.toggle('v')}
-
 async function saveWL(){
   const name=document.getElementById('wn').value.trim();
   const query=document.getElementById('wq').value.trim();
   if(!name||!query){alert('Remplissez le nom et les mots-clés.');return}
   await fetch(`${API}/watchlists?name=${encodeURIComponent(name)}&query=${encodeURIComponent(query)}`,{method:'POST'});
   document.getElementById('wn').value='';document.getElementById('wq').value='';
-  document.getElementById('nwp').classList.remove('v');
-  loadWL();
+  document.getElementById('nwp').classList.remove('v');loadWL();
 }
-
 async function delW(id){if(!confirm('Supprimer cette veille ?'))return;await fetch(`${API}/watchlists/${id}`,{method:'DELETE'});loadWL()}
 
+// ── SOURCES ───────────────────────────────────────────────────
 async function loadSrc(){
   try{
     const data=await fetch(`${API}/sources`).then(r=>r.json());
     allSrc=data.sources||[];
-    const act=allSrc.filter(s=>s.active);
-    const err=act.filter(s=>s.last_status&&![200,301,302,304].includes(s.last_status));
-    document.getElementById('ss-total').textContent=allSrc.length;
-    document.getElementById('ss-active').textContent=act.length;
-    document.getElementById('ss-err').textContent=err.length;
-    document.getElementById('ss-off').textContent=allSrc.filter(s=>!s.active).length;
+    const act=allSrc.filter(s=>s.active),err=act.filter(s=>s.last_status&&![200,301,302,304].includes(s.last_status));
+    document.getElementById('sst').textContent=allSrc.length;
+    document.getElementById('ssa').textContent=act.length;
+    document.getElementById('sse').textContent=err.length;
+    document.getElementById('sso').textContent=allSrc.filter(s=>!s.active).length;
     renderSrc();
   }catch(e){}
 }
@@ -667,12 +795,12 @@ function renderSrc(){
   let s=allSrc;
   if(srcTF!=='all'){if(srcTF==='errors')s=s.filter(x=>x.active&&x.last_status&&![200,301,302,304].includes(x.last_status));else s=s.filter(x=>x.category===srcTF)}
   if(srcSV){const q=srcSV.toLowerCase();s=s.filter(x=>x.name.toLowerCase().includes(q)||x.url.toLowerCase().includes(q))}
-  if(!s.length){document.getElementById('src-tbl').innerHTML='<div class="s-empty" style="padding:30px"><div class="ei">🔍</div>Aucune source</div>';return}
+  if(!s.length){document.getElementById('src-tbl').innerHTML='<div class="se" style="padding:30px"><div class="ei">🔍</div>Aucune source</div>';return}
   document.getElementById('src-tbl').innerHTML=`<table><thead><tr><th>Source</th><th>URL RSS</th><th>Catégorie</th><th>Statut</th><th>Art./24h</th><th>Actions</th></tr></thead><tbody>
   ${s.map(x=>{const st=getSt(x);return`
-    <tr class="sr"><td><div class="snc">${x.name}</div></td><td><div class="suc" title="${x.url}">${x.url}</div></td>
-    <td><span class="sbadge badge-${x.category}">${x.category}</span></td>
-    <td><span class="sp ${st.c}"><span class="sdot"></span>${st.l}</span></td>
+    <tr class="sr2"><td><div class="snc">${x.name}</div></td><td><div class="suc" title="${x.url}">${x.url}</div></td>
+    <td><span class="sb badge-${x.category}">${x.category}</span></td>
+    <td><span class="spp ${st.c}"><span class="sdot"></span>${st.l}</span></td>
     <td>${x.articles_today||0}</td>
     <td><div class="ra">
       <label class="tsw"><input type="checkbox" ${x.active?'checked':''} onchange="togSrc('${x.id}',this.checked)"><span class="tsl"></span></label>
@@ -684,45 +812,35 @@ function renderSrc(){
       <input id="eu-${x.id}" value="${x.url}">
       <select id="ec-${x.id}">${['PQN','PQR','TV','Radio','Magazine','Agence','Natif','International'].map(c=>`<option ${c===x.category?'selected':''}>${c}</option>`).join('')}</select>
       <select id="ei-${x.id}">${[5,15,30,60,360].map(v=>`<option value="${v}" ${v===x.interval_min?'selected':''}>${v<60?v+' min':(v/60)+'h'}</option>`).join('')}</select>
-      <button class="btn-p" style="height:30px;font-size:11px;padding:0 10px" onclick="saveE('${x.id}')">Sauver</button>
-      <button class="btn-g" style="height:30px;font-size:11px;padding:0 10px" onclick="hideE('${x.id}')">Annuler</button>
+      <button class="btnp" style="height:30px;font-size:11px;padding:0 10px" onclick="saveE('${x.id}')">Sauver</button>
+      <button class="btng" style="height:30px;font-size:11px;padding:0 10px" onclick="hideE('${x.id}')">Annuler</button>
     </div></td></tr>`}).join('')}</tbody></table>`;
 }
 
-function setSF(chip,f){document.querySelectorAll('.sfb .chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');srcTF=f;renderSrc()}
-function sSearch(v){srcSV=v;renderSrc()}
+function setSrcTF(chip,f){document.querySelectorAll('.sfb .chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');srcTF=f;renderSrc()}
+function sSrch(v){srcSV=v;renderSrc()}
 function toggleAF(h){h.classList.toggle('open');document.getElementById('afb').classList.toggle('v')}
 function showE(id){const r=document.getElementById(`se-${id}`);if(r)r.style.display=r.style.display==='table-row'?'none':'table-row'}
 function hideE(id){const r=document.getElementById(`se-${id}`);if(r)r.style.display='none'}
-
 async function saveE(id){
-  const name=document.getElementById(`en-${id}`).value;
-  const url=document.getElementById(`eu-${id}`).value;
-  const category=document.getElementById(`ec-${id}`).value;
-  const interval_min=document.getElementById(`ei-${id}`).value;
+  const name=document.getElementById(`en-${id}`).value,url=document.getElementById(`eu-${id}`).value;
+  const category=document.getElementById(`ec-${id}`).value,interval_min=document.getElementById(`ei-${id}`).value;
   await fetch(`${API}/sources/${id}?name=${encodeURIComponent(name)}&url=${encodeURIComponent(url)}&category=${category}&interval_min=${interval_min}`,{method:'PUT'});
   loadSrc();
 }
-
 async function togSrc(id,active){await fetch(`${API}/sources/${id}/toggle?active=${active}`,{method:'PATCH'});loadSrc();loadStats()}
 async function delSrc(id,name){if(!confirm(`Supprimer "${name}" ?`))return;await fetch(`${API}/sources/${id}`,{method:'DELETE'});loadSrc()}
-
 async function testUrl(){
   const url=document.getElementById('au').value.trim();
   if(!url){alert('Entrez une URL.');return}
   const d=document.getElementById('tr');
   d.className='trb';d.style.display='block';d.textContent='Test en cours…';
-  try{
-    const data=await fetch(`${API}/sources/test?url=${encodeURIComponent(url)}`).then(r=>r.json());
-    d.className=`trb ${data.ok?'tok':'terr'}`;d.textContent=data.message;
-  }catch(e){d.className='trb terr';d.textContent='Erreur de connexion.'}
+  try{const data=await fetch(`${API}/sources/test?url=${encodeURIComponent(url)}`).then(r=>r.json());d.className=`trb ${data.ok?'tok':'terr'}`;d.textContent=data.message}
+  catch(e){d.className='trb terr';d.textContent='Erreur de connexion.'}
 }
-
 async function addSrc(){
-  const name=document.getElementById('an').value.trim();
-  const url=document.getElementById('au').value.trim();
-  const category=document.getElementById('ac').value;
-  const interval_min=document.getElementById('ai').value;
+  const name=document.getElementById('an').value.trim(),url=document.getElementById('au').value.trim();
+  const category=document.getElementById('ac').value,interval_min=document.getElementById('ai').value;
   if(!name||!url){alert('Nom et URL requis.');return}
   const data=await fetch(`${API}/sources?name=${encodeURIComponent(name)}&url=${encodeURIComponent(url)}&category=${category}&interval_min=${interval_min}`,{method:'POST'}).then(r=>r.json());
   if(data.error){alert(data.error);return}
