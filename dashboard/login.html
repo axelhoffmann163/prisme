@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prisme — Connexion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Instrument Sans',sans-serif;background:#0D1117;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.card{background:#161B22;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:40px 36px;width:100%;max-width:380px}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:32px;justify-content:center}
+.logo-icon{width:36px;height:36px;background:#2563EB;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:white}
+.logo-text{font-size:18px;font-weight:600;color:white;letter-spacing:-0.3px}
+.logo-sub{font-size:10px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+h1{font-size:20px;font-weight:600;color:white;text-align:center;margin-bottom:6px}
+.sub{font-size:13px;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:28px}
+.field{margin-bottom:16px}
+label{display:block;font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+input[type=text],input[type=password]{width:100%;height:42px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0 14px;font-size:14px;font-family:inherit;color:white;outline:none;transition:border-color .15s}
+input[type=text]:focus,input[type=password]:focus{border-color:#2563EB;background:rgba(37,99,235,0.08)}
+input::placeholder{color:rgba(255,255,255,0.2)}
+.btn{width:100%;height:44px;background:#2563EB;border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:inherit;color:white;cursor:pointer;transition:all .15s;margin-top:8px}
+.btn:hover{background:#1D4ED8}
+.btn:active{transform:scale(0.98)}
+.error{background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.3);border-radius:8px;padding:10px 14px;font-size:13px;color:#FCA5A5;margin-bottom:16px;display:none}
+.error.v{display:block}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <div class="logo-icon">P</div>
+    <div><div class="logo-text">Prisme</div><div class="logo-sub">Veille presse</div></div>
+  </div>
+  <div class="error" id="err">Identifiants incorrects. Réessayez.</div>
+  <div class="field">
+    <label>Identifiant</label>
+    <input type="text" id="user" placeholder="votre identifiant" autocomplete="username">
+  </div>
+  <div class="field">
+    <label>Mot de passe</label>
+    <input type="password" id="pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+  </div>
+  <button class="btn" onclick="login()">Se connecter</button>
+</div>
+<script>
+// Comptes autorisés : {identifiant: mot_de_passe}
+// SHA-256 des mots de passe pour ne pas les stocker en clair
+const ACCOUNTS = {
+  'axel': 'axel',
+  'jpfarandou': 'jeanne',
+};
+
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function login(){
+  const user=document.getElementById('user').value.trim();
+  const pass=document.getElementById('pass').value;
+  const err=document.getElementById('err');
+  err.classList.remove('v');
+  if(!user||!pass){err.textContent='Remplissez tous les champs.';err.classList.add('v');return}
+  const expected=ACCOUNTS[user];
+  if(!expected||pass!==expected){
+    err.textContent='Identifiants incorrects. Réessayez.';
+    err.classList.add('v');
+    return;
+  }
+  // Stocke le token de session
+  const token=await sha256(user+pass+navigator.userAgent.substring(0,20));
+  localStorage.setItem('prisme_auth',JSON.stringify({user,token,ts:Date.now()}));
+  window.location.href='/';
+}
+
+// Si déjà connecté, redirige
+const auth=JSON.parse(localStorage.getItem('prisme_auth')||'null');
+if(auth&&auth.ts&&(Date.now()-auth.ts)<7*24*60*60*1000){
+  window.location.href='/';
+}
+</script>
+</body>
+</html>
