@@ -135,6 +135,14 @@ def watchlist_articles(watchlist_id: int, limit: int = Query(50, ge=1, le=200)):
 def watchlist_stats(watchlist_id: int, hours: int = Query(24, ge=1, le=336)):
     return get_watchlist_stats(watchlist_id=watchlist_id, hours=hours)
 
+@app.patch("/watchlists/{watchlist_id}/rename")
+def rename_watchlist(watchlist_id: int, name: str):
+    from database.connection import get_conn
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("UPDATE watchlists SET name = %s WHERE id = %s", (name, watchlist_id))
+    return {"id": watchlist_id, "name": name}
+
 # ── PDF ───────────────────────────────────────────────────────
 @app.get("/watchlists/{watchlist_id}/pdf")
 def watchlist_pdf(watchlist_id: int, hours: int = Query(24, ge=1, le=336)):
@@ -152,9 +160,10 @@ def watchlist_pdf(watchlist_id: int, hours: int = Query(24, ge=1, le=336)):
 
 # ── Partage ───────────────────────────────────────────────────
 @app.post("/watchlists/{watchlist_id}/share")
-def share_watchlist(watchlist_id: int):
-    token = generate_share_token(watchlist_id=watchlist_id)
-    return {"token": token, "url": f"/share/{token}"}
+def share_watchlist(watchlist_id: int, expire_days: int = 30):
+    from api.share import generate_share_token
+    result = generate_share_token(watchlist_id=watchlist_id, expire_days=expire_days)
+    return result
 
 @app.delete("/watchlists/{watchlist_id}/share")
 def revoke_share(watchlist_id: int):
