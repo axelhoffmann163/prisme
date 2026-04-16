@@ -246,6 +246,86 @@ input:checked+.tsl:before{transform:translateX(16px)}
 .eig input:focus,.eig select:focus{border-color:var(--accent)}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg2);border-radius:4px}
 @media(max-width:768px){.sidebar{width:60px}.sn,.ss,.nav span,.slb,.li span{display:none}.srcst{grid-template-columns:repeat(2,1fr)}.stc{display:none}}
+
+/* ═══ WATCHLISTS & FOLDERS ═══ */
+.wlp{flex:1;overflow-y:auto;padding:20px 24px}
+.wl-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.wl-toolbar h2{font-size:18px;font-weight:600;letter-spacing:-0.3px;flex:1}
+.folder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:20px}
+.folder-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;cursor:pointer;transition:all var(--t);position:relative}
+.folder-card:hover{box-shadow:var(--shadow-h);transform:translateY(-1px);border-color:rgba(37,99,235,.15)}
+.folder-card.add-folder{border-style:dashed;background:transparent;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--text3);font-size:13px;min-height:96px}
+.folder-card.add-folder:hover{color:var(--accent);border-color:var(--accent)}
+.fc-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:13px;flex-shrink:0}
+.fc-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.fc-meta{font-size:11px;color:var(--text3)}
+.fc-actions{position:absolute;top:10px;right:10px;display:flex;gap:3px;opacity:0;transition:opacity var(--t)}
+.folder-card:hover .fc-actions{opacity:1}
+.fc-btn{width:22px;height:22px;border:1px solid var(--border);border-radius:5px;background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3);transition:all var(--t)}
+.fc-btn.danger:hover{color:#DC2626;border-color:#FECACA}
+.wl-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:4px}
+.wl-section-ttl{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
+.wlg{display:flex;flex-direction:column;gap:7px}
+.wc{background:var(--white);border-radius:var(--r);padding:14px 16px;border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;transition:all var(--t);display:flex;align-items:center;gap:14px}
+.wc:hover{box-shadow:var(--shadow-h);transform:translateY(-1px);border-color:rgba(37,99,235,.15)}
+.wc-info{flex:1;min-width:0}
+.wcn{font-size:14px;font-weight:600;color:var(--text);letter-spacing:-0.2px;margin-bottom:3px}
+.wcq{font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wc-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.wstat{text-align:right}
+.wsv{font-size:16px;font-weight:600;color:var(--text)}
+.wsl{font-size:10px;color:var(--text3)}
+.wsep{width:1px;height:28px;background:var(--border)}
+.wnb2{display:inline-flex;padding:3px 8px;background:var(--accent);color:white;border-radius:20px;font-size:10px;font-weight:600}
+.wc-actions{display:flex;gap:4px;opacity:0;transition:opacity var(--t)}
+.wc:hover .wc-actions{opacity:1}
+.wab{width:26px;height:26px;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--t);color:var(--text3);font-size:11px}
+.wab.danger:hover{color:#DC2626;border-color:#FECACA}
+.wu{font-size:11px;color:var(--text3)}
+.nwp{background:var(--white);border:1.5px solid var(--accent);border-radius:var(--r);padding:18px;margin-bottom:14px;display:none;box-shadow:0 4px 16px rgba(37,99,235,.08)}
+.nwp.v{display:block;animation:fiu .2s ease}
+.wfg{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end}
+
+/* ═══ WATCH ANALYTICS PAGE ═══ */
+.wa-full{flex:1;overflow-y:auto;padding:0}
+.wa-topbar{display:flex;align-items:center;gap:12px;padding:12px 24px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0}
+.wa-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer;padding:5px 10px;border-radius:8px;transition:all var(--t)}
+.wa-back:hover{background:var(--bg2);color:var(--text)}
+.wa-name{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-0.2px}
+.wa-query{font-size:12px;color:var(--text3)}
+.wa-periods{display:flex;gap:4px;margin-left:auto}
+.wap-chip{display:inline-flex;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text2);transition:all var(--t)}
+.wap-chip:hover{border-color:var(--accent);color:var(--accent)}
+.wap-chip.active{background:var(--accent);color:white;border-color:var(--accent)}
+.wa-content{padding:16px 24px;overflow-y:auto;flex:1}
+.wa-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.wam{background:var(--white);border-radius:var(--rs);padding:14px 16px;border:1px solid var(--border)}
+.wam-v{font-size:24px;font-weight:600;color:var(--text);margin-bottom:2px}
+.wam-l{font-size:11px;color:var(--text3)}
+.wam-d{font-size:11px;color:#059669;font-weight:500}
+.wa-charts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.wa-chart-full{grid-column:1/-1}
+.wac-box{background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:16px}
+.wac-ttl{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+.words-cloud{display:flex;flex-wrap:wrap;gap:6px}
+.wword{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border);color:var(--text2);cursor:default;transition:all var(--t)}
+.wword:hover{border-color:var(--accent);color:var(--accent)}
+.entity-list{display:flex;flex-direction:column;gap:0}
+.ent{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.04)}
+.ent:last-child{border-bottom:none}
+.ent-name{font-size:13px;font-weight:500;color:var(--text);flex:1}
+.ent-type{font-size:10px;padding:2px 6px;border-radius:10px;background:var(--bg2);color:var(--text3);flex-shrink:0}
+.ent-cnt{font-size:13px;font-weight:600;color:var(--text);width:24px;text-align:right}
+.region-view{display:flex;gap:4px;margin-bottom:10px}
+.rv-btn{font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid var(--border);background:var(--white);color:var(--text2);cursor:pointer;transition:all var(--t)}
+.rv-btn.active{background:var(--accent);color:white;border-color:var(--accent)}
+.region-bars{display:flex;flex-direction:column;gap:6px}
+.rb-row{display:flex;align-items:center;gap:8px}
+.rb-lbl{font-size:11px;color:var(--text2);width:110px;flex-shrink:0;text-align:right}
+.rb-track{flex:1;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.rb-fill{height:100%;border-radius:3px;background:#15803D;transition:width .4s ease}
+.rb-val{font-size:11px;color:var(--text3);width:20px}
+.wa-articles{margin-top:10px}
 </style>
 </head>
 <body>
@@ -435,26 +515,79 @@ input:checked+.tsl:before{transform:translateX(16px)}
   <!-- PAGE WATCHLISTS -->
   <div class="page" id="page-watchlists">
     <div class="wlp">
-      <div class="ph"><h2>Mes veilles</h2>
-        <button class="btnp" onclick="toggleNWP()"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Nouvelle veille</button>
+      <div class="wl-toolbar">
+        <h2>Mes veilles</h2>
+        <button class="btng" onclick="toggleNewFolder()"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Nouveau dossier</button>
+        <button class="btnp" onclick="toggleNWP()"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Nouvelle veille</button>
       </div>
+      <!-- Formulaire nouveau dossier -->
+      <div class="nwp" id="new-folder-panel">
+        <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:end">
+          <div class="ff"><label class="ffl">Nom du dossier</label><input type="text" class="ffi" id="folder-name" placeholder="ex : Travail & emploi"></div>
+          <div class="ff"><label class="ffl">Couleur</label>
+            <select class="ffi" id="folder-color" style="width:120px">
+              <option value="#2563EB">Bleu</option><option value="#7C3AED">Violet</option>
+              <option value="#059669">Vert</option><option value="#D97706">Ambre</option>
+              <option value="#DC2626">Rouge</option><option value="#0891B2">Cyan</option>
+              <option value="#DB2777">Rose</option><option value="#475569">Gris</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end">
+            <button class="btnp" onclick="saveFolder()">Créer</button>
+            <button class="btng" onclick="toggleNewFolder()">Annuler</button>
+          </div>
+        </div>
+      </div>
+      <!-- Formulaire nouvelle veille -->
       <div class="nwp" id="nwp">
         <div class="wfg">
           <div class="ff"><label class="ffl">Nom</label><input type="text" class="ffi" id="wn" placeholder="ex : Emploi"></div>
           <div class="ff"><label class="ffl">Mots-clés</label><input type="text" class="ffi" id="wq" placeholder="ex : emploi chômage"></div>
-          <div style="display:flex;gap:8px;align-items:flex-end"><button class="btnp" onclick="saveWL()">Créer</button><button class="btng" onclick="toggleNWP()">Annuler</button></div>
+          <div class="ff"><label class="ffl">Dossier</label>
+            <select class="ffi" id="wfolder"><option value="">— Aucun dossier —</option></select>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end">
+            <button class="btnp" onclick="saveWL()">Créer</button>
+            <button class="btng" onclick="toggleNWP()">Annuler</button>
+          </div>
         </div>
+      </div>
+      <!-- Dossiers -->
+      <div class="wl-section-hdr"><span class="wl-section-ttl" id="wl-section-lbl">Dossiers</span></div>
+      <div class="folder-grid" id="folder-grid"></div>
+      <!-- Veilles -->
+      <div class="wl-section-hdr" id="wl-veilles-hdr" style="display:none">
+        <span class="wl-section-ttl" id="wl-veilles-lbl">Toutes les veilles</span>
+        <span style="font-size:11px;color:var(--accent);cursor:pointer" onclick="showAllWL()">Voir tout</span>
       </div>
       <div class="wlg" id="wlg"><div class="sl2"><div class="sp2"></div>Chargement…</div></div>
     </div>
   </div>
 
-  <!-- PAGE WATCH ARTICLES -->
+  <!-- PAGE ANALYTICS VEILLE -->
   <div class="page" id="page-watch-articles">
-    <div class="wap">
-      <div class="back" onclick="showPage('watchlists',document.getElementById('nav-watchlists'))"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>Retour aux veilles</div>
-      <div class="fh"><div class="fht" id="wat">Veille</div><div class="fhc" id="wac"></div></div>
-      <div class="al" id="wal"><div class="sl2"><div class="sp2"></div>Chargement…</div></div>
+    <div class="wa-topbar">
+      <div class="wa-back" onclick="showPage('watchlists',document.getElementById('nav-watchlists'))">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
+        Mes veilles
+      </div>
+      <div>
+        <div class="wa-name" id="wa-name">Veille</div>
+        <div class="wa-query" id="wa-query"></div>
+      </div>
+      <div class="wa-periods" id="wa-periods">
+        <div class="wap-chip" onclick="setWAPeriod(this,3)">3h</div>
+        <div class="wap-chip" onclick="setWAPeriod(this,6)">6h</div>
+        <div class="wap-chip" onclick="setWAPeriod(this,12)">12h</div>
+        <div class="wap-chip active" onclick="setWAPeriod(this,24)">24h</div>
+        <div class="wap-chip" onclick="setWAPeriod(this,72)">3j</div>
+        <div class="wap-chip" onclick="setWAPeriod(this,336)">14j</div>
+      </div>
+    </div>
+    <div class="wa-full">
+      <div class="wa-content" id="wa-content">
+        <div class="sl2"><div class="sp2"></div>Chargement…</div>
+      </div>
     </div>
   </div>
 
@@ -777,44 +910,357 @@ async function saveCurrentSearch(){
   alert(`Veille "${name}" créée !`);loadWL();
 }
 
-// ── WATCHLISTS ────────────────────────────────────────────────
+// ── FOLDERS & WATCHLISTS ─────────────────────────────────────
+let allFolders=[], currentFolderId=null, currentWatchId=null, currentWatchHours=24;
+
+function toggleNewFolder(){document.getElementById('new-folder-panel').classList.toggle('v')}
+function toggleNWP(){document.getElementById('nwp').classList.toggle('v')}
+
+async function saveFolder(){
+  const name=document.getElementById('folder-name').value.trim();
+  const color=document.getElementById('folder-color').value;
+  if(!name){alert('Entrez un nom.');return}
+  await fetch(`${API}/folders?name=${encodeURIComponent(name)}&color=${encodeURIComponent(color)}`,{method:'POST'});
+  document.getElementById('folder-name').value='';
+  document.getElementById('new-folder-panel').classList.remove('v');
+  loadWL();
+}
+
+async function delFolder(id){
+  if(!confirm('Supprimer ce dossier ? Les veilles ne seront pas supprimées.'))return;
+  await fetch(`${API}/folders/${id}`,{method:'DELETE'});
+  currentFolderId=null;loadWL();
+}
+
 async function loadWL(){
   try{
-    const data=await fetch(`${API}/watchlists`).then(r=>r.json());
-    const g=document.getElementById('wlg');
-    const tn=data.reduce((s,w)=>s+(w.new_articles||0),0);
+    const [folders,watchlists]=await Promise.all([
+      fetch(`${API}/folders`).then(r=>r.json()),
+      fetch(`${API}/watchlists`).then(r=>r.json()),
+    ]);
+    allFolders=folders;
+    const tn=watchlists.reduce((s,w)=>s+(w.new_articles||0),0);
     const b=document.getElementById('wnb');
     b.style.display=tn>0?'':'none';if(tn>0)b.textContent=tn;
-    if(!data.length){g.innerHTML='<div class="se" style="grid-column:1/-1"><div class="ei">📋</div><div style="font-weight:600;color:var(--text2)">Aucune veille</div><div>Créez votre première veille</div></div>';return}
-    g.innerHTML=data.map(w=>`<div class="wc" onclick="loadWA(${w.id},'${w.name}')">
-      <div class="wch"><div class="wcn">${w.name}</div><div class="wa2" onclick="event.stopPropagation()"><button class="wab danger" onclick="delW(${w.id})">✕</button></div></div>
-      <div class="wcq">${w.query}</div>
-      <div class="wcf">${w.new_articles>0?`<span class="wnb2">+${w.new_articles} nouveaux</span>`:'<span style="font-size:11px;color:var(--text3)">À jour</span>'}<span class="wu">${w.last_viewed?'Vu '+ago(w.last_viewed):'Jamais consulté'}</span></div>
+    // Populate folder select in new watchlist form
+    const sel=document.getElementById('wfolder');
+    sel.innerHTML='<option value="">— Aucun dossier —</option>'+folders.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
+    // Render folders
+    renderFolders(folders,watchlists);
+    // Render watchlists
+    if(currentFolderId){
+      const folderWLs=watchlists.filter(w=>(w.folder_ids||[]).includes(currentFolderId));
+      renderWatchlists(folderWLs);
+      document.getElementById('wl-veilles-hdr').style.display='flex';
+      const fn=folders.find(f=>f.id===currentFolderId);
+      document.getElementById('wl-veilles-lbl').textContent=fn?fn.name:'Veilles';
+    } else {
+      renderWatchlists(watchlists);
+      document.getElementById('wl-veilles-hdr').style.display='none';
+    }
+  }catch(e){}
+}
+
+function renderFolders(folders,watchlists){
+  const g=document.getElementById('folder-grid');
+  if(!folders.length){g.innerHTML='';return}
+  g.innerHTML=folders.map(f=>{
+    const count=(watchlists||[]).filter(w=>(w.folder_ids||[]).includes(f.id)).length;
+    const today=(watchlists||[]).filter(w=>(w.folder_ids||[]).includes(f.id)).reduce((s,w)=>s+(w.new_articles||0),0);
+    return`<div class="folder-card" onclick="filterByFolder(${f.id})">
+      <div class="fc-actions" onclick="event.stopPropagation()">
+        <div class="fc-btn danger" onclick="delFolder(${f.id})">✕</div>
+      </div>
+      <div class="fc-icon" style="background:${f.color}22;color:${f.color}">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v8.25"/></svg>
+      </div>
+      <div class="fc-name">${f.name}</div>
+      <div class="fc-meta">${count} veille${count>1?'s':''} ${today>0?'· <strong style="color:var(--accent)">+'+today+' nouveaux</strong>':''}</div>
+    </div>`;
+  }).join('')+`<div class="folder-card add-folder" onclick="toggleNewFolder()">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+    Nouveau dossier
+  </div>`;
+}
+
+function filterByFolder(id){
+  currentFolderId=id;loadWL();
+  document.getElementById('wl-veilles-hdr').style.display='flex';
+}
+
+function showAllWL(){currentFolderId=null;loadWL()}
+
+function renderWatchlists(watchlists){
+  const g=document.getElementById('wlg');
+  if(!watchlists||!watchlists.length){
+    g.innerHTML='<div class="se"><div class="ei">📋</div><div style="font-weight:600;color:var(--text2)">Aucune veille</div><div>Créez votre première veille ci-dessus</div></div>';
+    return;
+  }
+  g.innerHTML=watchlists.map(w=>`
+    <div class="wc" onclick="openWatchAnalytics(${w.id},'${w.name.replace(/'/g,"\\'")}','${w.query.replace(/'/g,"\\'")}')">
+      <div class="wc-info">
+        <div class="wcn">${w.name}</div>
+        <div class="wcq">${w.query}</div>
+      </div>
+      <div class="wc-right">
+        <div class="wstat"><div class="wsv">${w.new_articles||0}</div><div class="wsl">nouveaux</div></div>
+        <div class="wsep"></div>
+        <div class="wstat" style="text-align:right">
+          <div style="font-size:11px;color:var(--text3)">${w.last_viewed?'Vu '+ago(w.last_viewed):'Jamais consulté'}</div>
+        </div>
+        <div class="wc-actions" onclick="event.stopPropagation()">
+          <button class="wab danger" onclick="delW(${w.id})" title="Supprimer">✕</button>
+        </div>
+      </div>
     </div>`).join('');
-  }catch(e){}
 }
 
-async function loadWA(id,name){
-  showPage('watch-articles',null);
-  document.getElementById('nav-watchlists').classList.add('active');
-  document.getElementById('wat').textContent=name;
-  document.getElementById('wal').innerHTML='<div class="sl2"><div class="sp2"></div>Chargement…</div>';
-  try{
-    const data=await fetch(`${API}/watchlists/${id}/articles`).then(r=>r.json());
-    document.getElementById('wac').textContent=`${data.total} articles`;
-    renderArts(data.articles,'wal');setTimeout(loadWL,500);
-  }catch(e){}
-}
-
-function toggleNWP(){document.getElementById('nwp').classList.toggle('v')}
 async function saveWL(){
   const name=document.getElementById('wn').value.trim(),query=document.getElementById('wq').value.trim();
   if(!name||!query){alert('Remplissez le nom et les mots-clés.');return}
-  await fetch(`${API}/watchlists?name=${encodeURIComponent(name)}&query=${encodeURIComponent(query)}`,{method:'POST'});
+  const resp=await fetch(`${API}/watchlists?name=${encodeURIComponent(name)}&query=${encodeURIComponent(query)}`,{method:'POST'}).then(r=>r.json());
+  const folderId=document.getElementById('wfolder').value;
+  if(folderId&&resp.id){
+    await fetch(`${API}/folders/${folderId}/watchlists/${resp.id}`,{method:'POST'});
+  }
   document.getElementById('wn').value='';document.getElementById('wq').value='';
-  document.getElementById('nwp').classList.remove('v');loadWL();
+  document.getElementById('nwp').classList.remove('v');
+  loadWL();
 }
-async function delW(id){if(!confirm('Supprimer cette veille ?'))return;await fetch(`${API}/watchlists/${id}`,{method:'DELETE'});loadWL()}
+
+async function delW(id){
+  if(!confirm('Supprimer cette veille ?'))return;
+  await fetch(`${API}/watchlists/${id}`,{method:'DELETE'});
+  loadWL();
+}
+
+// ── ANALYTICS ────────────────────────────────────────────────
+async function openWatchAnalytics(id,name,query){
+  currentWatchId=id;currentWatchHours=24;
+  showPage('watch-articles',null);
+  document.getElementById('nav-watchlists').classList.add('active');
+  document.getElementById('wa-name').textContent=name;
+  document.getElementById('wa-query').textContent=query;
+  document.querySelectorAll('.wap-chip').forEach(c=>c.classList.toggle('active',c.textContent==='24h'));
+  await loadWatchAnalytics();
+}
+
+function setWAPeriod(chip,hours){
+  document.querySelectorAll('.wap-chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  currentWatchHours=hours;
+  loadWatchAnalytics();
+}
+
+async function loadWatchAnalytics(){
+  const content=document.getElementById('wa-content');
+  content.innerHTML='<div class="sl2"><div class="sp2"></div>Chargement des indicateurs…</div>';
+  try{
+    const [statsData,artsData]=await Promise.all([
+      fetch(`${API}/watchlists/${currentWatchId}/stats?hours=${currentWatchHours}`).then(r=>r.json()),
+      fetch(`${API}/watchlists/${currentWatchId}/articles?limit=50`).then(r=>r.json()),
+    ]);
+    renderWatchAnalytics(statsData,artsData.articles||[]);
+  }catch(e){
+    content.innerHTML='<div class="se"><div class="ei">⚠️</div>Erreur de chargement</div>';
+  }
+}
+
+function renderWatchAnalytics(s,articles){
+  const content=document.getElementById('wa-content');
+  const periodLbl=currentWatchHours<24?currentWatchHours+'h':currentWatchHours===24?'24h':Math.round(currentWatchHours/24)+'j';
+
+  const byTypeEntries=Object.entries(s.by_type||{}).sort((a,b)=>b[1]-a[1]);
+  const maxType=byTypeEntries.length?byTypeEntries[0][1]:1;
+  const typeColors={'PQN':'#2563EB','PQR':'#059669','TV':'#C2410C','Radio':'#9333EA','Magazine':'#0369A1','Agence':'#BE123C','Natif':'#065F46','International':'#475569'};
+
+  const bySourceEntries=Object.entries(s.by_source||{}).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxSrc=bySourceEntries.length?bySourceEntries[0][1]:1;
+
+  const topWords=s.top_words||[];
+  const maxWc=topWords.length?topWords[0].count:1;
+
+  const timeline=s.timeline||[];
+  const maxT=timeline.length?Math.max(...timeline.map(t=>t.count),1):1;
+
+  const regions=s.regional_coverage||[];
+  const maxReg=regions.length?regions[0].count:1;
+
+  content.innerHTML=`
+    <div class="wa-metrics">
+      <div class="wam"><div class="wam-v">${s.total||0}</div><div class="wam-l">articles · ${periodLbl}</div></div>
+      <div class="wam"><div class="wam-v">${s.distinct_sources||0}</div><div class="wam-l">médias distincts</div></div>
+      <div class="wam"><div class="wam-v">${s.regions_covered||0}</div><div class="wam-l">régions couvertes</div></div>
+      <div class="wam"><div class="wam-v">${s.distinct_source_types||0}</div><div class="wam-l">types de sources</div></div>
+    </div>
+
+    <div class="wa-charts">
+      <div class="wac-box wa-chart-full">
+        <div class="wac-ttl">Occurrences dans le temps</div>
+        <div style="position:relative;height:120px"><canvas id="timeline-chart" role="img" aria-label="Timeline des occurrences"></canvas></div>
+      </div>
+      <div class="wac-box">
+        <div class="wac-ttl">Par type de source</div>
+        ${byTypeEntries.map(([type,cnt])=>`
+          <div class="rb-row" style="margin-bottom:6px">
+            <span class="rb-lbl">${type}</span>
+            <div class="rb-track"><div class="rb-fill" style="width:${Math.round(cnt/maxType*100)}%;background:${typeColors[type]||'#888'}"></div></div>
+            <span class="rb-val">${cnt}</span>
+          </div>`).join('')}
+      </div>
+      <div class="wac-box">
+        <div class="wac-ttl">Par média</div>
+        ${bySourceEntries.map(([name,cnt])=>`
+          <div class="rb-row" style="margin-bottom:6px">
+            <span class="rb-lbl" style="width:120px;font-size:11px">${name}</span>
+            <div class="rb-track"><div class="rb-fill" style="width:${Math.round(cnt/maxSrc*100)}%;background:#2563EB"></div></div>
+            <span class="rb-val">${cnt}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="wa-charts">
+      <div class="wac-box">
+        <div class="wac-ttl">Mots les plus fréquents</div>
+        <div class="words-cloud">
+          ${topWords.slice(0,18).map(w=>{
+            const ratio=w.count/maxWc;
+            const size=Math.round(10+ratio*6);
+            const alpha=0.3+ratio*0.7;
+            return`<span class="wword" style="font-size:${size}px;opacity:${alpha.toFixed(2)}">${w.word} <span style="font-size:10px;color:var(--text3);margin-left:3px">${w.count}</span></span>`;
+          }).join('')}
+        </div>
+      </div>
+      <div class="wac-box">
+        <div class="wac-ttl">Entités co-citées</div>
+        <div class="entity-list">
+          ${buildEntities(articles).map(e=>`
+            <div class="ent">
+              <span class="ent-name">${e.name}</span>
+              <span class="ent-type">${e.type}</span>
+              <span class="ent-cnt">${e.count}</span>
+            </div>`).join('')||'<div style="font-size:12px;color:var(--text3);padding:8px 0">Pas assez de données</div>'}
+        </div>
+      </div>
+    </div>
+
+    <div class="wac-box" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="wac-ttl" style="margin-bottom:0">Couverture régionale (PQR)</div>
+        <div class="region-view">
+          <div class="rv-btn active" id="rv-bars" onclick="switchRegionView('bars')">Barres</div>
+          <div class="rv-btn" id="rv-map" onclick="switchRegionView('map')">Carte</div>
+        </div>
+      </div>
+      <div id="region-bars-view">
+        ${regions.length?regions.map(r=>`
+          <div class="rb-row" style="margin-bottom:6px">
+            <span class="rb-lbl">${r.region}</span>
+            <div class="rb-track"><div class="rb-fill" style="width:${Math.round(r.count/maxReg*100)}%"></div></div>
+            <span class="rb-val">${r.count}</span>
+          </div>`).join(''):'<div style="font-size:12px;color:var(--text3);padding:8px 0">Aucune source PQR pour cette veille</div>'}
+      </div>
+      <div id="region-map-view" style="display:none">
+        <div id="france-map" style="width:100%;max-width:500px;margin:0 auto"></div>
+      </div>
+    </div>
+
+    <div class="wac-box wa-articles">
+      <div class="wac-ttl" style="margin-bottom:10px">Articles · ${articles.length} résultats</div>
+      <div class="al" id="wa-arts-list"></div>
+    </div>
+  `;
+
+  renderArts(articles,'wa-arts-list');
+  drawTimeline(timeline,maxT,s.timeline_bucket_minutes||60,currentWatchHours);
+  window._waRegions=regions;window._waMaxReg=maxReg;
+}
+
+function buildEntities(articles){
+  // Extraction simple de noms propres (mots capitalisés qui reviennent)
+  const counts={};
+  const typeHints={'CFDT':'Organisation','CGT':'Organisation','FO':'Organisation','MEDEF':'Organisation',
+    'France':'Lieu','Paris':'Lieu','Lyon':'Lieu','Marseille':'Lieu','Bruxelles':'Lieu',
+    'Macron':'Personne','Premier ministre':'Personne'};
+  articles.forEach(a=>{
+    const text=(a.title||'')+(a.summary||'');
+    const matches=text.match(/[A-ZÀ-Ü][a-zà-ü]+(?:\s+[A-ZÀ-Ü][a-zà-ü]+)*/g)||[];
+    matches.forEach(m=>{
+      if(m.length<3||['Les','Des','Une','Sur','Pour'].includes(m))return;
+      counts[m]=(counts[m]||0)+1;
+    });
+  });
+  return Object.entries(counts)
+    .filter(([,c])=>c>=2)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,8)
+    .map(([name,count])=>({name,count,type:typeHints[name]||(name.includes(' ')?'Personne':'Organisation')}));
+}
+
+function drawTimeline(timeline,maxT,bucketMin,hours){
+  const canvas=document.getElementById('timeline-chart');
+  if(!canvas)return;
+  const labels=timeline.map((_,i)=>{
+    if(hours<=24){return i%Math.ceil(timeline.length/6)===0?(-hours+i*bucketMin/60).toFixed(0)+'h':'';}
+    return i%Math.ceil(timeline.length/6)===0?'J-'+Math.round((timeline.length-i)*bucketMin/60/24):'';
+  });
+  if(window._timelineChart)window._timelineChart.destroy();
+  window._timelineChart=new Chart(canvas,{
+    type:'bar',
+    data:{labels,datasets:[{data:timeline.map(t=>t.count),backgroundColor:'#BFDBFE',borderColor:'#2563EB',borderWidth:1,borderRadius:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw} article${c.raw>1?'s':''}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},color:'#9CA3AF'}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},color:'#9CA3AF',stepSize:1}}}}
+  });
+}
+
+function switchRegionView(v){
+  document.getElementById('region-bars-view').style.display=v==='bars'?'block':'none';
+  document.getElementById('region-map-view').style.display=v==='map'?'block':'none';
+  document.getElementById('rv-bars').classList.toggle('active',v==='bars');
+  document.getElementById('rv-map').classList.toggle('active',v==='map');
+  if(v==='map')drawFranceMap(window._waRegions||[],window._waMaxReg||1);
+}
+
+function drawFranceMap(regions,maxReg){
+  const mapEl=document.getElementById('france-map');
+  if(!mapEl)return;
+  const regionData={};
+  regions.forEach(r=>{regionData[r.key]=r.count});
+  // Carte SVG des régions françaises simplifiée
+  const paths={
+    'hauts-de-france':'M295,85 L340,80 L360,100 L350,130 L310,135 L285,115 Z',
+    'normandie':'M200,110 L285,115 L290,145 L260,165 L210,160 L185,140 Z',
+    'ile-de-france':'M310,135 L350,130 L355,160 L320,170 L300,155 Z',
+    'grand-est':'M360,100 L410,90 L430,115 L420,155 L375,165 L355,160 L350,130 Z',
+    'bretagne':'M130,165 L185,140 L200,170 L190,200 L150,210 L120,190 Z',
+    'pays-de-la-loire':'M185,165 L260,165 L270,195 L250,220 L200,225 L175,200 Z',
+    'centre-val-de-loire':'M260,165 L320,170 L330,200 L310,230 L270,235 L250,220 Z',
+    'bourgogne-franche-comté':'M355,160 L420,155 L425,200 L400,235 L360,235 L340,210 L330,200 Z',
+    'auvergne-rhône-alpes':'M330,200 L400,235 L405,280 L370,310 L330,300 L305,265 L310,230 Z',
+    'nouvelle-aquitaine':'M175,200 L250,220 L260,280 L235,315 L185,320 L155,290 L150,250 Z',
+    'occitanie':'M250,280 L305,265 L320,295 L300,335 L255,340 L235,315 Z',
+    'paca':'M370,310 L420,300 L430,325 L400,345 L365,340 L355,320 Z',
+    'corse':'M430,330 L445,325 L450,345 L440,360 L425,355 Z',
+  };
+  const getColor=(key)=>{
+    const v=regionData[key]||0;
+    if(!v)return'#F1EFE8';
+    const intensity=v/maxReg;
+    if(intensity>0.7)return'#15803D';
+    if(intensity>0.4)return'#4ADE80';
+    if(intensity>0.1)return'#86EFAC';
+    return'#DCFCE7';
+  };
+  const svgPaths=Object.entries(paths).map(([key,d])=>{
+    const r=regions.find(x=>x.key===key);
+    const label=r?r.region:key;
+    const cnt=regionData[key]||0;
+    return`<path d="${d}" fill="${getColor(key)}" stroke="white" stroke-width="1.5" stroke-linejoin="round"><title>${label}${cnt?': '+cnt+' article'+(cnt>1?'s':''):''}</title></path>`;
+  }).join('');
+  mapEl.innerHTML=`<svg viewBox="100 70 380 310" width="100%" style="display:block">
+    <rect x="100" y="70" width="380" height="310" fill="none"/>
+    ${svgPaths}
+  </svg>`;
+}
 
 // ── SOURCES ───────────────────────────────────────────────────
 async function loadSrc(){
@@ -892,5 +1338,6 @@ async function addSrc(){
 loadStats();loadArts();loadWL();loadTopicCounts();
 setInterval(loadStats,60000);setInterval(loadWL,300000);setInterval(loadTopicCounts,120000);
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 </body>
 </html>
