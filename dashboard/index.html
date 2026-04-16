@@ -10,8 +10,6 @@
 :root{--bg:#F7F6F3;--bg2:#EFEDE8;--sidebar:#0D1117;--accent:#2563EB;--accent2:#1D4ED8;--text:#1A1A1A;--text2:#6B7280;--text3:#9CA3AF;--border:rgba(0,0,0,0.07);--white:#FFFFFF;--shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 16px rgba(0,0,0,0.04);--shadow-h:0 4px 12px rgba(0,0,0,0.10),0 8px 32px rgba(0,0,0,0.06);--r:14px;--rs:8px;--t:180ms cubic-bezier(0.4,0,0.2,1)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden}
-
-/* SIDEBAR */
 .sidebar{width:220px;flex-shrink:0;background:var(--sidebar);display:flex;flex-direction:column;padding:20px 0;position:relative;z-index:10}
 .sidebar::after{content:'';position:absolute;top:0;right:0;width:1px;height:100%;background:linear-gradient(to bottom,transparent,rgba(255,255,255,0.06) 30%,rgba(255,255,255,0.06) 70%,transparent)}
 .sl{padding:0 18px 24px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:16px}
@@ -32,8 +30,6 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
 .li{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,0.35)}
 .ld{width:6px;height:6px;border-radius:50%;background:#10B981;animation:lp 2s infinite;flex-shrink:0}
 @keyframes lp{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(16,185,129,0.4)}50%{opacity:.7;box-shadow:0 0 0 4px rgba(16,185,129,0)}}
-
-/* MAIN */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .topbar{display:flex;align-items:center;gap:12px;padding:12px 24px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0}
 .tt{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-0.2px;white-space:nowrap}
@@ -45,12 +41,8 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
 .stc{display:flex;gap:6px;margin-left:auto}
 .scc{display:flex;align-items:center;gap:5px;padding:4px 10px;background:var(--bg);border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--text2)}
 .scc strong{font-size:12px;font-weight:600;color:var(--text)}
-
-/* PAGES */
 .page{display:none;flex:1;overflow:hidden}
 .page.active{display:flex;flex-direction:column}
-
-/* FILTER BAR */
 .fbar{display:flex;align-items:center;gap:6px;padding:10px 24px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto}
 .fbar::-webkit-scrollbar{display:none}
 .fl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;white-space:nowrap;margin-right:2px}
@@ -58,8 +50,6 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
 .chip{display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text2);white-space:nowrap;transition:all var(--t);user-select:none;flex-shrink:0}
 .chip:hover{border-color:var(--accent);color:var(--accent);background:rgba(37,99,235,0.04)}
 .chip.active{background:var(--accent);color:white;border-color:var(--accent);box-shadow:0 2px 8px rgba(37,99,235,0.25)}
-
-/* DROPDOWN */
 .ddw{position:relative;flex-shrink:0}
 .ddb{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text2);white-space:nowrap;transition:all var(--t);user-select:none}
 .ddb:hover{border-color:var(--accent);color:var(--accent);background:rgba(37,99,235,0.04)}
@@ -76,22 +66,16 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
 .ddil{display:flex;align-items:center;gap:8px}
 .tdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .ddc{font-size:11px;color:var(--text3);background:var(--bg2);padding:1px 6px;border-radius:10px}
-
-/* VIEW TOGGLE */
 .vt{display:flex;gap:2px;margin-left:auto;flex-shrink:0}
 .vb{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid var(--border);background:var(--white);cursor:pointer;color:var(--text3);transition:all var(--t)}
 .vb:hover{background:var(--bg);color:var(--text2)}
 .vb.active{background:var(--accent);color:white;border-color:var(--accent)}
-
-/* FEED */
 .fw{flex:1;overflow-y:auto;padding:16px 24px}
 .fw::-webkit-scrollbar{width:4px}
 .fw::-webkit-scrollbar-thumb{background:var(--bg2);border-radius:4px}
 .fh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .fht{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px}
 .fhc{font-size:12px;color:var(--text3)}
-
-/* ARTICLE CARDS */
 .al{display:flex;flex-direction:column;gap:7px}
 .ac{background:var(--white);border-radius:12px;padding:14px 16px;border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;transition:all var(--t);animation:fiu .25s ease both}
 .ac:hover{box-shadow:var(--shadow-h);transform:translateY(-1px);border-color:rgba(37,99,235,0.12)}
@@ -105,55 +89,57 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
 .badge-Natif{background:#ECFDF5;color:#065F46}.badge-International{background:#F8FAFC;color:#475569}
 .tp{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;background:var(--bg2);color:var(--text2)}
 .cs{font-size:12px;font-weight:500;color:var(--text2)}
-.ct{font-size:11px;color:var(--text3);margin-left:auto}
+.ctime{font-size:11px;color:var(--text3);margin-left:auto}
 .ctl{font-size:14px;font-weight:600;color:var(--text);line-height:1.45;margin-bottom:4px;letter-spacing:-0.1px}
 .ctl mark{background:#FFF7ED;color:#C2410C;border-radius:3px;padding:0 2px}
 .csu{font-size:12.5px;color:var(--text2);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-
-/* GRID */
 .ag{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
 .gc{background:var(--white);border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;transition:all var(--t);animation:fiu .25s ease both;overflow:hidden;display:flex;flex-direction:column}
 .gc:hover{box-shadow:var(--shadow-h);transform:translateY(-2px);border-color:rgba(37,99,235,0.12)}
-.gi{width:100%;height:100px;background:var(--bg2);flex-shrink:0;object-fit:cover}
+.gip{width:100%;height:90px;background:var(--bg2);flex-shrink:0}
 .gb{padding:11px 13px;display:flex;flex-direction:column;gap:5px;flex:1}
 .gm{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .gtl{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .gft{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:4px}
 .gsrc{font-size:10px;color:var(--text3);font-weight:500}
 .gtm{font-size:10px;color:var(--text3)}
-
-/* STATES */
 .sl2,.se{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--text3);font-size:13px;gap:10px;text-align:center}
 .sp2{width:24px;height:24px;border:2px solid var(--bg2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .ei{font-size:32px;opacity:.4}
 
-/* ═══════════════ SEARCH PAGE ═══════════════ */
-.srp{flex:1;overflow-y:auto;padding:20px 24px}
-.sr-top{background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
-.sr-row1{display:flex;gap:8px;margin-bottom:12px}
-.sr-input{flex:1;height:44px;padding:0 16px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;color:var(--text);background:var(--white);outline:none;transition:all var(--t)}
-.sr-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
-.sr-btn{height:44px;padding:0 20px;background:var(--accent);color:white;border:none;border-radius:10px;font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;white-space:nowrap;transition:all var(--t);flex-shrink:0}
-.sr-btn:hover{background:var(--accent2)}
-.sr-row2{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.sr-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap}
-.sr-chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text2);white-space:nowrap;transition:all var(--t);user-select:none}
-.sr-chip:hover{border-color:var(--accent);color:var(--accent)}
-.sr-chip.active{background:var(--accent);color:white;border-color:var(--accent)}
-.sr-sel{height:32px;padding:0 10px;border:1px solid var(--border);border-radius:20px;font-size:12px;font-family:inherit;color:var(--text2);background:var(--white);cursor:pointer;outline:none;transition:all var(--t)}
-.sr-sel:focus{border-color:var(--accent)}
-.sr-div{width:1px;height:16px;background:var(--border);flex-shrink:0}
+/* ═══ SEARCH PAGE ═══ */
+.srp{flex:1;overflow-y:auto;padding:16px 24px}
 
-/* Syntax hint */
-.sh{display:flex;align-items:center;gap:10px;background:#EFF6FF;border:1px solid #B5D4F4;border-radius:9px;padding:9px 14px;margin-bottom:14px;font-size:12px;color:#1D4ED8}
-.sh-t{font-weight:600;margin-right:4px;color:#0C447C;flex-shrink:0}
-.sh-tags{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
-.sh-tag{background:#E6F1FB;color:#0C447C;padding:2px 7px;border-radius:5px;font-family:monospace;font-size:11px}
-.sh-sep{color:#B5D4F4;font-size:10px}
+/* Filter bar identique à celle du flux */
+.sr-fbar{display:flex;align-items:center;gap:6px;padding:10px 24px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;position:relative}
+.sr-fbar::-webkit-scrollbar{display:none}
+
+/* Bouton info syntaxe */
+.info-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:11px;font-weight:600;transition:all var(--t);flex-shrink:0;font-style:italic}
+.info-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(37,99,235,0.04)}
+.info-popup{position:fixed;z-index:9999;background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.12);padding:14px 16px;max-width:300px;display:none}
+.info-popup.open{display:block;animation:ddi .15s ease}
+.info-ttl{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+.info-row{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;font-size:12px}
+.info-code{font-family:monospace;background:var(--bg2);color:var(--text);padding:2px 7px;border-radius:5px;font-size:11px;flex-shrink:0}
+.info-desc{color:var(--text2)}
+
+/* Barre de recherche */
+.sr-wrap{padding:16px 0 12px}
+.sr-row{display:flex;gap:8px;margin-bottom:0}
+.sr-input{flex:1;height:42px;padding:0 16px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;color:var(--text);background:var(--white);outline:none;transition:all var(--t)}
+.sr-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
+.sr-input::placeholder{color:var(--text3)}
+.sr-btn{height:42px;padding:0 20px;background:var(--accent);color:white;border:none;border-radius:10px;font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;white-space:nowrap;transition:all var(--t);flex-shrink:0}
+.sr-btn:hover{background:var(--accent2)}
 
 /* Historique */
-.hist-box{background:var(--white);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow)}
+.hist-toggle{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text2);transition:all var(--t);user-select:none;margin-top:10px}
+.hist-toggle:hover{border-color:var(--accent);color:var(--accent);background:rgba(37,99,235,0.04)}
+.hist-toggle.open{background:var(--accent);color:white;border-color:var(--accent)}
+.hist-box{background:var(--white);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;margin-top:10px;box-shadow:var(--shadow);display:none;animation:fiu .2s ease}
+.hist-box.open{display:block}
 .hist-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border)}
 .hist-ttl{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
 .hist-clr{font-size:11px;color:var(--text3);cursor:pointer;transition:color var(--t)}
@@ -168,16 +154,16 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
 .hist-time{font-size:11px;color:var(--text3)}
 .hist-run{font-size:11px;color:var(--accent);opacity:0;transition:opacity var(--t);white-space:nowrap}
 .hist-item:hover .hist-run{opacity:1}
-.hist-del{font-size:11px;color:var(--text3);opacity:0;transition:opacity var(--t);cursor:pointer;padding:2px 4px}
+.hist-del{font-size:11px;color:var(--text3);opacity:0;transition:opacity var(--t);cursor:pointer;padding:2px 4px;line-height:1}
 .hist-item:hover .hist-del{opacity:1}
 .hist-del:hover{color:#DC2626}
 .hist-empty{padding:20px 16px;text-align:center;font-size:13px;color:var(--text3)}
 
-/* Résultats recherche */
-.sr-res-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+/* Résultats */
+.sr-res-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:14px}
 .sr-res-t{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
-.sr-save-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:var(--accent);color:white;border:none;border-radius:8px;font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;transition:all var(--t)}
-.sr-save-btn:hover{background:var(--accent2)}
+.sr-save{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:var(--accent);color:white;border:none;border-radius:8px;font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;transition:all var(--t)}
+.sr-save:hover{background:var(--accent2)}
 
 /* WATCHLISTS */
 .wlp{flex:1;overflow-y:auto;padding:24px}
@@ -201,14 +187,12 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
 .wcn{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-0.2px}
 .wcq{font-size:12px;color:var(--text2);margin-bottom:14px}
 .wcf{display:flex;align-items:center;justify-content:space-between}
-.wnb{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;background:var(--accent);color:white;border-radius:20px;font-size:11px;font-weight:600}
+.wnb2{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;background:var(--accent);color:white;border-radius:20px;font-size:11px;font-weight:600}
 .wu{font-size:11px;color:var(--text3)}
-.wa{display:flex;gap:4px;opacity:0;transition:opacity var(--t)}
-.wc:hover .wa{opacity:1}
+.wa2{display:flex;gap:4px;opacity:0;transition:opacity var(--t)}
+.wc:hover .wa2{opacity:1}
 .wab{width:26px;height:26px;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--t);color:var(--text3);font-size:12px}
 .wab.danger:hover{color:#DC2626;border-color:#FECACA}
-
-/* WATCH ARTICLES */
 .wap{flex:1;overflow-y:auto;padding:24px}
 .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer;margin-bottom:16px;padding:6px 10px;border-radius:8px;transition:all var(--t)}
 .back:hover{background:var(--bg2);color:var(--text)}
@@ -304,7 +288,7 @@ input:checked+.tsl:before{transform:translateX(16px)}
     <div class="stc">
       <div class="scc"><strong id="ct">—</strong> aujourd'hui</div>
       <div class="scc"><strong id="ctt">—</strong> total</div>
-      <div class="scc"><strong id="cs">—</strong> sources</div>
+      <div class="scc"><strong id="cst">—</strong> sources</div>
     </div>
   </div>
 
@@ -355,60 +339,90 @@ input:checked+.tsl:before{transform:translateX(16px)}
 
   <!-- PAGE SEARCH -->
   <div class="page" id="page-search">
-    <div class="srp">
-      <div class="sr-top">
-        <div class="sr-row1">
+    <!-- Filter bar identique au flux -->
+    <div class="sr-fbar">
+      <span class="fl">Période</span>
+      <div class="chip active" onclick="setSRPeriod(this,1)" data-d="1">24h</div>
+      <div class="chip" onclick="setSRPeriod(this,0.5)" data-d="0.5">12h</div>
+      <div class="chip" onclick="setSRPeriod(this,3)" data-d="3">3 jours</div>
+      <div class="chip" onclick="setSRPeriod(this,7)" data-d="7">7 jours</div>
+      <div class="chip" onclick="setSRPeriod(this,30)" data-d="30">1 mois</div>
+      <div class="fdv"></div>
+      <!-- Dropdown Source -->
+      <div class="ddw" id="sr-src-ddw">
+        <div class="ddb" id="sr-src-ddb" onclick="toggleSRDD('src',event)">
+          <span id="sr-src-lbl">Source</span>
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+        </div>
+        <div class="ddm" id="sr-src-ddm">
+          <div class="ddh">Sources</div>
+          <div class="ddi active" onclick="setSRSrc(this,'','Source')"><div class="ddil"><span>Toutes les sources</span></div></div>
+          <div id="sr-src-list"></div>
+        </div>
+      </div>
+      <!-- Dropdown Thème -->
+      <div class="ddw" id="sr-topic-ddw">
+        <div class="ddb" id="sr-topic-ddb" onclick="toggleSRDD('topic',event)">
+          <span id="sr-topic-lbl">Thème</span>
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+        </div>
+        <div class="ddm" id="sr-topic-ddm">
+          <div class="ddh">Thématiques</div>
+          <div class="ddi active" onclick="setSRTopic(this,'','Thème')"><div class="ddil"><span>Tous les thèmes</span></div></div>
+          <div class="ddi" onclick="setSRTopic(this,'Politique','Politique')"><div class="ddil"><div class="tdot" style="background:#7C3AED"></div><span>Politique</span></div></div>
+          <div class="ddi" onclick="setSRTopic(this,'Économie','Économie')"><div class="ddil"><div class="tdot" style="background:#0891B2"></div><span>Économie</span></div></div>
+          <div class="ddi" onclick="setSRTopic(this,'Social','Social')"><div class="ddil"><div class="tdot" style="background:#D97706"></div><span>Social</span></div></div>
+          <div class="ddi" onclick="setSRTopic(this,'Justice','Justice')"><div class="ddil"><div class="tdot" style="background:#DC2626"></div><span>Justice</span></div></div>
+          <div class="ddi" onclick="setSRTopic(this,'International','International')"><div class="ddil"><div class="tdot" style="background:#059669"></div><span>International</span></div></div>
+          <div class="ddi" onclick="setSRTopic(this,'Société','Société')"><div class="ddil"><div class="tdot" style="background:#DB2777"></div><span>Société</span></div></div>
+          <div class="ddi" onclick="setSRTopic(this,'Santé','Santé')"><div class="ddil"><div class="tdot" style="background:#16A34A"></div><span>Santé</span></div></div>
+          <div class="ddi" onclick="setSRTopic(this,'Environnement','Environnement')"><div class="ddil"><div class="tdot" style="background:#15803D"></div><span>Environnement</span></div></div>
+          <div class="ddi" onclick="setSRTopic(this,'Science & Tech','Science & Tech')"><div class="ddil"><div class="tdot" style="background:#1D4ED8"></div><span>Science & Tech</span></div></div>
+          <div class="ddi" onclick="setSRTopic(this,'Culture','Culture')"><div class="ddil"><div class="tdot" style="background:#9333EA"></div><span>Culture</span></div></div>
+          <div class="ddi" onclick="setSRTopic(this,'Sport','Sport')"><div class="ddil"><div class="tdot" style="background:#EA580C"></div><span>Sport</span></div></div>
+          <div class="ddi" onclick="setSRTopic(this,'Faits divers','Faits divers')"><div class="ddil"><div class="tdot" style="background:#475569"></div><span>Faits divers</span></div></div>
+        </div>
+      </div>
+      <!-- Bouton info syntaxe -->
+      <div class="ddw" id="info-ddw" style="margin-left:auto">
+        <button class="info-btn" onclick="toggleInfoDD(event)" title="Syntaxe de recherche"><i>i</i></button>
+        <div class="ddm info-popup" id="info-ddm" style="min-width:260px">
+          <div class="info-ttl">Syntaxe de recherche</div>
+          <div class="info-row"><span class="info-code">ET</span><span class="info-desc">Les deux mots présents</span></div>
+          <div class="info-row"><span class="info-code">OU</span><span class="info-desc">L'un ou l'autre</span></div>
+          <div class="info-row"><span class="info-code">-mot</span><span class="info-desc">Exclure ce mot</span></div>
+          <div class="info-row"><span class="info-code">"phrase"</span><span class="info-desc">Expression exacte</span></div>
+          <div class="info-row"><span class="info-code">(groupe)</span><span class="info-desc">Grouper des termes</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fw">
+      <!-- Barre de recherche -->
+      <div class="sr-wrap">
+        <div class="sr-row">
           <input type="text" class="sr-input" id="sri" placeholder="emploi ET syndicat, &quot;dialogue social&quot;, retraites -sport…" onkeydown="if(event.key==='Enter') doSearch()">
           <button class="sr-btn" onclick="doSearch()">Rechercher</button>
         </div>
-        <div class="sr-row2">
-          <span class="sr-lbl">Période</span>
-          <div class="sr-chip active" onclick="setPeriod(this,1)" data-days="1">24h</div>
-          <div class="sr-chip" onclick="setPeriod(this,0.5)" data-days="0.5">12h</div>
-          <div class="sr-chip" onclick="setPeriod(this,3)" data-days="3">3 jours</div>
-          <div class="sr-chip" onclick="setPeriod(this,7)" data-days="7">7 jours</div>
-          <div class="sr-chip" onclick="setPeriod(this,30)" data-days="30">1 mois</div>
-          <div class="sr-div"></div>
-          <span class="sr-lbl">Source</span>
-          <select class="sr-sel" id="src-sel" onchange="doSearch()">
-            <option value="">Toutes</option>
-          </select>
-          <div class="sr-div"></div>
-          <span class="sr-lbl">Thème</span>
-          <select class="sr-sel" id="topic-sel" onchange="doSearch()">
-            <option value="">Tous</option>
-            <option>Politique</option><option>Économie</option><option>Social</option>
-            <option>Justice</option><option>International</option><option>Société</option>
-            <option>Santé</option><option>Environnement</option><option>Science & Tech</option>
-            <option>Culture</option><option>Sport</option><option>Faits divers</option>
-          </select>
+        <!-- Historique toggle -->
+        <div class="hist-toggle" id="hist-toggle" onclick="toggleHist()">
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+          Historique
+        </div>
+        <div class="hist-box" id="hist-box">
+          <div class="hist-hdr">
+            <span class="hist-ttl">Recherches récentes</span>
+            <span class="hist-clr" onclick="clearHistory()">Tout effacer</span>
+          </div>
+          <div id="hist-list"></div>
         </div>
       </div>
 
-      <div class="sh">
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#1D4ED8" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
-        <span class="sh-t">Syntaxe :</span>
-        <div class="sh-tags">
-          <span class="sh-tag">ET</span><span class="sh-sep">·</span>
-          <span class="sh-tag">OU</span><span class="sh-sep">·</span>
-          <span class="sh-tag">-mot</span> exclure<span class="sh-sep">·</span>
-          <span class="sh-tag">"phrase exacte"</span><span class="sh-sep">·</span>
-          <span class="sh-tag">(groupe)</span>
-        </div>
-      </div>
-
-      <div class="hist-box" id="hist-box">
-        <div class="hist-hdr">
-          <span class="hist-ttl">Historique</span>
-          <span class="hist-clr" onclick="clearHistory()">Tout effacer</span>
-        </div>
-        <div id="hist-list"></div>
-      </div>
-
-      <div id="sr-results-wrap" style="display:none">
+      <!-- Résultats -->
+      <div id="sr-res-wrap" style="display:none">
         <div class="sr-res-hdr">
           <div class="sr-res-t" id="sr-res-t"></div>
-          <button class="sr-save-btn" id="sr-save-btn" onclick="saveCurrentSearch()">
+          <button class="sr-save" onclick="saveCurrentSearch()">
             <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             Créer une veille
           </button>
@@ -488,9 +502,9 @@ input:checked+.tsl:before{transform:translateX(16px)}
 
 <script>
 const API='http://128.140.41.234:8000';
-const HIST_KEY='prisme_search_history';
+const HK='prisme_search_history';
 let srcCat=null,topic=null,view='list',allSrc=[],srcTF='all',srcSV='';
-let srDays=1,srSrc='',srTopic='',lastQuery='',lastResults=0;
+let srDays=1,srSrcId='',srTopic='',lastQuery='',lastResults=0;
 const PT={flux:'Actualité',search:'Recherche',watchlists:'Mes veilles','watch-articles':'Veille',sources:'Sources'};
 
 function showPage(n,el){
@@ -501,7 +515,8 @@ function showPage(n,el){
   document.getElementById('tbt').textContent=PT[n]||n;
   if(n==='sources')loadSrc();
   if(n==='watchlists')loadWL();
-  if(n==='search'){renderHist();loadSrcList()}
+  if(n==='search')loadSrcList();
+  closeAllDD();
 }
 
 async function loadStats(){
@@ -509,7 +524,7 @@ async function loadStats(){
     const d=await fetch(`${API}/stats`).then(r=>r.json());
     document.getElementById('ct').textContent=(d.articles_today||0).toLocaleString('fr');
     document.getElementById('ctt').textContent=(d.articles_total||0).toLocaleString('fr');
-    document.getElementById('cs').textContent=d.sources_active||0;
+    document.getElementById('cst').textContent=d.sources_active||0;
     document.getElementById('lt').textContent='En direct';
   }catch(e){document.getElementById('lt').textContent='Hors ligne'}
 }
@@ -523,19 +538,19 @@ function ago(d){
   return`il y a ${Math.floor(s/86400)}j`;
 }
 
-function highlight(text,q){
+function hl(text,q){
   if(!text||!q)return text||'';
   const words=q.replace(/["""()\-+]/g,' ').split(/\s+/).filter(w=>w.length>2&&!['ET','OU','AND','OR'].includes(w.toUpperCase()));
   let r=text;
-  words.forEach(w=>{try{r=r.replace(new RegExp(`(${w})`, 'gi'),'<mark>$1</mark>')}catch(e){}});
+  words.forEach(w=>{try{r=r.replace(new RegExp(`(${w})`,'gi'),'<mark>$1</mark>')}catch(e){}});
   return r;
 }
 
 function listCard(a,q=''){
   const cat=a.category||a.source_category||'PQN';
   return`<div class="ac" onclick="window.open('${a.url}','_blank')">
-    <div class="cm"><span class="sb badge-${cat.replace(/\s/g,'')}">${cat}</span>${a.topic?`<span class="tp">${a.topic}</span>`:''}<span class="cs">${a.source_name||''}</span><span class="ct">${ago(a.collected_at)}</span></div>
-    <div class="ctl">${highlight(a.title,q)}</div>
+    <div class="cm"><span class="sb badge-${cat.replace(/\s/g,'')}">${cat}</span>${a.topic?`<span class="tp">${a.topic}</span>`:''}<span class="cs">${a.source_name||''}</span><span class="ctime">${ago(a.collected_at)}</span></div>
+    <div class="ctl">${hl(a.title,q)}</div>
     ${a.summary?`<div class="csu">${a.summary}</div>`:''}
   </div>`;
 }
@@ -543,7 +558,7 @@ function listCard(a,q=''){
 function gridCard(a){
   const cat=a.category||a.source_category||'PQN';
   return`<div class="gc" onclick="window.open('${a.url}','_blank')">
-    <div class="gi" style="background:var(--bg2)"></div>
+    <div class="gip"></div>
     <div class="gb"><div class="gm"><span class="sb badge-${cat.replace(/\s/g,'')}">${cat}</span>${a.topic?`<span class="tp">${a.topic}</span>`:''}</div>
     <div class="gtl">${a.title}</div>
     <div class="gft"><span class="gsrc">${a.source_name||''}</span><span class="gtm">${ago(a.collected_at)}</span></div></div>
@@ -554,7 +569,7 @@ function renderArts(arts,id,q=''){
   const el=document.getElementById(id);
   if(!arts||!arts.length){el.innerHTML='<div class="se"><div class="ei">📭</div>Aucun article</div>';return}
   if(id==='al'){el.className=view==='grid'?'ag':'al';el.innerHTML=arts.map(view==='grid'?gridCard:a=>listCard(a,q)).join('')}
-  else{el.innerHTML=arts.map(a=>listCard(a,q)).join('')}
+  else el.innerHTML=arts.map(a=>listCard(a,q)).join('');
 }
 
 function setView(v){
@@ -564,23 +579,60 @@ function setView(v){
   loadArts();
 }
 
+// ── DROPDOWNS ────────────────────────────────────────────────
+function closeAllDD(){
+  ['ddb','sr-src-ddb','sr-topic-ddb'].forEach(id=>{
+    const btn=document.getElementById(id);
+    if(btn)btn.classList.remove('open');
+  });
+  document.querySelectorAll('.ddm').forEach(m=>m.classList.remove('open'));
+}
+
+function positionDD(btn,menu){
+  const r=btn.getBoundingClientRect();
+  menu.style.top=(r.bottom+6)+'px';
+  menu.style.left=r.left+'px';
+}
+
 function toggleDD(e){
   e.stopPropagation();
   const btn=document.getElementById('ddb'),menu=document.getElementById('ddm');
   const isOpen=menu.classList.contains('open');
-  if(!isOpen){const r=btn.getBoundingClientRect();menu.style.top=(r.bottom+6)+'px';menu.style.left=r.left+'px'}
-  btn.classList.toggle('open',!isOpen);menu.classList.toggle('open',!isOpen);
+  closeAllDD();
+  if(!isOpen){positionDD(btn,menu);btn.classList.add('open');menu.classList.add('open')}
 }
-document.addEventListener('click',e=>{if(!document.getElementById('ddw').contains(e.target)){document.getElementById('ddb').classList.remove('open');document.getElementById('ddm').classList.remove('open')}});
+
+function toggleSRDD(type,e){
+  e.stopPropagation();
+  const btn=document.getElementById(`sr-${type}-ddb`),menu=document.getElementById(`sr-${type}-ddm`);
+  const isOpen=menu.classList.contains('open');
+  closeAllDD();
+  if(!isOpen){positionDD(btn,menu);btn.classList.add('open');menu.classList.add('open')}
+}
+
+function toggleInfoDD(e){
+  e.stopPropagation();
+  const btn=e.currentTarget.closest('.ddw').querySelector('.ddb,.info-btn');
+  const menu=document.getElementById('info-ddm');
+  const isOpen=menu.classList.contains('open');
+  closeAllDD();
+  if(!isOpen){
+    const r=e.currentTarget.getBoundingClientRect();
+    menu.style.top=(r.bottom+6)+'px';
+    menu.style.right=(window.innerWidth-r.right)+'px';
+    menu.style.left='auto';
+    menu.classList.add('open');
+  }
+}
+
+document.addEventListener('click',()=>closeAllDD());
 
 function setTF(item,t,lbl){
-  document.querySelectorAll('.ddi').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('#ddm .ddi').forEach(i=>i.classList.remove('active'));
   item.classList.add('active');topic=t;
   document.getElementById('ddl').textContent=lbl;
   document.getElementById('ddb').classList.toggle('active',t!==null);
-  document.getElementById('ddb').classList.remove('open');
-  document.getElementById('ddm').classList.remove('open');
-  loadArts();
+  closeAllDD();loadArts();
 }
 
 async function loadTopicCounts(){
@@ -617,117 +669,112 @@ function quickSearch(q){
   document.getElementById('sri').value=q;doSearch();
 }
 
-// ── SEARCH avec syntaxe avancée ────────────────────────────────
-function parseQuery(q){
-  // Transforme la syntaxe Prisme en SQL-compatible
-  // ET → AND, OU → OR, -mot → NOT mot, "exact" → "exact", (groupe) → (groupe)
-  return q
-    .replace(/\bET\b/gi,' ')
-    .replace(/\bOU\b/gi,' ')
-    .replace(/\bAND\b/gi,' ')
-    .replace(/\bOR\b/gi,' ')
-    .replace(/-(\w+)/g,' -$1')
-    .trim();
+// ── SEARCH ────────────────────────────────────────────────────
+function setSRPeriod(chip,days){
+  document.querySelectorAll('.sr-fbar .chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');srDays=days;
 }
 
-function setPeriod(chip,days){
-  document.querySelectorAll('.sr-chip').forEach(c=>c.classList.remove('active'));
-  chip.classList.add('active');srDays=days;
+function setSRSrc(item,id,lbl){
+  document.querySelectorAll('#sr-src-ddm .ddi').forEach(i=>i.classList.remove('active'));
+  item.classList.add('active');srSrcId=id;
+  document.getElementById('sr-src-lbl').textContent=lbl;
+  document.getElementById('sr-src-ddb').classList.toggle('active',!!id);
+  closeAllDD();
+}
+
+function setSRTopic(item,t,lbl){
+  document.querySelectorAll('#sr-topic-ddm .ddi').forEach(i=>i.classList.remove('active'));
+  item.classList.add('active');srTopic=t;
+  document.getElementById('sr-topic-lbl').textContent=lbl;
+  document.getElementById('sr-topic-ddb').classList.toggle('active',!!t);
+  closeAllDD();
 }
 
 async function loadSrcList(){
   try{
     const data=await fetch(`${API}/sources`).then(r=>r.json());
-    const sel=document.getElementById('src-sel');
-    const current=sel.value;
-    sel.innerHTML='<option value="">Toutes les sources</option>';
-    (data.sources||[]).forEach(s=>{
-      const opt=document.createElement('option');
-      opt.value=s.id;opt.textContent=s.name;
-      if(s.id===current)opt.selected=true;
-      sel.appendChild(opt);
-    });
+    const list=document.getElementById('sr-src-list');
+    list.innerHTML=(data.sources||[]).map(s=>`
+      <div class="ddi" onclick="setSRSrc(this,'${s.id}','${s.name}')">
+        <div class="ddil"><span class="sb badge-${s.category}" style="font-size:9px">${s.category}</span><span>${s.name}</span></div>
+      </div>`).join('');
   }catch(e){}
+}
+
+function parseQ(q){
+  return q.replace(/\bET\b/gi,' ').replace(/\bOU\b/gi,' ').replace(/\bAND\b/gi,' ').replace(/\bOR\b/gi,' ').trim();
 }
 
 async function doSearch(){
   const raw=document.getElementById('sri').value.trim();
   if(!raw)return;
-  srSrc=document.getElementById('src-sel').value;
-  srTopic=document.getElementById('topic-sel').value;
-  const q=parseQuery(raw);
   lastQuery=raw;
   const el=document.getElementById('sr-list');
-  document.getElementById('sr-results-wrap').style.display='block';
-  document.getElementById('hist-box').style.display='none';
+  document.getElementById('sr-res-wrap').style.display='block';
   el.innerHTML='<div class="sl2"><div class="sp2"></div>Recherche…</div>';
   try{
-    let url=`${API}/search?q=${encodeURIComponent(q)}&limit=50&days=${Math.max(1,Math.ceil(srDays))}`;
-    if(srSrc)url+=`&source_id=${srSrc}`;
+    const days=Math.max(1,Math.ceil(srDays));
+    let url=`${API}/search?q=${encodeURIComponent(parseQ(raw))}&limit=100&days=${days}`;
+    if(srSrcId)url+=`&source_id=${srSrcId}`;
     if(srTopic)url+=`&topic=${encodeURIComponent(srTopic)}`;
     const data=await fetch(url).then(r=>r.json());
     lastResults=data.total||0;
-    document.getElementById('sr-res-t').textContent=`${lastResults} résultat${lastResults>1?'s':''} · ${srDays<1?srDays*24+'h':srDays+' jour'+(srDays>1?'s':'')} · "${raw}"`;
-    renderArts(data.results,'sr-list',raw);
+    const periodLbl=srDays<1?srDays*24+'h':srDays===1?'24h':srDays+' jours';
+    document.getElementById('sr-res-t').textContent=`${lastResults} résultat${lastResults>1?'s':''} · ${periodLbl} · "${raw}"`;
+    // Tri du plus récent au plus ancien
+    const sorted=(data.results||[]).sort((a,b)=>new Date(b.collected_at)-new Date(a.collected_at));
+    renderArts(sorted,'sr-list',raw);
     addToHistory(raw,lastResults);
   }catch(e){el.innerHTML='<div class="se"><div class="ei">⚠️</div>Erreur</div>'}
 }
 
-// ── HISTORIQUE (localStorage) ─────────────────────────────────
-function getHistory(){try{return JSON.parse(localStorage.getItem(HIST_KEY)||'[]')}catch(e){return[]}}
-function saveHistory(h){try{localStorage.setItem(HIST_KEY,JSON.stringify(h))}catch(e){}}
+// ── HISTORIQUE ────────────────────────────────────────────────
+function getH(){try{return JSON.parse(localStorage.getItem(HK)||'[]')}catch(e){return[]}}
+function saveH(h){try{localStorage.setItem(HK,JSON.stringify(h))}catch(e){}}
 
 function addToHistory(q,count){
-  const h=getHistory().filter(x=>x.q!==q);
+  const h=getH().filter(x=>x.q!==q);
   h.unshift({q,count,ts:Date.now()});
-  saveHistory(h.slice(0,20));
-  renderHist();
+  saveH(h.slice(0,20));
+}
+
+function toggleHist(){
+  const btn=document.getElementById('hist-toggle');
+  const box=document.getElementById('hist-box');
+  const isOpen=box.classList.contains('open');
+  btn.classList.toggle('open',!isOpen);
+  box.classList.toggle('open',!isOpen);
+  if(!isOpen)renderHist();
 }
 
 function renderHist(){
-  const h=getHistory();
-  const box=document.getElementById('hist-box');
+  const h=getH();
   const list=document.getElementById('hist-list');
-  if(!h.length){
-    list.innerHTML='<div class="hist-empty">Aucune recherche récente</div>';
-    box.style.display='block';
-    return;
-  }
-  box.style.display='block';
+  if(!h.length){list.innerHTML='<div class="hist-empty">Aucune recherche récente</div>';return}
   list.innerHTML=h.map((x,i)=>`
-    <div class="hist-item" onclick="rerunSearch('${x.q.replace(/'/g,"\\'")}')">
+    <div class="hist-item" onclick="rerun('${x.q.replace(/'/g,"\\'")}')">
       <svg class="hist-ic" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
       <span class="hist-q">${x.q}</span>
       <div class="hist-meta">
         <span class="hist-cnt">${x.count} résultats</span>
         <span class="hist-time">${ago(new Date(x.ts))}</span>
         <span class="hist-run">Relancer →</span>
-        <span class="hist-del" onclick="event.stopPropagation();delHistItem(${i})">✕</span>
+        <span class="hist-del" onclick="event.stopPropagation();delH(${i})">✕</span>
       </div>
     </div>`).join('');
 }
 
-function rerunSearch(q){
-  document.getElementById('sri').value=q;
-  doSearch();
-}
-
-function delHistItem(i){
-  const h=getHistory();h.splice(i,1);saveHistory(h);renderHist();
-}
-
-function clearHistory(){
-  saveHistory([]);renderHist();
-  document.getElementById('sr-results-wrap').style.display='none';
-}
+function rerun(q){document.getElementById('sri').value=q;doSearch()}
+function delH(i){const h=getH();h.splice(i,1);saveH(h);renderHist()}
+function clearHistory(){saveH([]);renderHist();document.getElementById('sr-res-wrap').style.display='none'}
 
 async function saveCurrentSearch(){
   if(!lastQuery){alert('Lancez d\'abord une recherche.');return}
   const name=prompt(`Nom de la veille pour "${lastQuery}" :`);
   if(!name)return;
   await fetch(`${API}/watchlists?name=${encodeURIComponent(name)}&query=${encodeURIComponent(lastQuery)}`,{method:'POST'});
-  alert(`Veille "${name}" créée !`);
-  loadWL();
+  alert(`Veille "${name}" créée !`);loadWL();
 }
 
 // ── WATCHLISTS ────────────────────────────────────────────────
@@ -740,9 +787,9 @@ async function loadWL(){
     b.style.display=tn>0?'':'none';if(tn>0)b.textContent=tn;
     if(!data.length){g.innerHTML='<div class="se" style="grid-column:1/-1"><div class="ei">📋</div><div style="font-weight:600;color:var(--text2)">Aucune veille</div><div>Créez votre première veille</div></div>';return}
     g.innerHTML=data.map(w=>`<div class="wc" onclick="loadWA(${w.id},'${w.name}')">
-      <div class="wch"><div class="wcn">${w.name}</div><div class="wa" onclick="event.stopPropagation()"><button class="wab danger" onclick="delW(${w.id})">✕</button></div></div>
+      <div class="wch"><div class="wcn">${w.name}</div><div class="wa2" onclick="event.stopPropagation()"><button class="wab danger" onclick="delW(${w.id})">✕</button></div></div>
       <div class="wcq">${w.query}</div>
-      <div class="wcf">${w.new_articles>0?`<span class="wnb">+${w.new_articles} nouveaux</span>`:'<span style="font-size:11px;color:var(--text3)">À jour</span>'}<span class="wu">${w.last_viewed?'Vu '+ago(w.last_viewed):'Jamais consulté'}</span></div>
+      <div class="wcf">${w.new_articles>0?`<span class="wnb2">+${w.new_articles} nouveaux</span>`:'<span style="font-size:11px;color:var(--text3)">À jour</span>'}<span class="wu">${w.last_viewed?'Vu '+ago(w.last_viewed):'Jamais consulté'}</span></div>
     </div>`).join('');
   }catch(e){}
 }
@@ -761,8 +808,7 @@ async function loadWA(id,name){
 
 function toggleNWP(){document.getElementById('nwp').classList.toggle('v')}
 async function saveWL(){
-  const name=document.getElementById('wn').value.trim();
-  const query=document.getElementById('wq').value.trim();
+  const name=document.getElementById('wn').value.trim(),query=document.getElementById('wq').value.trim();
   if(!name||!query){alert('Remplissez le nom et les mots-clés.');return}
   await fetch(`${API}/watchlists?name=${encodeURIComponent(name)}&query=${encodeURIComponent(query)}`,{method:'POST'});
   document.getElementById('wn').value='';document.getElementById('wq').value='';
@@ -783,14 +829,12 @@ async function loadSrc(){
     renderSrc();
   }catch(e){}
 }
-
 function getSt(s){
   if(!s.active)return{c:'off',l:'Désactivée'};
   if(!s.last_status)return{c:'ok',l:'En attente'};
   if([200,301,302,304].includes(s.last_status))return{c:'ok',l:'En ligne'};
   return{c:'err',l:`Erreur ${s.last_status}`};
 }
-
 function renderSrc(){
   let s=allSrc;
   if(srcTF!=='all'){if(srcTF==='errors')s=s.filter(x=>x.active&&x.last_status&&![200,301,302,304].includes(x.last_status));else s=s.filter(x=>x.category===srcTF)}
@@ -802,21 +846,17 @@ function renderSrc(){
     <td><span class="sb badge-${x.category}">${x.category}</span></td>
     <td><span class="spp ${st.c}"><span class="sdot"></span>${st.l}</span></td>
     <td>${x.articles_today||0}</td>
-    <td><div class="ra">
-      <label class="tsw"><input type="checkbox" ${x.active?'checked':''} onchange="togSrc('${x.id}',this.checked)"><span class="tsl"></span></label>
-      <button class="rb" onclick="showE('${x.id}')">Éditer</button>
-      <button class="rb danger" onclick="delSrc('${x.id}','${x.name}')">Suppr.</button>
-    </div></td></tr>
+    <td><div class="ra"><label class="tsw"><input type="checkbox" ${x.active?'checked':''} onchange="togSrc('${x.id}',this.checked)"><span class="tsl"></span></label>
+    <button class="rb" onclick="showE('${x.id}')">Éditer</button>
+    <button class="rb danger" onclick="delSrc('${x.id}','${x.name}')">Suppr.</button></div></td></tr>
     <tr class="er" id="se-${x.id}"><td colspan="6"><div class="eig">
-      <input id="en-${x.id}" value="${x.name}">
-      <input id="eu-${x.id}" value="${x.url}">
-      <select id="ec-${x.id}">${['PQN','PQR','TV','Radio','Magazine','Agence','Natif','International'].map(c=>`<option ${c===x.category?'selected':''}>${c}</option>`).join('')}</select>
-      <select id="ei-${x.id}">${[5,15,30,60,360].map(v=>`<option value="${v}" ${v===x.interval_min?'selected':''}>${v<60?v+' min':(v/60)+'h'}</option>`).join('')}</select>
-      <button class="btnp" style="height:30px;font-size:11px;padding:0 10px" onclick="saveE('${x.id}')">Sauver</button>
-      <button class="btng" style="height:30px;font-size:11px;padding:0 10px" onclick="hideE('${x.id}')">Annuler</button>
+    <input id="en-${x.id}" value="${x.name}"><input id="eu-${x.id}" value="${x.url}">
+    <select id="ec-${x.id}">${['PQN','PQR','TV','Radio','Magazine','Agence','Natif','International'].map(c=>`<option ${c===x.category?'selected':''}>${c}</option>`).join('')}</select>
+    <select id="ei-${x.id}">${[5,15,30,60,360].map(v=>`<option value="${v}" ${v===x.interval_min?'selected':''}>${v<60?v+' min':(v/60)+'h'}</option>`).join('')}</select>
+    <button class="btnp" style="height:30px;font-size:11px;padding:0 10px" onclick="saveE('${x.id}')">Sauver</button>
+    <button class="btng" style="height:30px;font-size:11px;padding:0 10px" onclick="hideE('${x.id}')">Annuler</button>
     </div></td></tr>`}).join('')}</tbody></table>`;
 }
-
 function setSrcTF(chip,f){document.querySelectorAll('.sfb .chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');srcTF=f;renderSrc()}
 function sSrch(v){srcSV=v;renderSrc()}
 function toggleAF(h){h.classList.toggle('open');document.getElementById('afb').classList.toggle('v')}
