@@ -73,6 +73,19 @@ CREATE TABLE IF NOT EXISTS watchlists (
     new_since_last INTEGER  DEFAULT 0
 );
 
+CREATE TABLE IF NOT EXISTS folders (
+    id          SERIAL      PRIMARY KEY,
+    name        TEXT        NOT NULL,
+    color       TEXT        NOT NULL DEFAULT '#2563EB',
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS folder_watchlists (
+    folder_id    INTEGER     NOT NULL REFERENCES folders(id) ON DELETE CASCADE,
+    watchlist_id INTEGER     NOT NULL REFERENCES watchlists(id) ON DELETE CASCADE,
+    PRIMARY KEY (folder_id, watchlist_id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_articles_source_id ON articles(source_id);
 CREATE INDEX IF NOT EXISTS idx_articles_published_at ON articles(published_at DESC);
 CREATE INDEX IF NOT EXISTS idx_articles_collected_at ON articles(collected_at DESC);
@@ -80,18 +93,6 @@ CREATE INDEX IF NOT EXISTS idx_articles_category ON articles(category);
 CREATE INDEX IF NOT EXISTS idx_articles_topic ON articles(topic);
 CREATE INDEX IF NOT EXISTS idx_articles_content_hash ON articles(content_hash);
 CREATE INDEX IF NOT EXISTS idx_articles_title_fts ON articles USING gin(to_tsvector('french', coalesce(title, '')));
-
-DO
-$do$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_name='articles' AND column_name='topic'
-    ) THEN
-        ALTER TABLE articles ADD COLUMN topic TEXT;
-    END IF;
-END
-$do$;
 
 CREATE OR REPLACE VIEW articles_recent AS
 SELECT a.*, s.name AS source_name, s.category AS source_category
