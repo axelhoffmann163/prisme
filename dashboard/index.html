@@ -1517,7 +1517,7 @@ async function shareWatchlist(){
   const btn=document.getElementById('share-btn');
   try{
     const data=await fetch(`${API}/watchlists/${currentWatchId}/share`,{method:'POST'}).then(r=>r.json());
-    const shareUrl=`${window.location.origin}/share/${data.token}`;
+    const shareUrl=`http://prisme.axelhoffmann.fr:8081/share/${data.token}`;
     // Affiche une popup avec le lien
     showSharePopup(shareUrl,btn);
   }catch(e){alert('Erreur lors de la création du lien de partage')}
