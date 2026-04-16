@@ -46,19 +46,13 @@ input::placeholder{color:rgba(255,255,255,0.2)}
   <button class="btn" onclick="login()">Se connecter</button>
 </div>
 <script>
-// Comptes autorisés : {identifiant: mot_de_passe}
-// SHA-256 des mots de passe pour ne pas les stocker en clair
+// Comptes autorisés
 const ACCOUNTS = {
   'axel': 'axel',
   'jpfarandou': 'jeanne',
 };
 
-async function sha256(str){
-  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-async function login(){
+function login(){
   const user=document.getElementById('user').value.trim();
   const pass=document.getElementById('pass').value;
   const err=document.getElementById('err');
@@ -70,9 +64,7 @@ async function login(){
     err.classList.add('v');
     return;
   }
-  // Stocke le token de session
-  const token=await sha256(user+pass+navigator.userAgent.substring(0,20));
-  localStorage.setItem('prisme_auth',JSON.stringify({user,token,ts:Date.now()}));
+  localStorage.setItem('prisme_auth',JSON.stringify({user,ts:Date.now()}));
   window.location.href='/';
 }
 
