@@ -209,10 +209,17 @@ def trends_stats():
             today = cur.fetchone()[0]
             cur.execute("SELECT COUNT(*) FROM sources WHERE active = true")
             active_sources = cur.fetchone()[0]
-            cur.execute("SELECT COUNT(*) FROM articles WHERE collected_at >= NOW() - INTERVAL '30 days'")
-            last30 = cur.fetchone()[0]
-    avg_day = round(last30 / 30) if last30 else 0
-    return {"total": total, "today": today, "active_sources": active_sources, "avg_day": avg_day}
+            # Moy./jour = articles des 30 derniers jours ÷ nombre de jours réellement actifs
+            cur.execute("""
+                SELECT COUNT(*) as cnt,
+                       COUNT(DISTINCT DATE(collected_at AT TIME ZONE 'Europe/Paris')) as active_days
+                FROM articles
+                WHERE collected_at >= NOW() - INTERVAL '30 days'
+            """)
+            row = cur.fetchone()
+            last30, active_days = row[0], max(row[1], 1)
+    avg_day = round(last30 / active_days) if last30 else 0
+    return {"total": total, "today": today, "active_sources": active_sources, "avg_day": avg_day, "active_days": active_days}
 
 @app.get("/trends/topics")
 def trends_topics(hours: int = Query(168, ge=1, le=2160)):
