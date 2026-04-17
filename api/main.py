@@ -198,6 +198,20 @@ def disable_googlenews(watchlist_id: int):
             cur.execute("UPDATE sources SET active = false WHERE id = %s", (f"googlenews_{watchlist_id}",))
     return {"ok": True}
 
+@app.get("/trends/stats")
+def trends_stats():
+    from database.connection import get_conn
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT COUNT(*) FROM articles")
+            total = cur.fetchone()[0]
+            cur.execute("SELECT COUNT(*) FROM articles WHERE collected_at >= NOW() - INTERVAL '24 hours'")
+            today = cur.fetchone()[0]
+            cur.execute("SELECT COUNT(*) FROM sources WHERE active = true")
+            active_sources = cur.fetchone()[0]
+    avg_day = round(total / 30) if total else 0
+    return {"total": total, "today": today, "active_sources": active_sources, "avg_day": avg_day}
+
 @app.get("/trends/topics")
 def trends_topics(hours: int = Query(168, ge=1, le=2160)):
     from database.connection import get_conn
@@ -267,7 +281,18 @@ def trends_words(hours: int = Query(24, ge=1, le=168)):
         'depuis','sans','sous','chez','via','alors','ainsi','quand','cela',
         'avoir','être','fait','faire','bien','non','oui','mise','nouveau',
         'nouvelle','premier','première','france','français','française',
-        'gouvernement','ministre','président',
+        'gouvernement','ministre','président','paris','national','police',
+        'selon','celui','celle','ceux','celles','autre','autres','tout','tous',
+        'toutes','toute','cette','lors','dont','dont','lequel','laquelle',
+        # Noms de médias / sources fréquents dans les titres
+        'monde','figaro','libération','express','point','nouvel','humanité',
+        'croix','ouest','voix','nord','alsace','républicain','progrès','dauphiné',
+        'provence','méridional','dépêche','midi','bretagne','normandie',
+        'berry','canard','enchaîné','rugbyrama','franceantilles','martinique',
+        'réunion','guadeloupe','montagne','lorrain','républicaine','populaire',
+        'journal','presse','quotidien','hebdomadaire','revue','gazette',
+        'info','news','actu','media','radio','télé','tele','france','bfm',
+        'cnews','lci','itele','rmc','europe','rtl','inter','culture','bleu',
     }
     with get_conn() as conn:
         with conn.cursor() as cur:
@@ -296,13 +321,12 @@ def trends_words(hours: int = Query(24, ge=1, le=168)):
     total_prev = max(sum(prev.values()), 1)
 
     results = []
-    for word, cnt in curr.most_common(200):
-        if cnt < 3:
+    for word, cnt in curr.most_common(500):
+        if cnt < 5:
             continue
         freq_curr = cnt / total_curr
         freq_prev = (prev.get(word, 0) + 0.5) / total_prev
         ratio = freq_curr / freq_prev
-        # Score = ratio × log(count + 1)
         score = ratio * math.log(cnt + 1)
         results.append({"word": word, "count": cnt, "ratio": round(ratio, 2), "score": round(score, 2)})
 
