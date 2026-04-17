@@ -198,6 +198,117 @@ def disable_googlenews(watchlist_id: int):
             cur.execute("UPDATE sources SET active = false WHERE id = %s", (f"googlenews_{watchlist_id}",))
     return {"ok": True}
 
+@app.get("/trends/topics")
+def trends_topics(hours: int = Query(168, ge=1, le=2160)):
+    from database.connection import get_conn
+    import math
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT topic, COUNT(*) as cnt
+                FROM articles
+                WHERE topic IS NOT NULL AND collected_at >= NOW() - (%s || ' hours')::INTERVAL
+                GROUP BY topic ORDER BY cnt DESC
+            """, (str(hours),))
+            current = {r[0]: r[1] for r in cur.fetchall()}
+            cur.execute("""
+                SELECT topic, COUNT(*) as cnt
+                FROM articles
+                WHERE topic IS NOT NULL
+                  AND collected_at >= NOW() - (%s || ' hours')::INTERVAL * 2
+                  AND collected_at < NOW() - (%s || ' hours')::INTERVAL
+                GROUP BY topic
+            """, (str(hours), str(hours)))
+            previous = {r[0]: r[1] for r in cur.fetchall()}
+    result = []
+    for topic, cnt in sorted(current.items(), key=lambda x: -x[1]):
+        prev = previous.get(topic, 0)
+        diff = round((cnt - prev) / max(prev, 1) * 100) if prev > 0 else 100
+        result.append({"topic": topic, "count": cnt, "prev": prev, "diff": diff})
+    return result
+
+@app.get("/trends/sources")
+def trends_sources(hours: int = Query(168, ge=1, le=2160)):
+    from database.connection import get_conn
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT s.name, s.category, COUNT(a.id) as cnt
+                FROM articles a JOIN sources s ON s.id = a.source_id
+                WHERE a.collected_at >= NOW() - (%s || ' hours')::INTERVAL
+                GROUP BY s.name, s.category ORDER BY cnt DESC LIMIT 15
+            """, (str(hours),))
+            return [{"name": r[0], "category": r[1], "count": r[2]} for r in cur.fetchall()]
+
+@app.get("/trends/volume")
+def trends_volume(days: int = Query(30, ge=7, le=90)):
+    from database.connection import get_conn
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT DATE(collected_at AT TIME ZONE 'Europe/Paris') as d, COUNT(*) as cnt
+                FROM articles
+                WHERE collected_at >= NOW() - (%s || ' days')::INTERVAL
+                GROUP BY d ORDER BY d ASC
+            """, (str(days),))
+            return [{"date": str(r[0]), "count": r[1]} for r in cur.fetchall()]
+
+@app.get("/trends/words")
+def trends_words(hours: int = Query(24, ge=1, le=168)):
+    from database.connection import get_conn
+    from collections import Counter
+    import re, math
+    STOPWORDS = {
+        'le','la','les','un','une','des','de','du','en','et','est','au','aux',
+        'ce','qui','que','se','sa','son','ses','sur','par','pour','dans','avec',
+        'à','il','elle','ils','elles','on','l','d','s','plus','très','aussi',
+        'mais','ou','donc','car','ne','pas','tout','cette','ces','leur','leurs',
+        'après','avant','entre','selon','dont','lors','même','comme','contre',
+        'depuis','sans','sous','chez','via','alors','ainsi','quand','cela',
+        'avoir','être','fait','faire','bien','non','oui','mise','nouveau',
+        'nouvelle','premier','première','france','français','française',
+        'gouvernement','ministre','président',
+    }
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT title, summary FROM articles
+                WHERE collected_at >= NOW() - (%s || ' hours')::INTERVAL
+            """, (str(hours),))
+            current_texts = [f"{r[0] or ''} {r[1] or ''}" for r in cur.fetchall()]
+            cur.execute("""
+                SELECT title, summary FROM articles
+                WHERE collected_at >= NOW() - (%s || ' hours')::INTERVAL * 2
+                  AND collected_at < NOW() - (%s || ' hours')::INTERVAL
+            """, (str(hours), str(hours)))
+            prev_texts = [f"{r[0] or ''} {r[1] or ''}" for r in cur.fetchall()]
+
+    def count_words(texts):
+        c = Counter()
+        for t in texts:
+            words = re.findall(r'\b[a-zàâäéèêëîïôùûüÿœæç]{4,}\b', t.lower())
+            c.update(w for w in words if w not in STOPWORDS)
+        return c
+
+    curr = count_words(current_texts)
+    prev = count_words(prev_texts)
+    total_curr = max(sum(curr.values()), 1)
+    total_prev = max(sum(prev.values()), 1)
+
+    results = []
+    for word, cnt in curr.most_common(200):
+        if cnt < 3:
+            continue
+        freq_curr = cnt / total_curr
+        freq_prev = (prev.get(word, 0) + 0.5) / total_prev
+        ratio = freq_curr / freq_prev
+        # Score = ratio × log(count + 1)
+        score = ratio * math.log(cnt + 1)
+        results.append({"word": word, "count": cnt, "ratio": round(ratio, 2), "score": round(score, 2)})
+
+    results.sort(key=lambda x: -x["score"])
+    return results[:20]
+
 # ── Partage ───────────────────────────────────────────────────
 @app.post("/watchlists/{watchlist_id}/share")
 def share_watchlist(watchlist_id: int, expire_days: int = 30):
