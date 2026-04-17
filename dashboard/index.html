@@ -1600,7 +1600,14 @@ function showExpireChoice(anchor){
     </div>
   `;
   document.body.appendChild(pop);
-  setTimeout(()=>document.addEventListener('click',removeSharePopup,{once:true}),0);
+  // Ferme uniquement si clic EN DEHORS de la popup
+  const closeOutside=e=>{
+    if(!pop.contains(e.target)){
+      removeSharePopup();
+      document.removeEventListener('click',closeOutside);
+    }
+  };
+  setTimeout(()=>document.addEventListener('click',closeOutside),0);
 }
 
 async function createShareLink(){
@@ -1637,7 +1644,8 @@ function showSharePopup(url,anchor,expiresAt){
     </div>
   `;
   document.body.appendChild(pop);
-  setTimeout(()=>document.addEventListener('click',removeSharePopup,{once:true}),0);
+  const closeOutside2=e=>{if(!pop.contains(e.target)){removeSharePopup();document.removeEventListener('click',closeOutside2);}};
+  setTimeout(()=>document.addEventListener('click',closeOutside2),0);
 }
 
 function removeSharePopup(){const p=document.getElementById('share-popup');if(p)p.remove()}
