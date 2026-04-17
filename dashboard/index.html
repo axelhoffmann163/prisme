@@ -715,43 +715,62 @@ input:checked+.tsl:before{transform:translateX(16px)}
       <div class="ph">
         <div>
           <h2>Veille territoriale</h2>
-          <div style="font-size:12px;color:var(--text3);margin-top:2px">Couverture presse par territoire</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">Surveillance presse par territoire</div>
         </div>
-        <div style="display:flex;gap:4px" id="ter-type-chips">
-          <div class="wap-chip active" onclick="setTerType(this,'region')">Régions</div>
-          <div class="wap-chip" onclick="setTerType(this,'department')">Départements</div>
-          <div class="wap-chip" onclick="setTerType(this,'commune')">Mes communes</div>
-        </div>
-        <div style="display:flex;gap:4px" id="ter-period-chips">
-          <div class="wap-chip active" onclick="setTerPeriod(this,24)">24h</div>
-          <div class="wap-chip" onclick="setTerPeriod(this,72)">3j</div>
-          <div class="wap-chip" onclick="setTerPeriod(this,168)">7j</div>
-        </div>
+        <button class="btnp" onclick="toggleTerNew()">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Nouvelle veille
+        </button>
       </div>
-      <div style="display:grid;grid-template-columns:220px 1fr;gap:12px;flex:1;overflow:hidden">
-        <!-- Liste territoires -->
-        <div style="overflow-y:auto">
-          <div id="ter-list"><div class="sl2"><div class="sp2"></div>Chargement…</div></div>
-          <!-- Ajout commune -->
-          <div id="ter-add-commune" style="display:none;margin-top:8px">
-            <button class="btng" onclick="toggleAddCommune()" style="width:100%;justify-content:center;margin-bottom:8px">
-              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              Nouvelle commune
-            </button>
-            <div id="ter-commune-form" style="display:none" class="nwp v" style="padding:12px">
-              <div class="ff"><label class="ffl">Nom de la commune</label><input type="text" class="ffi" id="ter-commune-name" placeholder="ex : Strasbourg"></div>
-              <div class="ff" style="margin-top:8px"><label class="ffl">Mots-clés (virgule)</label><input type="text" class="ffi" id="ter-commune-kw" placeholder="ex : strasbourg, bas-rhin"></div>
-              <div style="display:flex;gap:6px;margin-top:10px">
-                <button class="btnp" onclick="saveTerCommune()">Créer</button>
-                <button class="btng" onclick="document.getElementById('ter-commune-form').style.display='none'">Annuler</button>
-              </div>
-            </div>
+      <!-- Formulaire création -->
+      <div class="nwp" id="ter-new-panel">
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end">
+          <div class="ff" style="position:relative">
+            <label class="ffl">Territoire</label>
+            <input type="text" class="ffi" id="ter-name" placeholder="ex : Bordeaux, Bretagne, Métropole de Lyon…">
+          </div>
+          <div class="ff">
+            <label class="ffl">Mots-clés additionnels (optionnel, virgule)</label>
+            <input type="text" class="ffi" id="ter-keywords" placeholder="ex : métropole, agglo, gironde">
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end">
+            <button class="btnp" onclick="saveTerNew()">Créer</button>
+            <button class="btng" onclick="toggleTerNew()">Annuler</button>
           </div>
         </div>
-        <!-- Détail territoire -->
-        <div style="overflow-y:auto" id="ter-detail">
-          <div class="se" style="margin-top:60px"><div class="ei">🗺️</div><div style="font-weight:600;color:var(--text2)">Sélectionnez un territoire</div></div>
-        </div>
+      </div>
+      <!-- Liste des veilles -->
+      <div id="ter-list"><div class="sl2"><div class="sp2"></div>Chargement…</div></div>
+    </div>
+  </div>
+
+  <!-- PAGE DÉTAIL TERRITOIRE -->
+  <div class="page" id="page-territory-detail">
+    <div class="wa-topbar">
+      <div class="wa-back" onclick="showPage('territories',document.getElementById('nav-territories'))">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
+        Veille territoriale
+      </div>
+      <div>
+        <div class="wa-name" id="ter-detail-name">Territoire</div>
+        <div class="wa-query" id="ter-detail-kw"></div>
+      </div>
+      <div class="wa-periods" id="ter-period-chips">
+        <div class="wap-chip" onclick="setTerDetailPeriod(this,1)">1h</div>
+        <div class="wap-chip" onclick="setTerDetailPeriod(this,3)">3h</div>
+        <div class="wap-chip" onclick="setTerDetailPeriod(this,6)">6h</div>
+        <div class="wap-chip" onclick="setTerDetailPeriod(this,12)">12h</div>
+        <div class="wap-chip" onclick="setTerDetailPeriod(this,24)">24h</div>
+        <div class="wap-chip active" onclick="setTerDetailPeriod(this,168)">7j</div>
+        <div class="wap-chip" onclick="setTerDetailPeriod(this,336)">14j</div>
+      </div>
+      <div style="display:flex;gap:6px;margin-left:12px">
+        <button class="btng" id="ter-delete-btn" onclick="deleteTerCurrent()" style="color:#DC2626;border-color:#FECACA">Supprimer</button>
+      </div>
+    </div>
+    <div class="wa-full">
+      <div class="wa-content" id="ter-detail-content">
+        <div class="sl2"><div class="sp2"></div>Chargement…</div>
       </div>
     </div>
   </div>
@@ -855,6 +874,7 @@ function showPage(n,el){
   if(n==='watchlists')loadWL();
   if(n==='search')loadSrcList();
   if(n==='territories')loadTerritories();
+  if(n==='territory-detail'){} // chargé via openTerDetail
   if(n==='trends')loadTrends();
   closeAllDD();
 }
@@ -1904,10 +1924,199 @@ async function revokeShareLink(){
 }
 
 // ── TERRITOIRES ───────────────────────────────────────────────
-let terType='region', terHours=24, terSelected=null;
+let terCurrentId=null, terCurrentHours=168;
 
-const TOPIC_COLORS_TER={'Politique':'#7C3AED','Économie':'#0891B2','Social':'#D97706','Justice':'#DC2626','International':'#059669','Société':'#DB2777','Santé':'#16A34A','Environnement':'#15803D','Science & Tech':'#1D4ED8','Culture':'#9333EA','Sport':'#EA580C','Faits divers':'#475569'};
-const SRC_COLORS={'PQN':'#2563EB','PQR':'#059669','TV':'#C2410C','Radio':'#9333EA','Magazine':'#0369A1','Agence':'#BE123C','Natif':'#065F46','International':'#475569'};
+function toggleTerNew(){document.getElementById('ter-new-panel').classList.toggle('v')}
+
+async function loadTerritories(){
+  const list=document.getElementById('ter-list');
+  try{
+    const data=await fetch(`${API}/territories`).then(r=>r.json());
+    if(!data.length){
+      list.innerHTML='<div class="se"><div class="ei">🗺️</div><div style="font-weight:600;color:var(--text2)">Aucune veille territoriale</div><div>Créez votre première veille ci-dessus</div></div>';
+      return;
+    }
+    list.innerHTML=`<div style="display:flex;flex-direction:column;gap:7px">`+
+      data.map(t=>`
+        <div class="wc" onclick="openTerDetail(${t.id},'${t.name.replace(/'/g,"\\'")}','${(t.keywords||[]).join(', ')}')">
+          <div class="wc-info">
+            <div class="wcn">${t.name}</div>
+            <div class="wcq">${(t.keywords||[]).join(', ')}</div>
+          </div>
+          <div class="wc-right">
+            <div class="wstat"><div class="wsv">7j</div><div class="wsl">par défaut</div></div>
+            <div class="wsep"></div>
+            <div class="wc-actions" onclick="event.stopPropagation()">
+              <button class="wab danger" onclick="deleteTer(${t.id})" title="Supprimer">✕</button>
+            </div>
+          </div>
+        </div>`).join('')+`</div>`;
+  }catch(e){list.innerHTML='<div class="se"><div class="ei">⚠️</div>Erreur</div>';}
+}
+
+async function saveTerNew(){
+  const name=document.getElementById('ter-name').value.trim();
+  const kw=document.getElementById('ter-keywords').value.trim();
+  if(!name){alert('Entrez un nom de territoire.');return}
+  // Mots-clés = nom + additionnels
+  const kwList=[name.toLowerCase(), ...kw.split(',').map(k=>k.trim()).filter(Boolean)];
+  await fetch(`${API}/territories?name=${encodeURIComponent(name)}&keywords=${encodeURIComponent(kwList.join(','))}`,{method:'POST'});
+  document.getElementById('ter-name').value='';
+  document.getElementById('ter-keywords').value='';
+  document.getElementById('ter-new-panel').classList.remove('v');
+  loadTerritories();
+  showToast(`Veille "${name}" créée`);
+}
+
+async function deleteTer(id){
+  if(!confirm('Supprimer cette veille territoriale ?'))return;
+  await fetch(`${API}/territories/${id}`,{method:'DELETE'});
+  loadTerritories();
+}
+
+function openTerDetail(id,name,kw){
+  terCurrentId=id;terCurrentHours=168;
+  showPage('territory-detail',null);
+  document.getElementById('nav-territories').classList.add('active');
+  document.getElementById('ter-detail-name').textContent=name;
+  document.getElementById('ter-detail-kw').textContent=kw;
+  document.querySelectorAll('#ter-period-chips .wap-chip').forEach(c=>c.classList.toggle('active',c.textContent==='7j'));
+  loadTerDetail();
+}
+
+function setTerDetailPeriod(chip,hours){
+  document.querySelectorAll('#ter-period-chips .wap-chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');terCurrentHours=hours;loadTerDetail();
+}
+
+async function deleteTerCurrent(){
+  if(!confirm('Supprimer cette veille territoriale ?'))return;
+  await fetch(`${API}/territories/${terCurrentId}`,{method:'DELETE'});
+  showPage('territories',document.getElementById('nav-territories'));
+  loadTerritories();
+}
+
+async function loadTerDetail(){
+  const content=document.getElementById('ter-detail-content');
+  content.innerHTML='<div class="sl2"><div class="sp2"></div>Chargement…</div>';
+  try{
+    const s=await fetch(`${API}/territories/${terCurrentId}/stats?hours=${terCurrentHours}`).then(r=>r.json());
+    renderTerDetail(s);
+  }catch(e){content.innerHTML='<div class="se"><div class="ei">⚠️</div>Erreur de chargement</div>';}
+}
+
+function renderTerDetail(s){
+  const content=document.getElementById('ter-detail-content');
+  const diff=s.diff||0;
+  const diffColor=diff>0?'#059669':diff<0?'#DC2626':'#9CA3AF';
+  const articles=s.articles||[];
+  const sorted=[...articles].sort((a,b)=>new Date(a.collected_at)-new Date(b.collected_at));
+  const first=sorted[0], last=sorted[sorted.length-1];
+
+  // Timeline chart data
+  const timeline=s.timeline||[];
+
+  // Top sources
+  const maxSrc=(s.top_sources||[])[0]?.count||1;
+  const srcRows=(s.top_sources||[]).map(src=>{
+    const color=SRC_CAT_COLORS[src.category]||'#9CA3AF';
+    return`<div class="src-row">
+      <span class="src-name">${src.name}</span>
+      <span style="font-size:9px;padding:1px 5px;border-radius:4px;background:${color}18;color:${color};border:1px solid ${color}33;flex-shrink:0;font-weight:700">${src.category||''}</span>
+      <div class="src-track"><div class="src-fill" style="width:${Math.round(src.count/maxSrc*100)}%;background:${color}"></div></div>
+      <span class="src-n">${src.count}</span>
+    </div>`;
+  }).join('');
+
+  // Mots
+  const maxWc=(s.top_words||[])[0]?.count||1;
+  const wordsHtml=(s.top_words||[]).slice(0,18).map(w=>{
+    const ratio=w.count/maxWc;
+    const sz=Math.round(10+ratio*5);
+    return`<span class="wword" style="font-size:${sz}px;opacity:${(0.35+ratio*0.65).toFixed(2)}">${w.word}<span style="font-size:9px;color:var(--text3);margin-left:3px">${w.count}</span></span>`;
+  }).join('');
+
+  // Entités
+  const entRows=(s.entities||[]).map(e=>`
+    <div class="ent"><span class="ent-name">${e.name}</span><span class="ent-type">${e.type}</span><span class="ent-cnt">${e.count}</span></div>`).join('')||'<div style="font-size:12px;color:var(--text3)">Pas assez de données</div>';
+
+  // Articles
+  const artRows=articles.map(a=>`
+    <div style="padding:10px;background:var(--bg);border-radius:9px;border:1px solid var(--border);margin-bottom:6px;cursor:pointer" onclick="window.open('${a.url}','_blank')">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+        ${a.topic?`<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:${TOPIC_COLORS[a.topic]||'#9CA3AF'}18;color:${TOPIC_COLORS[a.topic]||'#9CA3AF'};font-weight:700">${a.topic}</span>`:''}
+        <span style="font-size:11px;font-weight:500;color:var(--text2)">${a.source_name||''}</span>
+        <span style="font-size:10px;color:var(--text3);margin-left:auto">${ago(a.collected_at)}</span>
+      </div>
+      <div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.4">${a.title||''}</div>
+    </div>`).join('');
+
+  content.innerHTML=`
+    <div class="wa-metrics">
+      <div class="wam"><div class="wam-v">${s.total||0}</div><div class="wam-l">Articles</div><div style="font-size:11px;font-weight:500;color:${diffColor};margin-top:2px">${diff>0?'+':''}${diff}% vs préc.</div></div>
+      <div class="wam"><div class="wam-v">${s.distinct_sources||0}</div><div class="wam-l">Sources</div></div>
+      <div class="wam">
+        <div class="wam-l" style="margin-bottom:3px">Premier signal</div>
+        <div style="font-size:12px;font-weight:600;color:var(--text)">${first?ago(first.collected_at):'—'}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${first?(first.source_name+' · '+first.title.substring(0,40)+'…'):''}</div>
+      </div>
+      <div class="wam">
+        <div class="wam-l" style="margin-bottom:3px">Dernière mention</div>
+        <div style="font-size:12px;font-weight:600;color:var(--text)">${last?ago(last.collected_at):'—'}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${last?(last.source_name+' · '+last.title.substring(0,40)+'…'):''}</div>
+      </div>
+    </div>
+
+    <div class="wa-charts">
+      <div class="wac-box wa-chart-full">
+        <div class="wac-ttl">Activité dans le temps</div>
+        <div style="position:relative;height:120px"><canvas id="ter-timeline-chart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="wa-charts">
+      <div class="wac-box">
+        <div class="wac-ttl">Sources les plus actives</div>
+        ${srcRows||'<div style="font-size:12px;color:var(--text3)">Pas de données</div>'}
+      </div>
+      <div class="wac-box">
+        <div class="wac-ttl">Mots les plus fréquents</div>
+        <div class="words-cloud">${wordsHtml||'<div style="font-size:12px;color:var(--text3)">Pas de données</div>'}</div>
+      </div>
+    </div>
+
+    <div class="wa-charts">
+      <div class="wac-box wa-chart-full">
+        <div class="wac-ttl">Entités co-citées</div>
+        <div class="entity-list">${entRows}</div>
+      </div>
+    </div>
+
+    <div class="wac-box" style="margin-bottom:10px">
+      <div class="wac-ttl" style="margin-bottom:10px">Articles · ${articles.length} résultats</div>
+      <div>${artRows||'<div style="font-size:12px;color:var(--text3)">Aucun article</div>'}</div>
+    </div>
+  `;
+
+  // Dessine le graphique timeline
+  drawTerTimeline(timeline);
+}
+
+function drawTerTimeline(timeline){
+  const canvas=document.getElementById('ter-timeline-chart');
+  if(!canvas||!timeline.length)return;
+  if(window._terChart)window._terChart.destroy();
+  window._terChart=new Chart(canvas,{
+    type:'bar',
+    data:{
+      labels:timeline.map(v=>{const d=new Date(v.date);return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});}),
+      datasets:[{data:timeline.map(v=>v.count),backgroundColor:'#BFDBFE',borderColor:'#2563EB',borderWidth:1,borderRadius:2}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw} article${c.raw>1?'s':''}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},color:'#9CA3AF',maxRotation:0}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10},color:'#9CA3AF',stepSize:1},beginAtZero:true}}}
+  });
+}
+
+// ── TENDANCES ─────────────────────────────────────────────────
 
 function setTerType(chip,type){
   document.querySelectorAll('#ter-type-chips .wap-chip').forEach(c=>c.classList.remove('active'));
