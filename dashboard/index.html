@@ -1935,18 +1935,28 @@ async function loadTrendWords(){
   try{
     const data=await fetch(`${API}/trends/words?hours=${trWordHours}`).then(r=>r.json());
     if(!data||!data.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:8px 0">Pas assez de données</div>';return}
-    const maxScore=data[0].score||1;
-    el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px">`+
-      data.slice(0,10).map((w,i)=>{
-        const pct=Math.round(w.score/maxScore*100);
-        const arrow=w.ratio>2?'↑↑':w.ratio>1.2?'↑':w.ratio<0.8?'↓':'→';
-        const ac=w.ratio>1.2?'#15803D':w.ratio<0.8?'#DC2626':'#9CA3AF';
-        const intensity=Math.round(40+pct*0.5);
-        return`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
-          <span style="font-size:11px;color:var(--text3);width:14px;flex-shrink:0">${i+1}</span>
-          <span style="font-size:13px;font-weight:600;color:var(--text);flex:1">${w.word}</span>
-          <span style="font-size:11px;color:var(--text3)">${w.count} fois</span>
-          <span style="font-size:12px;font-weight:700;color:${ac}">${arrow}</span>
+    const heatStyle={
+      'VIRAL': 'background:#FEF2F2;color:#DC2626;border-color:#FECACA',
+      'CHAUD': 'background:#FFFBEB;color:#D97706;border-color:#FDE68A',
+      'HAUSSE': 'background:#F0FDF4;color:#15803D;border-color:#BBF7D0',
+      'STABLE': 'background:#F9FAFB;color:#6B7280;border-color:#E5E7EB',
+    };
+    const dirIcon={'emergence':'↗','plateau':'→','retombee':'↘'};
+    const dirColor={'emergence':'#059669','plateau':'#9CA3AF','retombee':'#DC2626'};
+    const dirLabel={'emergence':'Émergence','plateau':'Plateau','retombee':'Retombée'};
+    el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">`+
+      data.slice(0,12).map(w=>{
+        const hs=heatStyle[w.heat]||heatStyle['STABLE'];
+        const srcList=w.top_sources.slice(0,3).join(' · ')+(w.sources>3?` +${w.sources-3}`:'');
+        return`<div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:11px;font-weight:600;color:${dirColor[w.direction]}">${dirIcon[w.direction]} ${dirLabel[w.direction]}</span>
+            <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid;${hs}">${w.heat}</span>
+          </div>
+          <div style="font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.3px;text-transform:capitalize">${w.word}</div>
+          <div style="font-size:22px;font-weight:700;color:var(--accent)">×${w.ratio}</div>
+          <div style="font-size:11px;color:var(--text3)">${w.count} mentions · ${w.sources} sources · vs ${w.ref_hours}h</div>
+          <div style="font-size:10px;color:var(--text3);padding-top:4px;border-top:1px solid var(--border)">${srcList}</div>
         </div>`;
       }).join('')+`</div>`;
   }catch(e){el.innerHTML='<div style="font-size:12px;color:var(--text3)">Erreur</div>';}
