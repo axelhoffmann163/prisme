@@ -659,7 +659,7 @@ input:checked+.tsl:before{transform:translateX(16px)}
 </div>
 
 <script>
-const API='http://128.140.41.234:8000';
+const API='/api';
 
 // ── AUTH ──────────────────────────────────────────────────────
 (function(){
@@ -1616,7 +1616,7 @@ async function createShareLink(){
   const btn=document.getElementById('share-btn');
   try{
     const data=await fetch(`${API}/watchlists/${currentWatchId}/share?expire_days=${expDays}`,{method:'POST'}).then(r=>r.json());
-    const shareUrl=`http://prisme.axelhoffmann.fr:8081/share/${data.token}`;
+    const shareUrl=`https://prisme.axelhoffmann.fr:8081/share/${data.token}`;
     showSharePopup(shareUrl,btn,data.expires_at);
   }catch(e){alert('Erreur lors de la création du lien de partage')}
 }
