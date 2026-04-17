@@ -158,6 +158,46 @@ def watchlist_pdf(watchlist_id: int, hours: int = Query(24, ge=1, le=336)):
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
+@app.get("/watchlists/{watchlist_id}/googlenews")
+def get_googlenews(watchlist_id: int):
+    from database.connection import get_conn
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            source_id = f"googlenews_{watchlist_id}"
+            cur.execute("SELECT active FROM sources WHERE id = %s", (source_id,))
+            row = cur.fetchone()
+    return {"active": bool(row and row[0])}
+
+@app.post("/watchlists/{watchlist_id}/googlenews")
+def enable_googlenews(watchlist_id: int):
+    from database.connection import get_conn
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT name, query FROM watchlists WHERE id = %s", (watchlist_id,))
+            row = cur.fetchone()
+            if not row:
+                return {"error": "Veille introuvable"}
+            wl_name, wl_query = row
+            # Encode la requête pour Google News
+            import urllib.parse
+            q = urllib.parse.quote(wl_query.split()[0])
+            rss_url = f"https://news.google.com/rss/search?q={q}&hl=fr&gl=FR&ceid=FR:fr"
+            source_id = f"googlenews_{watchlist_id}"
+            cur.execute("""
+                INSERT INTO sources (id, name, category, subcategory, url, interval_min, active, tags)
+                VALUES (%s, %s, 'Natif', 'Google News', %s, 30, true, '{google-news}')
+                ON CONFLICT (id) DO UPDATE SET active = true, url = EXCLUDED.url
+            """, (source_id, f"Google News · {wl_name}", rss_url))
+    return {"ok": True, "source_id": source_id, "url": rss_url}
+
+@app.delete("/watchlists/{watchlist_id}/googlenews")
+def disable_googlenews(watchlist_id: int):
+    from database.connection import get_conn
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("UPDATE sources SET active = false WHERE id = %s", (f"googlenews_{watchlist_id}",))
+    return {"ok": True}
+
 # ── Partage ───────────────────────────────────────────────────
 @app.post("/watchlists/{watchlist_id}/share")
 def share_watchlist(watchlist_id: int, expire_days: int = 30):
