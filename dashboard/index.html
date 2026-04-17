@@ -1929,10 +1929,10 @@ async function loadTerritories(){
   const list=document.getElementById('ter-list');
   list.innerHTML='<div class="sl2"><div class="sp2"></div>Chargement…</div>';
   try{
-    let url=terType==='commune'
-      ?`${API}/territories?type=commune`
-      :`${API}/territories?hours=${terHours}`;
-    if(terType==='department') url=`${API}/territories?type=department`;
+    let url;
+    if(terType==='commune') url=`${API}/territories?type=commune`;
+    else if(terType==='department') url=`${API}/territories?type=department&hours=${terHours}`;
+    else url=`${API}/territories?hours=${terHours}`;
     const data=await fetch(url).then(r=>r.json());
     const items=Array.isArray(data)?data:[];
     if(!items.length){
@@ -1944,7 +1944,7 @@ async function loadTerritories(){
     list.innerHTML=items.map(t=>`
       <div class="ter-item ${terSelected===t.id?'active':''}" onclick="loadTerDetail('${t.id}')">
         <span class="ter-item-name">${t.name}</span>
-        <span class="ter-item-count">${t.count||0}</span>
+        <span class="ter-item-count">${(t.count||0).toLocaleString('fr-FR')}</span>
       </div>`).join('');
   }catch(e){list.innerHTML='<div class="se"><div class="ei">⚠️</div>Erreur</div>';}
 }
