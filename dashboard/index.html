@@ -1859,9 +1859,8 @@ function periodToHours(p){return p==='1d'?24:p==='7d'?168:p==='30d'?720:2160}
 async function loadTrends(){
   const hours=periodToHours(trPeriod);
   try{
-    const stats=await fetch(`${API}/stats`).then(r=>r.json());
-    const today=stats.today||0,total=stats.total||0,sources=stats.active_sources||0;
-    const avgDay=hours>24?Math.round(total/(hours/24)):today;
+    const stats=await fetch(`${API}/trends/stats`).then(r=>r.json());
+    const today=stats.today||0,total=stats.total||0,sources=stats.active_sources||0,avgDay=stats.avg_day||0;
     document.getElementById('tr-metrics').innerHTML=`
       <div class="wam"><div class="wam-v">${total.toLocaleString('fr-FR')}</div><div class="wam-l">Articles en base</div></div>
       <div class="wam"><div class="wam-v">${sources}</div><div class="wam-l">Sources actives</div></div>
@@ -1905,7 +1904,17 @@ function renderTrends(topics,sources,volume){
       </div>
     </div>
     <div class="tr-box" style="margin-bottom:10px">
-      <div class="tr-ttl">Mots émergents — score de tendance</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="tr-ttl" style="margin-bottom:0">Mots émergents</div>
+        <button onclick="toggleScoreExplain(this)" style="width:20px;height:20px;border-radius:50%;border:1px solid var(--border);background:var(--bg);font-size:11px;font-weight:600;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center">?</button>
+      </div>
+      <div id="score-explain" style="display:none;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#1E40AF;line-height:1.6">
+        <strong>Score de tendance</strong> = accélération × fréquence<br>
+        Formule : <code style="background:#DBEAFE;padding:1px 5px;border-radius:4px">ratio × log(occurrences + 1)</code><br>
+        <span style="color:#3B82F6">ratio</span> = fréquence actuelle ÷ fréquence période précédente<br>
+        Un mot qui passe de 5 à 50 mentions score plus haut qu'un mot stable à 200 mentions.<br>
+        <span style="color:#3B82F6">↑↑</span> = ratio &gt; 2 &nbsp;·&nbsp; <span style="color:#3B82F6">↑</span> = ratio &gt; 1.2 &nbsp;·&nbsp; → = stable &nbsp;·&nbsp; ↓ = en recul
+      </div>
       <div class="tr-word-periods">
         <div class="tr-wp" onclick="setTRWordPeriod(this,1)">1h</div>
         <div class="tr-wp" onclick="setTRWordPeriod(this,3)">3h</div>
@@ -1927,12 +1936,29 @@ async function loadTrendWords(){
     const data=await fetch(`${API}/trends/words?hours=${trWordHours}`).then(r=>r.json());
     if(!data||!data.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:8px 0">Pas assez de données</div>';return}
     const maxScore=data[0].score||1;
-    el.innerHTML=data.slice(0,10).map((w,i)=>{
-      const arrow=w.ratio>2?'↑↑':w.ratio>1.2?'↑':w.ratio<0.5?'↓':'→';
-      const ac=w.ratio>1.2?'#15803D':w.ratio<0.8?'#DC2626':'#9CA3AF';
-      return`<div class="word-row"><span class="word-rank">${i+1}</span><span class="word-name">${w.word}</span><div class="word-score-bar"><div class="word-score-fill" style="width:${Math.round(w.score/maxScore*100)}%"></div></div><span class="word-cnt">${w.count}</span><span class="word-score">${w.score.toFixed(1)}</span><span class="word-arrow" style="color:${ac};font-weight:700">${arrow}</span></div>`;
-    }).join('');
+    el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px">`+
+      data.slice(0,10).map((w,i)=>{
+        const pct=Math.round(w.score/maxScore*100);
+        const arrow=w.ratio>2?'↑↑':w.ratio>1.2?'↑':w.ratio<0.8?'↓':'→';
+        const ac=w.ratio>1.2?'#15803D':w.ratio<0.8?'#DC2626':'#9CA3AF';
+        const intensity=Math.round(40+pct*0.5);
+        return`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+          <span style="font-size:11px;color:var(--text3);width:14px;flex-shrink:0">${i+1}</span>
+          <span style="font-size:13px;font-weight:600;color:var(--text);flex:1">${w.word}</span>
+          <span style="font-size:11px;color:var(--text3)">${w.count} fois</span>
+          <span style="font-size:12px;font-weight:700;color:${ac}">${arrow}</span>
+        </div>`;
+      }).join('')+`</div>`;
   }catch(e){el.innerHTML='<div style="font-size:12px;color:var(--text3)">Erreur</div>';}
+}
+
+function toggleScoreExplain(btn){
+  const el=document.getElementById('score-explain');
+  if(!el)return;
+  const visible=el.style.display!=='none';
+  el.style.display=visible?'none':'block';
+  btn.style.background=visible?'var(--bg)':'#EFF6FF';
+  btn.style.color=visible?'var(--text3)':'#1D4ED8';
 }
 
 async function loadSrc(){
