@@ -1858,6 +1858,7 @@ function periodToHours(p){return p==='1d'?24:p==='7d'?168:p==='30d'?720:2160}
 
 async function loadTrends(){
   const hours=periodToHours(trPeriod);
+  const periodLbl=trPeriod==='1d'?'24 dernières heures':trPeriod==='7d'?'7 derniers jours':trPeriod==='30d'?'30 derniers jours':'3 derniers mois';
   try{
     const stats=await fetch(`${API}/trends/stats`).then(r=>r.json());
     const today=stats.today||0,total=stats.total||0,sources=stats.active_sources||0,avgDay=stats.avg_day||0;
@@ -1865,42 +1866,81 @@ async function loadTrends(){
       <div class="wam"><div class="wam-v">${total.toLocaleString('fr-FR')}</div><div class="wam-l">Articles en base</div></div>
       <div class="wam"><div class="wam-v">${sources}</div><div class="wam-l">Sources actives</div></div>
       <div class="wam"><div class="wam-v">${today.toLocaleString('fr-FR')}</div><div class="wam-l">Aujourd'hui</div></div>
-      <div class="wam"><div class="wam-v">${avgDay.toLocaleString('fr-FR')}</div><div class="wam-l">Moy. / jour</div></div>`;
+      <div class="wam">
+        <div class="wam-v">${avgDay.toLocaleString('fr-FR')}</div>
+        <div class="wam-l">Moy. / jour (30j)</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">Sur les 30 derniers jours actifs</div>
+      </div>`;
     const [topicsData,sourcesData,volumeData]=await Promise.all([
       fetch(`${API}/trends/topics?hours=${hours}`).then(r=>r.json()),
       fetch(`${API}/trends/sources?hours=${hours}`).then(r=>r.json()),
       fetch(`${API}/trends/volume?days=30`).then(r=>r.json()),
     ]);
-    renderTrends(topicsData,sourcesData,volumeData);
+    renderTrends(topicsData,sourcesData,volumeData,periodLbl);
   }catch(e){document.getElementById('tr-content').innerHTML='<div class="se"><div class="ei">⚠️</div>Erreur de chargement</div>';}
 }
 
-function renderTrends(topics,sources,volume){
+const SRC_CAT_COLORS={
+  'PQN':'#2563EB','PQR':'#059669','TV':'#C2410C',
+  'Radio':'#9333EA','Magazine':'#0369A1','Agence':'#BE123C',
+  'Natif':'#065F46','International':'#475569',
+};
+
+function renderTrends(topics,sources,volume,periodLbl){
   const maxTopic=topics.length?Math.max(...topics.map(t=>t.count),1):1;
   const maxSrc=sources.length?sources[0].count:1;
-  const maxVol=volume.length?Math.max(...volume.map(v=>v.count),1):1;
+
   const topicRows=topics.slice(0,12).map(t=>{
     const color=TOPIC_COLORS[t.topic]||'#9CA3AF';
     const diff=t.diff||0;
     const tCls=diff>5?'tr-up':diff<-5?'tr-down':'tr-flat';
     const tLbl=diff>0?`↑ ${diff}%`:diff<0?`↓ ${Math.abs(diff)}%`:'→';
-    return`<div class="topic-row"><div class="topic-dot" style="background:${color}"></div><span class="topic-name">${t.topic}</span><div class="topic-track"><div class="topic-fill" style="width:${Math.round(t.count/maxTopic*100)}%;background:${color}"></div></div><span class="topic-cnt">${t.count.toLocaleString('fr-FR')}</span><span class="topic-trend ${tCls}">${tLbl}</span></div>`;
+    const delta=t.count-(t.prev||0);
+    const deltaStr=delta>0?`+${delta.toLocaleString('fr-FR')}`:delta.toString();
+    return`<div class="topic-row">
+      <div class="topic-dot" style="background:${color}"></div>
+      <span class="topic-name">${t.topic}</span>
+      <div class="topic-track"><div class="topic-fill" style="width:${Math.round(t.count/maxTopic*100)}%;background:${color}"></div></div>
+      <span class="topic-cnt">${t.count.toLocaleString('fr-FR')}</span>
+      <span style="font-size:10px;color:var(--text3);width:44px;text-align:right">${deltaStr}</span>
+      <span class="topic-trend ${tCls}">${tLbl}</span>
+    </div>`;
   }).join('');
-  const srcRows=sources.slice(0,10).map(s=>`<div class="src-row"><span class="src-name">${s.name}</span><span class="src-cat">${s.category||''}</span><div class="src-track"><div class="src-fill" style="width:${Math.round(s.count/maxSrc*100)}%"></div></div><span class="src-n">${s.count}</span></div>`).join('');
-  const volBars=volume.map((v,i)=>{
-    const h=Math.max(3,Math.round(v.count/maxVol*100));
-    return`<div style="flex:1;height:${h}%;background:${i===volume.length-1?'#2563EB':'#BFDBFE'};border-radius:2px 2px 0 0;min-height:3px" title="${v.date}: ${v.count} articles"></div>`;
+
+  const srcRows=sources.slice(0,10).map(s=>{
+    const color=SRC_CAT_COLORS[s.category]||'#9CA3AF';
+    return`<div class="src-row">
+      <span class="src-name">${s.name}</span>
+      <span style="font-size:9px;padding:1px 5px;border-radius:6px;background:${color}18;color:${color};border:1px solid ${color}33;flex-shrink:0">${s.category||''}</span>
+      <div class="src-track"><div class="src-fill" style="width:${Math.round(s.count/maxSrc*100)}%;background:${color}"></div></div>
+      <span class="src-n">${s.count}</span>
+    </div>`;
   }).join('');
+
   document.getElementById('tr-content').innerHTML=`
     <div class="tr-grid">
-      <div class="tr-box"><div class="tr-ttl">Thèmes dominants</div>${topicRows}</div>
+      <div class="tr-box">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px">
+          <div class="tr-ttl" style="margin-bottom:0">Thèmes dominants</div>
+          <span style="font-size:10px;color:var(--text3)">${periodLbl}</span>
+        </div>
+        ${topicRows}
+      </div>
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="tr-box" style="flex:1">
-          <div class="tr-ttl">Volume quotidien (30 jours)</div>
-          <div style="display:flex;align-items:flex-end;gap:2px;height:80px">${volBars}</div>
-          <div style="display:flex;justify-content:space-between;margin-top:5px"><span style="font-size:10px;color:var(--text3)">Il y a 30j</span><span style="font-size:10px;color:var(--text3)">Aujourd'hui</span></div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px">
+            <div class="tr-ttl" style="margin-bottom:0">Volume quotidien (30 jours)</div>
+            <span id="vol-tooltip" style="font-size:10px;color:var(--accent);font-weight:500"></span>
+          </div>
+          <div style="position:relative;height:90px"><canvas id="vol-chart"></canvas></div>
         </div>
-        <div class="tr-box" style="flex:1"><div class="tr-ttl">Top sources</div>${srcRows}</div>
+        <div class="tr-box" style="flex:1">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px">
+            <div class="tr-ttl" style="margin-bottom:0">Top sources</div>
+            <span style="font-size:10px;color:var(--text3)">${periodLbl}</span>
+          </div>
+          ${srcRows}
+        </div>
       </div>
     </div>
     <div class="tr-box" style="margin-bottom:10px">
@@ -1911,9 +1951,10 @@ function renderTrends(topics,sources,volume){
       <div id="score-explain" style="display:none;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#1E40AF;line-height:1.6">
         <strong>Score de tendance</strong> = accélération × fréquence<br>
         Formule : <code style="background:#DBEAFE;padding:1px 5px;border-radius:4px">ratio × log(occurrences + 1)</code><br>
-        <span style="color:#3B82F6">ratio</span> = fréquence actuelle ÷ fréquence période précédente<br>
+        <span style="color:#3B82F6">ratio</span> = fréquence actuelle ÷ fréquence période de référence (6× plus longue)<br>
         Un mot qui passe de 5 à 50 mentions score plus haut qu'un mot stable à 200 mentions.<br>
-        <span style="color:#3B82F6">↑↑</span> = ratio &gt; 2 &nbsp;·&nbsp; <span style="color:#3B82F6">↑</span> = ratio &gt; 1.2 &nbsp;·&nbsp; → = stable &nbsp;·&nbsp; ↓ = en recul
+        Niveaux basés sur le % de sources actives qui citent le mot :<br>
+        <strong style="color:#DC2626">VIRAL</strong> ≥ 20% · <strong style="color:#D97706">CHAUD</strong> ≥ 12% · <strong style="color:#15803D">HAUSSE</strong> ≥ 6% · <strong style="color:#9CA3AF">STABLE</strong> en dessous
       </div>
       <div class="tr-word-periods">
         <div class="tr-wp" onclick="setTRWordPeriod(this,1)">1h</div>
@@ -1926,7 +1967,75 @@ function renderTrends(topics,sources,volume){
       </div>
       <div id="tr-words"><div class="sl2"><div class="sp2"></div>Calcul…</div></div>
     </div>`;
+
+  drawVolumeChart(volume);
   loadTrendWords();
+}
+
+function drawVolumeChart(volume){
+  const canvas=document.getElementById('vol-chart');
+  if(!canvas||!volume.length)return;
+  if(window._volChart)window._volChart.destroy();
+  const labels=volume.map(v=>{
+    const d=new Date(v.date);
+    return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});
+  });
+  // Moyenne mobile 7 jours
+  const ma7=volume.map((_,i)=>{
+    const slice=volume.slice(Math.max(0,i-6),i+1);
+    return Math.round(slice.reduce((s,v)=>s+v.count,0)/slice.length);
+  });
+  window._volChart=new Chart(canvas,{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {
+          type:'bar',
+          label:'Articles',
+          data:volume.map(v=>v.count),
+          backgroundColor:volume.map((_,i)=>i===volume.length-1?'#2563EB':'#BFDBFE'),
+          borderRadius:2,
+          order:2,
+        },
+        {
+          type:'line',
+          label:'Moy. 7j',
+          data:ma7,
+          borderColor:'#F59E0B',
+          borderWidth:1.5,
+          pointRadius:0,
+          tension:0.4,
+          fill:false,
+          order:1,
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          callbacks:{
+            title:ctx=>{
+              const d=new Date(volume[ctx[0].dataIndex].date);
+              return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+            },
+            label:ctx=>ctx.dataset.label==='Articles'
+              ?`${ctx.raw.toLocaleString('fr-FR')} articles`
+              :`Moyenne 7j : ${ctx.raw.toLocaleString('fr-FR')}`,
+          },
+          displayColors:false,
+        }
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:9},color:'#9CA3AF',maxRotation:0,maxTicksLimit:8}},
+        y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:9},color:'#9CA3AF'},beginAtZero:true}
+      }
+    }
+  });
 }
 
 async function loadTrendWords(){
