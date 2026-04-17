@@ -1,76 +1,126 @@
--- ── Table territories ─────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS territories (
-    id          TEXT        PRIMARY KEY,  -- ex: 'region-idf', 'dept-75', 'commune-paris'
+    id          TEXT        PRIMARY KEY,
     name        TEXT        NOT NULL,
-    type        TEXT        NOT NULL,     -- 'region', 'department', 'commune'
-    code        TEXT,                     -- code INSEE
+    type        TEXT        NOT NULL,
+    code        TEXT,
     region_id   TEXT        REFERENCES territories(id),
     dept_id     TEXT        REFERENCES territories(id),
-    keywords    TEXT[]      DEFAULT '{}', -- mots-clés géographiques
-    source_ids  TEXT[]      DEFAULT '{}', -- sources PQR associées
+    keywords    TEXT[]      DEFAULT '{}',
+    source_ids  TEXT[]      DEFAULT '{}',
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_territories_type ON territories(type);
 CREATE INDEX IF NOT EXISTS idx_territories_region ON territories(region_id);
 
--- ── Régions ───────────────────────────────────────────────────
 INSERT INTO territories (id, name, type, code, keywords, source_ids) VALUES
-('region-idf',  'Île-de-France',          'region', '11', ARRAY['île-de-france','paris','seine','val-de-marne','hauts-de-seine','seine-saint-denis','essonne','yvelines','val-d''oise'], ARRAY['le_parisien','le_monde','le_figaro','liberation']),
-('region-hdf',  'Hauts-de-France',         'region', '32', ARRAY['hauts-de-france','nord','pas-de-calais','somme','oise','aisne','lille','amiens','valenciennes','dunkerque','lens','calais'], ARRAY['la_voix_du_nord','courrier_picard','nord_eclair']),
-('region-gest', 'Grand Est',               'region', '44', ARRAY['grand-est','alsace','lorraine','champagne','strasbourg','nancy','reims','metz','mulhouse','colmar','troyes','épinal'], ARRAY['l_est_republicain','l_alsace','dna','republicain_lorrain','vosges_matin','l_union_ardennais']),
-('region-norm', 'Normandie',               'region', '28', ARRAY['normandie','seine-maritime','calvados','manche','eure','orne','rouen','caen','le havre','cherbourg','évreux'], ARRAY['paris_normandie','la_manche_libre','ouest_france']),
-('region-bret', 'Bretagne',                'region', '53', ARRAY['bretagne','finistère','morbihan','ille-et-vilaine','côtes-d''armor','rennes','brest','quimper','lorient','vannes','saint-brieuc'], ARRAY['ouest_france','le_telegramme']),
-('region-pdl',  'Pays de la Loire',        'region', '52', ARRAY['pays-de-la-loire','loire-atlantique','maine-et-loire','vendée','sarthe','mayenne','nantes','angers','le mans','saint-nazaire','la roche-sur-yon'], ARRAY['presse_ocean','courrier_de_l_ouest','le_maine_libre']),
-('region-cvl',  'Centre-Val de Loire',     'region', '24', ARRAY['centre-val-de-loire','loiret','loir-et-cher','indre-et-loire','cher','indre','orléans','tours','bourges','blois','chartres'], ARRAY['la_nouvelle_republique','la_republique_du_centre','le_berry_republicain','l_echo_republicain']),
-('region-bfc',  'Bourgogne-Franche-Comté', 'region', '27', ARRAY['bourgogne','franche-comté','côte-d''or','saône-et-loire','yonne','nièvre','doubs','jura','haute-saône','dijon','besançon','chalon-sur-saône'], ARRAY['journal_saone_et_loire','l_yonne_republicaine','le_bien_public']),
-('region-ara',  'Auvergne-Rhône-Alpes',    'region', '84', ARRAY['auvergne','rhône-alpes','rhône','isère','puy-de-dôme','haute-savoie','savoie','ain','ardèche','drôme','lyon','grenoble','clermont-ferrand','saint-étienne','annecy','chambéry'], ARRAY['le_progres','le_dauphine','la_montagne']),
-('region-naq',  'Nouvelle-Aquitaine',      'region', '75', ARRAY['nouvelle-aquitaine','gironde','dordogne','charente','corrèze','creuse','haute-vienne','lot-et-garonne','pyrénées-atlantiques','bordeaux','limoges','poitiers','pau','périgueux'], ARRAY['sud_ouest','charente_libre','le_populaire_du_centre']),
-('region-occ',  'Occitanie',               'region', '76', ARRAY['occitanie','hérault','haute-garonne','gard','var','aude','lozère','pyrénées-orientales','toulouse','montpellier','nîmes','perpignan','carcassonne'], ARRAY['la_depeche','midi_libre','l_independant']),
-('region-paca', 'Provence-Alpes-Côte d''Azur', 'region', '93', ARRAY['provence','alpes','côte-d''azur','bouches-du-rhône','var','alpes-maritimes','alpes-de-haute-provence','hautes-alpes','vaucluse','marseille','nice','toulon','aix-en-provence','avignon'], ARRAY['la_provence','nice_matin','var_matin']),
-('region-cors', 'Corse',                   'region', '94', ARRAY['corse','haute-corse','corse-du-sud','ajaccio','bastia'], ARRAY['corse_matin'])
-ON CONFLICT (id) DO UPDATE SET
-    keywords = EXCLUDED.keywords,
-    source_ids = EXCLUDED.source_ids;
+('region-idf',  'Île-de-France',              'region', '11', ARRAY['île-de-france','paris','seine','val-de-marne','hauts-de-seine','seine-saint-denis','essonne','yvelines','val-d''oise'], ARRAY['le_parisien']),
+('region-hdf',  'Hauts-de-France',             'region', '32', ARRAY['hauts-de-france','nord','pas-de-calais','somme','oise','aisne','lille','amiens','valenciennes','dunkerque'], ARRAY['la_voix_du_nord','courrier_picard']),
+('region-gest', 'Grand Est',                   'region', '44', ARRAY['grand-est','alsace','lorraine','champagne','strasbourg','nancy','reims','metz','mulhouse'], ARRAY['l_est_republicain','l_alsace','dna','republicain_lorrain','vosges_matin']),
+('region-norm', 'Normandie',                   'region', '28', ARRAY['normandie','seine-maritime','calvados','manche','eure','orne','rouen','caen','le havre','cherbourg'], ARRAY['paris_normandie','la_manche_libre']),
+('region-bret', 'Bretagne',                    'region', '53', ARRAY['bretagne','finistère','morbihan','ille-et-vilaine','côtes-d''armor','rennes','brest','quimper','lorient','vannes'], ARRAY['ouest_france','le_telegramme']),
+('region-pdl',  'Pays de la Loire',            'region', '52', ARRAY['pays-de-la-loire','loire-atlantique','maine-et-loire','vendée','sarthe','mayenne','nantes','angers','le mans'], ARRAY['presse_ocean','courrier_de_l_ouest','le_maine_libre']),
+('region-cvl',  'Centre-Val de Loire',         'region', '24', ARRAY['centre-val-de-loire','loiret','loir-et-cher','indre-et-loire','cher','indre','orléans','tours','bourges'], ARRAY['la_nouvelle_republique','la_republique_du_centre','le_berry_republicain']),
+('region-bfc',  'Bourgogne-Franche-Comté',     'region', '27', ARRAY['bourgogne','franche-comté','côte-d''or','saône-et-loire','yonne','nièvre','doubs','jura','dijon','besançon'], ARRAY['journal_saone_et_loire','l_yonne_republicaine']),
+('region-ara',  'Auvergne-Rhône-Alpes',        'region', '84', ARRAY['auvergne','rhône-alpes','rhône','isère','puy-de-dôme','haute-savoie','savoie','ain','lyon','grenoble','clermont-ferrand'], ARRAY['le_progres','le_dauphine','la_montagne']),
+('region-naq',  'Nouvelle-Aquitaine',          'region', '75', ARRAY['nouvelle-aquitaine','gironde','dordogne','charente','corrèze','haute-vienne','bordeaux','limoges','poitiers'], ARRAY['sud_ouest','charente_libre','le_populaire_du_centre']),
+('region-occ',  'Occitanie',                   'region', '76', ARRAY['occitanie','hérault','haute-garonne','gard','aude','lozère','pyrénées-orientales','toulouse','montpellier','nîmes'], ARRAY['la_depeche','midi_libre']),
+('region-paca', 'Provence-Alpes-Côte d''Azur', 'region', '93', ARRAY['provence','alpes','côte-d''azur','bouches-du-rhône','var','alpes-maritimes','marseille','nice','toulon','aix-en-provence'], ARRAY['la_provence','nice_matin','var_matin']),
+('region-cors', 'Corse',                       'region', '94', ARRAY['corse','haute-corse','corse-du-sud','ajaccio','bastia'], ARRAY['corse_matin'])
+ON CONFLICT (id) DO UPDATE SET keywords=EXCLUDED.keywords, source_ids=EXCLUDED.source_ids;
 
--- ── Départements (sélection des principaux) ───────────────────
 INSERT INTO territories (id, name, type, code, region_id, keywords, source_ids) VALUES
--- IDF
-('dept-75', 'Paris',            'department', '75', 'region-idf', ARRAY['paris','75','seine'], ARRAY['le_parisien']),
-('dept-92', 'Hauts-de-Seine',   'department', '92', 'region-idf', ARRAY['hauts-de-seine','92','nanterre','boulogne','neuilly','issy'], ARRAY['le_parisien']),
-('dept-93', 'Seine-Saint-Denis','department', '93', 'region-idf', ARRAY['seine-saint-denis','93','saint-denis','montreuil','bobigny'], ARRAY['le_parisien']),
-('dept-94', 'Val-de-Marne',     'department', '94', 'region-idf', ARRAY['val-de-marne','94','créteil','vincennes','vitry'], ARRAY['le_parisien']),
--- Hauts-de-France
-('dept-59', 'Nord',             'department', '59', 'region-hdf', ARRAY['nord','59','lille','roubaix','tourcoing','valenciennes','dunkerque'], ARRAY['la_voix_du_nord']),
-('dept-62', 'Pas-de-Calais',    'department', '62', 'region-hdf', ARRAY['pas-de-calais','62','calais','boulogne','lens','arras'], ARRAY['la_voix_du_nord']),
-('dept-80', 'Somme',            'department', '80', 'region-hdf', ARRAY['somme','80','amiens','abbeville'], ARRAY['courrier_picard']),
--- Grand Est
-('dept-67', 'Bas-Rhin',         'department', '67', 'region-gest', ARRAY['bas-rhin','67','strasbourg','haguenau','sélestat'], ARRAY['l_alsace','dna']),
-('dept-57', 'Moselle',          'department', '57', 'region-gest', ARRAY['moselle','57','metz','thionville','forbach'], ARRAY['republicain_lorrain']),
-('dept-51', 'Marne',            'department', '51', 'region-gest', ARRAY['marne','51','reims','châlons-en-champagne','épernay'], ARRAY['l_union_ardennais']),
--- Normandie
-('dept-76', 'Seine-Maritime',   'department', '76', 'region-norm', ARRAY['seine-maritime','76','rouen','le havre','dieppe'], ARRAY['paris_normandie']),
-('dept-14', 'Calvados',         'department', '14', 'region-norm', ARRAY['calvados','14','caen','bayeux','lisieux'], ARRAY['paris_normandie']),
--- Bretagne
-('dept-35', 'Ille-et-Vilaine',  'department', '35', 'region-bret', ARRAY['ille-et-vilaine','35','rennes','saint-malo','fougères'], ARRAY['ouest_france','le_telegramme']),
-('dept-29', 'Finistère',        'department', '29', 'region-bret', ARRAY['finistère','29','brest','quimper','lorient'], ARRAY['le_telegramme','ouest_france']),
--- Pays de la Loire
-('dept-44', 'Loire-Atlantique', 'department', '44', 'region-pdl',  ARRAY['loire-atlantique','44','nantes','saint-nazaire','la baule'], ARRAY['presse_ocean','ouest_france']),
-('dept-49', 'Maine-et-Loire',   'department', '49', 'region-pdl',  ARRAY['maine-et-loire','49','angers','saumur','cholet'], ARRAY['courrier_de_l_ouest']),
--- Auvergne-RA
-('dept-69', 'Rhône',            'department', '69', 'region-ara',  ARRAY['rhône','69','lyon','villeurbanne','vénissieux'], ARRAY['le_progres']),
-('dept-38', 'Isère',            'department', '38', 'region-ara',  ARRAY['isère','38','grenoble','vienne','bourgoin'], ARRAY['le_dauphine']),
-('dept-63', 'Puy-de-Dôme',      'department', '63', 'region-ara',  ARRAY['puy-de-dôme','63','clermont-ferrand','thiers','riom'], ARRAY['la_montagne']),
--- Nouvelle-Aquitaine
-('dept-33', 'Gironde',          'department', '33', 'region-naq',  ARRAY['gironde','33','bordeaux','mérignac','pessac','libourne'], ARRAY['sud_ouest']),
--- Occitanie
-('dept-31', 'Haute-Garonne',    'department', '31', 'region-occ',  ARRAY['haute-garonne','31','toulouse','colomiers','muret'], ARRAY['la_depeche']),
-('dept-34', 'Hérault',          'department', '34', 'region-occ',  ARRAY['hérault','34','montpellier','sète','béziers'], ARRAY['midi_libre']),
--- PACA
-('dept-13', 'Bouches-du-Rhône', 'department', '13', 'region-paca', ARRAY['bouches-du-rhône','13','marseille','aix-en-provence','arles'], ARRAY['la_provence']),
-('dept-06', 'Alpes-Maritimes',  'department', '06', 'region-paca', ARRAY['alpes-maritimes','06','nice','cannes','antibes','grasse'], ARRAY['nice_matin']),
-('dept-83', 'Var',              'department', '83', 'region-paca', ARRAY['var','83','toulon','draguignan','fréjus'], ARRAY['var_matin'])
-ON CONFLICT (id) DO UPDATE SET
-    keywords = EXCLUDED.keywords,
-    source_ids = EXCLUDED.source_ids,
-    region_id = EXCLUDED.region_id;
+('dept-01','Ain','department','01','region-ara',ARRAY['ain','bourg-en-bresse'],ARRAY['le_progres']),
+('dept-02','Aisne','department','02','region-hdf',ARRAY['aisne','laon','saint-quentin'],ARRAY['l_union_ardennais']),
+('dept-03','Allier','department','03','region-ara',ARRAY['allier','moulins','vichy'],ARRAY['la_montagne']),
+('dept-04','Alpes-de-Haute-Provence','department','04','region-paca',ARRAY['alpes-de-haute-provence','digne'],ARRAY['la_provence']),
+('dept-05','Hautes-Alpes','department','05','region-paca',ARRAY['hautes-alpes','gap'],ARRAY['le_dauphine']),
+('dept-06','Alpes-Maritimes','department','06','region-paca',ARRAY['alpes-maritimes','nice','cannes','antibes'],ARRAY['nice_matin']),
+('dept-07','Ardèche','department','07','region-ara',ARRAY['ardèche','privas','aubenas'],ARRAY['le_dauphine']),
+('dept-08','Ardennes','department','08','region-gest',ARRAY['ardennes','charleville-mézières'],ARRAY['l_union_ardennais']),
+('dept-09','Ariège','department','09','region-occ',ARRAY['ariège','foix'],ARRAY['la_depeche']),
+('dept-10','Aube','department','10','region-gest',ARRAY['aube','troyes'],ARRAY['l_est_republicain']),
+('dept-11','Aude','department','11','region-occ',ARRAY['aude','carcassonne','narbonne'],ARRAY['midi_libre']),
+('dept-12','Aveyron','department','12','region-occ',ARRAY['aveyron','rodez','millau'],ARRAY['la_depeche']),
+('dept-13','Bouches-du-Rhône','department','13','region-paca',ARRAY['bouches-du-rhône','marseille','aix-en-provence','arles'],ARRAY['la_provence']),
+('dept-14','Calvados','department','14','region-norm',ARRAY['calvados','caen','bayeux','lisieux'],ARRAY['paris_normandie']),
+('dept-15','Cantal','department','15','region-ara',ARRAY['cantal','aurillac'],ARRAY['la_montagne']),
+('dept-16','Charente','department','16','region-naq',ARRAY['charente','angoulême'],ARRAY['charente_libre']),
+('dept-17','Charente-Maritime','department','17','region-naq',ARRAY['charente-maritime','la rochelle','rochefort','saintes'],ARRAY['sud_ouest']),
+('dept-18','Cher','department','18','region-cvl',ARRAY['cher','bourges'],ARRAY['le_berry_republicain']),
+('dept-19','Corrèze','department','19','region-naq',ARRAY['corrèze','tulle','brive'],ARRAY['le_populaire_du_centre']),
+('dept-21','Côte-d''Or','department','21','region-bfc',ARRAY['côte-d''or','dijon','beaune'],ARRAY['le_bien_public']),
+('dept-22','Côtes-d''Armor','department','22','region-bret',ARRAY['côtes-d''armor','saint-brieuc'],ARRAY['le_telegramme','ouest_france']),
+('dept-23','Creuse','department','23','region-naq',ARRAY['creuse','guéret'],ARRAY['le_populaire_du_centre']),
+('dept-24','Dordogne','department','24','region-naq',ARRAY['dordogne','périgueux','bergerac'],ARRAY['sud_ouest']),
+('dept-25','Doubs','department','25','region-bfc',ARRAY['doubs','besançon','montbéliard'],ARRAY['l_est_republicain']),
+('dept-26','Drôme','department','26','region-ara',ARRAY['drôme','valence','romans'],ARRAY['le_dauphine']),
+('dept-27','Eure','department','27','region-norm',ARRAY['eure','évreux','vernon'],ARRAY['paris_normandie']),
+('dept-28','Eure-et-Loir','department','28','region-cvl',ARRAY['eure-et-loir','chartres','dreux'],ARRAY['l_echo_republicain']),
+('dept-29','Finistère','department','29','region-bret',ARRAY['finistère','brest','quimper','lorient'],ARRAY['le_telegramme','ouest_france']),
+('dept-30','Gard','department','30','region-occ',ARRAY['gard','nîmes','alès'],ARRAY['midi_libre']),
+('dept-31','Haute-Garonne','department','31','region-occ',ARRAY['haute-garonne','toulouse','colomiers'],ARRAY['la_depeche']),
+('dept-32','Gers','department','32','region-occ',ARRAY['gers','auch'],ARRAY['la_depeche']),
+('dept-33','Gironde','department','33','region-naq',ARRAY['gironde','bordeaux','mérignac'],ARRAY['sud_ouest']),
+('dept-34','Hérault','department','34','region-occ',ARRAY['hérault','montpellier','sète','béziers'],ARRAY['midi_libre']),
+('dept-35','Ille-et-Vilaine','department','35','region-bret',ARRAY['ille-et-vilaine','rennes','saint-malo'],ARRAY['ouest_france','le_telegramme']),
+('dept-36','Indre','department','36','region-cvl',ARRAY['indre','châteauroux'],ARRAY['la_nouvelle_republique']),
+('dept-37','Indre-et-Loire','department','37','region-cvl',ARRAY['indre-et-loire','tours'],ARRAY['la_nouvelle_republique']),
+('dept-38','Isère','department','38','region-ara',ARRAY['isère','grenoble','vienne'],ARRAY['le_dauphine']),
+('dept-39','Jura','department','39','region-bfc',ARRAY['jura','lons-le-saunier'],ARRAY['le_progres']),
+('dept-40','Landes','department','40','region-naq',ARRAY['landes','mont-de-marsan','dax'],ARRAY['sud_ouest']),
+('dept-41','Loir-et-Cher','department','41','region-cvl',ARRAY['loir-et-cher','blois','vendôme'],ARRAY['la_nouvelle_republique']),
+('dept-42','Loire','department','42','region-ara',ARRAY['loire','saint-étienne','roanne'],ARRAY['le_progres']),
+('dept-43','Haute-Loire','department','43','region-ara',ARRAY['haute-loire','le puy-en-velay'],ARRAY['la_montagne']),
+('dept-44','Loire-Atlantique','department','44','region-pdl',ARRAY['loire-atlantique','nantes','saint-nazaire'],ARRAY['presse_ocean','ouest_france']),
+('dept-45','Loiret','department','45','region-cvl',ARRAY['loiret','orléans'],ARRAY['la_republique_du_centre']),
+('dept-46','Lot','department','46','region-occ',ARRAY['lot','cahors','figeac'],ARRAY['la_depeche']),
+('dept-47','Lot-et-Garonne','department','47','region-naq',ARRAY['lot-et-garonne','agen'],ARRAY['sud_ouest']),
+('dept-48','Lozère','department','48','region-occ',ARRAY['lozère','mende'],ARRAY['midi_libre']),
+('dept-49','Maine-et-Loire','department','49','region-pdl',ARRAY['maine-et-loire','angers','saumur'],ARRAY['courrier_de_l_ouest']),
+('dept-50','Manche','department','50','region-norm',ARRAY['manche','cherbourg','saint-lô'],ARRAY['la_manche_libre']),
+('dept-51','Marne','department','51','region-gest',ARRAY['marne','reims','châlons-en-champagne'],ARRAY['l_union_ardennais']),
+('dept-52','Haute-Marne','department','52','region-gest',ARRAY['haute-marne','chaumont'],ARRAY['l_est_republicain']),
+('dept-53','Mayenne','department','53','region-pdl',ARRAY['mayenne','laval'],ARRAY['le_maine_libre']),
+('dept-54','Meurthe-et-Moselle','department','54','region-gest',ARRAY['meurthe-et-moselle','nancy','longwy'],ARRAY['republicain_lorrain']),
+('dept-55','Meuse','department','55','region-gest',ARRAY['meuse','bar-le-duc','verdun'],ARRAY['republicain_lorrain']),
+('dept-56','Morbihan','department','56','region-bret',ARRAY['morbihan','vannes','lorient'],ARRAY['le_telegramme','ouest_france']),
+('dept-57','Moselle','department','57','region-gest',ARRAY['moselle','metz','thionville'],ARRAY['republicain_lorrain']),
+('dept-58','Nièvre','department','58','region-bfc',ARRAY['nièvre','nevers'],ARRAY['le_journal_du_centre']),
+('dept-59','Nord','department','59','region-hdf',ARRAY['nord','lille','roubaix','tourcoing','valenciennes'],ARRAY['la_voix_du_nord']),
+('dept-60','Oise','department','60','region-hdf',ARRAY['oise','beauvais','compiègne'],ARRAY['courrier_picard']),
+('dept-61','Orne','department','61','region-norm',ARRAY['orne','alençon','flers'],ARRAY['paris_normandie']),
+('dept-62','Pas-de-Calais','department','62','region-hdf',ARRAY['pas-de-calais','calais','boulogne','lens','arras'],ARRAY['la_voix_du_nord']),
+('dept-63','Puy-de-Dôme','department','63','region-ara',ARRAY['puy-de-dôme','clermont-ferrand','thiers'],ARRAY['la_montagne']),
+('dept-64','Pyrénées-Atlantiques','department','64','region-naq',ARRAY['pyrénées-atlantiques','pau','bayonne'],ARRAY['sud_ouest']),
+('dept-65','Hautes-Pyrénées','department','65','region-occ',ARRAY['hautes-pyrénées','tarbes','lourdes'],ARRAY['la_depeche']),
+('dept-66','Pyrénées-Orientales','department','66','region-occ',ARRAY['pyrénées-orientales','perpignan'],ARRAY['midi_libre']),
+('dept-67','Bas-Rhin','department','67','region-gest',ARRAY['bas-rhin','strasbourg','haguenau'],ARRAY['l_alsace','dna']),
+('dept-68','Haut-Rhin','department','68','region-gest',ARRAY['haut-rhin','mulhouse','colmar'],ARRAY['l_alsace']),
+('dept-69','Rhône','department','69','region-ara',ARRAY['rhône','lyon','villeurbanne'],ARRAY['le_progres']),
+('dept-70','Haute-Saône','department','70','region-bfc',ARRAY['haute-saône','vesoul'],ARRAY['l_est_republicain']),
+('dept-71','Saône-et-Loire','department','71','region-bfc',ARRAY['saône-et-loire','mâcon','chalon-sur-saône'],ARRAY['journal_saone_et_loire']),
+('dept-72','Sarthe','department','72','region-pdl',ARRAY['sarthe','le mans'],ARRAY['le_maine_libre']),
+('dept-73','Savoie','department','73','region-ara',ARRAY['savoie','chambéry','albertville'],ARRAY['le_dauphine']),
+('dept-74','Haute-Savoie','department','74','region-ara',ARRAY['haute-savoie','annecy','thonon'],ARRAY['le_dauphine']),
+('dept-75','Paris','department','75','region-idf',ARRAY['paris','75'],ARRAY['le_parisien']),
+('dept-76','Seine-Maritime','department','76','region-norm',ARRAY['seine-maritime','rouen','le havre','dieppe'],ARRAY['paris_normandie']),
+('dept-77','Seine-et-Marne','department','77','region-idf',ARRAY['seine-et-marne','melun','meaux'],ARRAY['le_parisien']),
+('dept-78','Yvelines','department','78','region-idf',ARRAY['yvelines','versailles','saint-germain'],ARRAY['le_parisien']),
+('dept-79','Deux-Sèvres','department','79','region-naq',ARRAY['deux-sèvres','niort'],ARRAY['courrier_de_l_ouest']),
+('dept-80','Somme','department','80','region-hdf',ARRAY['somme','amiens','abbeville'],ARRAY['courrier_picard']),
+('dept-81','Tarn','department','81','region-occ',ARRAY['tarn','albi','castres'],ARRAY['la_depeche']),
+('dept-82','Tarn-et-Garonne','department','82','region-occ',ARRAY['tarn-et-garonne','montauban'],ARRAY['la_depeche']),
+('dept-83','Var','department','83','region-paca',ARRAY['var','toulon','draguignan','fréjus'],ARRAY['var_matin']),
+('dept-84','Vaucluse','department','84','region-paca',ARRAY['vaucluse','avignon','carpentras'],ARRAY['la_provence']),
+('dept-85','Vendée','department','85','region-pdl',ARRAY['vendée','la roche-sur-yon','les sables'],ARRAY['courrier_de_l_ouest']),
+('dept-86','Vienne','department','86','region-naq',ARRAY['vienne','poitiers'],ARRAY['la_nouvelle_republique']),
+('dept-87','Haute-Vienne','department','87','region-naq',ARRAY['haute-vienne','limoges'],ARRAY['le_populaire_du_centre']),
+('dept-88','Vosges','department','88','region-gest',ARRAY['vosges','épinal'],ARRAY['vosges_matin']),
+('dept-89','Yonne','department','89','region-bfc',ARRAY['yonne','auxerre','sens'],ARRAY['l_yonne_republicaine']),
+('dept-90','Territoire de Belfort','department','90','region-bfc',ARRAY['territoire de belfort','belfort'],ARRAY['l_alsace']),
+('dept-91','Essonne','department','91','region-idf',ARRAY['essonne','évry','corbeil'],ARRAY['le_parisien']),
+('dept-92','Hauts-de-Seine','department','92','region-idf',ARRAY['hauts-de-seine','nanterre','boulogne','neuilly'],ARRAY['le_parisien']),
+('dept-93','Seine-Saint-Denis','department','93','region-idf',ARRAY['seine-saint-denis','saint-denis','montreuil'],ARRAY['le_parisien']),
+('dept-94','Val-de-Marne','department','94','region-idf',ARRAY['val-de-marne','créteil','vincennes'],ARRAY['le_parisien']),
+('dept-95','Val-d''Oise','department','95','region-idf',ARRAY['val-d''oise','cergy','pontoise'],ARRAY['le_parisien'])
+ON CONFLICT (id) DO UPDATE SET keywords=EXCLUDED.keywords, source_ids=EXCLUDED.source_ids, region_id=EXCLUDED.region_id;
