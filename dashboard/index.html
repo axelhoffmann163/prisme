@@ -333,6 +333,41 @@ input:checked+.tsl:before{transform:translateX(16px)}
 .wam-d{font-size:11px;color:#059669;font-weight:500}
 .wa-charts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .wa-chart-full{grid-column:1/-1}
+.trp{flex:1;overflow-y:auto;padding:20px 24px}
+.tr-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.tr-full{grid-column:1/-1}
+.tr-box{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}
+.tr-ttl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+.topic-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.03)}
+.topic-row:last-child{border:none}
+.topic-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.topic-name{font-size:12px;font-weight:500;color:var(--text);flex:1}
+.topic-track{width:90px;height:5px;background:var(--bg2);border-radius:3px;overflow:hidden;flex-shrink:0}
+.topic-fill{height:100%;border-radius:3px}
+.topic-cnt{font-size:11px;color:var(--text2);width:36px;text-align:right;flex-shrink:0}
+.topic-trend{font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;flex-shrink:0}
+.tr-up{background:#F0FDF4;color:#15803D}
+.tr-down{background:#FFF1F2;color:#BE123C}
+.tr-flat{background:var(--bg2);color:var(--text3)}
+.src-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.03)}
+.src-row:last-child{border:none}
+.src-name{font-size:12px;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.src-cat{font-size:9px;padding:1px 5px;border-radius:6px;background:var(--bg2);color:var(--text3);flex-shrink:0}
+.src-track{width:70px;height:4px;background:var(--bg2);border-radius:2px;overflow:hidden;flex-shrink:0}
+.src-fill{height:100%;background:var(--accent);border-radius:2px}
+.src-n{font-size:11px;color:var(--text3);width:28px;text-align:right;flex-shrink:0}
+.word-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.03)}
+.word-row:last-child{border:none}
+.word-rank{font-size:11px;color:var(--text3);width:16px;flex-shrink:0}
+.word-name{font-size:14px;font-weight:600;color:var(--text);flex:1}
+.word-score-bar{width:80px;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;flex-shrink:0}
+.word-score-fill{height:100%;background:var(--accent);border-radius:3px}
+.word-cnt{font-size:11px;color:var(--text2);width:36px;text-align:right;flex-shrink:0}
+.word-score{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:#EFF6FF;color:#1D4ED8;flex-shrink:0}
+.tr-word-periods{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
+.tr-wp{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text2);transition:all var(--t)}
+.tr-wp:hover{border-color:var(--accent);color:var(--accent)}
+.tr-wp.active{background:var(--accent);color:white;border-color:var(--accent)}
 .wac-box{background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:16px}
 .wac-ttl{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
 .words-cloud{display:flex;flex-wrap:wrap;gap:6px}
@@ -386,6 +421,10 @@ input:checked+.tsl:before{transform:translateX(16px)}
       <svg class="ni" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25"/></svg>
       <span>Mes veilles</span>
       <span class="nb" id="wnb" style="display:none">0</span>
+    </div>
+    <div class="nav" onclick="showPage('trends',this)" id="nav-trends">
+      <svg class="ni" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"/></svg>
+      <span>Tendances</span>
     </div>
   </div>
   <div class="sc">
@@ -657,6 +696,33 @@ input:checked+.tsl:before{transform:translateX(16px)}
     </div>
   </div>
 
+  <!-- PAGE TENDANCES -->
+  <div class="page" id="page-trends">
+    <div class="trp">
+      <div class="ph">
+        <div>
+          <h2>Tendances</h2>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">Évolution de la couverture presse</div>
+        </div>
+        <div style="display:flex;gap:4px" id="tr-period-chips">
+          <div class="wap-chip" onclick="setTRPeriod(this,'1d')">24h</div>
+          <div class="wap-chip active" onclick="setTRPeriod(this,'7d')">7j</div>
+          <div class="wap-chip" onclick="setTRPeriod(this,'30d')">30j</div>
+          <div class="wap-chip" onclick="setTRPeriod(this,'90d')">3 mois</div>
+        </div>
+      </div>
+      <!-- Métriques -->
+      <div class="wa-metrics" id="tr-metrics" style="margin-bottom:14px">
+        <div class="wam"><div class="wam-v">—</div><div class="wam-l">Articles collectés</div></div>
+        <div class="wam"><div class="wam-v">—</div><div class="wam-l">Sources actives</div></div>
+        <div class="wam"><div class="wam-v">—</div><div class="wam-l">Aujourd'hui</div></div>
+        <div class="wam"><div class="wam-v">—</div><div class="wam-l">Moy. par jour</div></div>
+      </div>
+      <!-- Contenu principal -->
+      <div id="tr-content"><div class="sl2"><div class="sp2"></div>Chargement…</div></div>
+    </div>
+  </div>
+
   <!-- PAGE SOURCES -->
   <div class="page" id="page-sources">
     <div class="spg">
@@ -728,6 +794,7 @@ function showPage(n,el){
   if(n==='sources')loadSrc();
   if(n==='watchlists')loadWL();
   if(n==='search')loadSrcList();
+  if(n==='trends')loadTrends();
   closeAllDD();
 }
 
@@ -1774,6 +1841,100 @@ async function revokeShareLink(){
   await fetch(`${API}/watchlists/${currentWatchId}/share`,{method:'DELETE'});
   alert('Lien révoqué.');
 }
+
+// ── TENDANCES ─────────────────────────────────────────────────
+let trPeriod='7d', trWordHours=24;
+const TOPIC_COLORS={'Politique':'#7C3AED','Économie':'#0891B2','Social':'#D97706','Justice':'#DC2626','International':'#059669','Société':'#DB2777','Santé':'#16A34A','Environnement':'#15803D','Science & Tech':'#1D4ED8','Culture':'#9333EA','Sport':'#EA580C','Faits divers':'#475569'};
+
+function setTRPeriod(chip,period){
+  document.querySelectorAll('#tr-period-chips .wap-chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');trPeriod=period;loadTrends();
+}
+function setTRWordPeriod(chip,hours){
+  document.querySelectorAll('.tr-wp').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');trWordHours=hours;loadTrendWords();
+}
+function periodToHours(p){return p==='1d'?24:p==='7d'?168:p==='30d'?720:2160}
+
+async function loadTrends(){
+  const hours=periodToHours(trPeriod);
+  try{
+    const stats=await fetch(`${API}/stats`).then(r=>r.json());
+    const today=stats.today||0,total=stats.total||0,sources=stats.active_sources||0;
+    const avgDay=hours>24?Math.round(total/(hours/24)):today;
+    document.getElementById('tr-metrics').innerHTML=`
+      <div class="wam"><div class="wam-v">${total.toLocaleString('fr-FR')}</div><div class="wam-l">Articles en base</div></div>
+      <div class="wam"><div class="wam-v">${sources}</div><div class="wam-l">Sources actives</div></div>
+      <div class="wam"><div class="wam-v">${today.toLocaleString('fr-FR')}</div><div class="wam-l">Aujourd'hui</div></div>
+      <div class="wam"><div class="wam-v">${avgDay.toLocaleString('fr-FR')}</div><div class="wam-l">Moy. / jour</div></div>`;
+    const [topicsData,sourcesData,volumeData]=await Promise.all([
+      fetch(`${API}/trends/topics?hours=${hours}`).then(r=>r.json()),
+      fetch(`${API}/trends/sources?hours=${hours}`).then(r=>r.json()),
+      fetch(`${API}/trends/volume?days=30`).then(r=>r.json()),
+    ]);
+    renderTrends(topicsData,sourcesData,volumeData);
+  }catch(e){document.getElementById('tr-content').innerHTML='<div class="se"><div class="ei">⚠️</div>Erreur de chargement</div>';}
+}
+
+function renderTrends(topics,sources,volume){
+  const maxTopic=topics.length?Math.max(...topics.map(t=>t.count),1):1;
+  const maxSrc=sources.length?sources[0].count:1;
+  const maxVol=volume.length?Math.max(...volume.map(v=>v.count),1):1;
+  const topicRows=topics.slice(0,12).map(t=>{
+    const color=TOPIC_COLORS[t.topic]||'#9CA3AF';
+    const diff=t.diff||0;
+    const tCls=diff>5?'tr-up':diff<-5?'tr-down':'tr-flat';
+    const tLbl=diff>0?`↑ ${diff}%`:diff<0?`↓ ${Math.abs(diff)}%`:'→';
+    return`<div class="topic-row"><div class="topic-dot" style="background:${color}"></div><span class="topic-name">${t.topic}</span><div class="topic-track"><div class="topic-fill" style="width:${Math.round(t.count/maxTopic*100)}%;background:${color}"></div></div><span class="topic-cnt">${t.count.toLocaleString('fr-FR')}</span><span class="topic-trend ${tCls}">${tLbl}</span></div>`;
+  }).join('');
+  const srcRows=sources.slice(0,10).map(s=>`<div class="src-row"><span class="src-name">${s.name}</span><span class="src-cat">${s.category||''}</span><div class="src-track"><div class="src-fill" style="width:${Math.round(s.count/maxSrc*100)}%"></div></div><span class="src-n">${s.count}</span></div>`).join('');
+  const volBars=volume.map((v,i)=>{
+    const h=Math.max(3,Math.round(v.count/maxVol*100));
+    return`<div style="flex:1;height:${h}%;background:${i===volume.length-1?'#2563EB':'#BFDBFE'};border-radius:2px 2px 0 0;min-height:3px" title="${v.date}: ${v.count} articles"></div>`;
+  }).join('');
+  document.getElementById('tr-content').innerHTML=`
+    <div class="tr-grid">
+      <div class="tr-box"><div class="tr-ttl">Thèmes dominants</div>${topicRows}</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="tr-box" style="flex:1">
+          <div class="tr-ttl">Volume quotidien (30 jours)</div>
+          <div style="display:flex;align-items:flex-end;gap:2px;height:80px">${volBars}</div>
+          <div style="display:flex;justify-content:space-between;margin-top:5px"><span style="font-size:10px;color:var(--text3)">Il y a 30j</span><span style="font-size:10px;color:var(--text3)">Aujourd'hui</span></div>
+        </div>
+        <div class="tr-box" style="flex:1"><div class="tr-ttl">Top sources</div>${srcRows}</div>
+      </div>
+    </div>
+    <div class="tr-box" style="margin-bottom:10px">
+      <div class="tr-ttl">Mots émergents — score de tendance</div>
+      <div class="tr-word-periods">
+        <div class="tr-wp" onclick="setTRWordPeriod(this,1)">1h</div>
+        <div class="tr-wp" onclick="setTRWordPeriod(this,3)">3h</div>
+        <div class="tr-wp" onclick="setTRWordPeriod(this,6)">6h</div>
+        <div class="tr-wp" onclick="setTRWordPeriod(this,12)">12h</div>
+        <div class="tr-wp active" onclick="setTRWordPeriod(this,24)">24h</div>
+        <div class="tr-wp" onclick="setTRWordPeriod(this,72)">3j</div>
+        <div class="tr-wp" onclick="setTRWordPeriod(this,168)">7j</div>
+      </div>
+      <div id="tr-words"><div class="sl2"><div class="sp2"></div>Calcul…</div></div>
+    </div>`;
+  loadTrendWords();
+}
+
+async function loadTrendWords(){
+  const el=document.getElementById('tr-words');if(!el)return;
+  el.innerHTML='<div class="sl2"><div class="sp2"></div>Calcul du score…</div>';
+  try{
+    const data=await fetch(`${API}/trends/words?hours=${trWordHours}`).then(r=>r.json());
+    if(!data||!data.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:8px 0">Pas assez de données</div>';return}
+    const maxScore=data[0].score||1;
+    el.innerHTML=data.slice(0,10).map((w,i)=>{
+      const arrow=w.ratio>2?'↑↑':w.ratio>1.2?'↑':w.ratio<0.5?'↓':'→';
+      const ac=w.ratio>1.2?'#15803D':w.ratio<0.8?'#DC2626':'#9CA3AF';
+      return`<div class="word-row"><span class="word-rank">${i+1}</span><span class="word-name">${w.word}</span><div class="word-score-bar"><div class="word-score-fill" style="width:${Math.round(w.score/maxScore*100)}%"></div></div><span class="word-cnt">${w.count}</span><span class="word-score">${w.score.toFixed(1)}</span><span class="word-arrow" style="color:${ac};font-weight:700">${arrow}</span></div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<div style="font-size:12px;color:var(--text3)">Erreur</div>';}
+}
+
 async function loadSrc(){
   try{
     const data=await fetch(`${API}/sources`).then(r=>r.json());
