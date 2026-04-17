@@ -18,9 +18,7 @@ from api.watchlist import (
 from api.share import generate_share_token, revoke_share_token, get_watchlist_by_token
 from api.pdf_report import generate_watchlist_pdf
 from api.territories import (
-    get_territories, get_territory, get_territory_stats,
-    get_territory_articles, create_commune_territory,
-    delete_territory, get_territories_overview,
+    get_all_territories, create_territory, delete_territory, get_territory_stats
 )
 
 app = FastAPI(title="PressWatch API", version="2.2")
@@ -345,30 +343,23 @@ def trends_words(hours: int = Query(24, ge=1, le=168)):
 
 # ── Territoires ───────────────────────────────────────────────
 @app.get("/territories")
-def territories_list(type: Optional[str] = None, hours: int = Query(24, ge=1, le=336)):
-    if type in ('region', None):
-        return get_territories_overview(hours=hours, type_filter=type or 'region')
-    elif type == 'department':
-        return get_territories_overview(hours=hours, type_filter='department')
-    elif type == 'commune':
-        return get_territories(type_filter='commune')
-    return get_territories_overview(hours=hours)
+def territories_list():
+    return get_all_territories()
 
-@app.get("/territories/{territory_id}/stats")
-def territory_stats_ep(territory_id: str, hours: int = Query(24, ge=1, le=336)):
-    s = get_territory_stats(territory_id=territory_id, hours=hours)
-    if not s: raise HTTPException(status_code=404, detail="Territoire introuvable")
-    return s
-
-@app.get("/territories/{territory_id}/articles")
-def territory_articles_ep(territory_id: str, hours: int = Query(24, ge=1, le=336), limit: int = Query(50, ge=1, le=200)):
-    return get_territory_articles(territory_id=territory_id, hours=hours, limit=limit)
-
-@app.post("/territories/communes")
-def create_commune(name: str, keywords: str, dept_id: Optional[str] = None, region_id: Optional[str] = None):
+@app.post("/territories")
+def create_ter(name: str, type: str = 'commune', keywords: str = ''):
     kws = [k.strip() for k in keywords.split(',') if k.strip()]
-    return create_commune_territory(name=name, keywords=kws, dept_id=dept_id, region_id=region_id)
+    if not kws:
+        kws = [name.lower()]
+    return create_territory(name=name, type=type, keywords=kws)
 
 @app.delete("/territories/{territory_id}")
-def remove_territory(territory_id: str):
+def remove_territory(territory_id: int):
     return delete_territory(territory_id=territory_id)
+
+@app.get("/territories/{territory_id}/stats")
+def territory_stats_ep(territory_id: int, hours: int = Query(168, ge=1, le=336)):
+    s = get_territory_stats(territory_id=territory_id, hours=hours)
+    if not s:
+        raise HTTPException(status_code=404, detail="Territoire introuvable")
+    return s
