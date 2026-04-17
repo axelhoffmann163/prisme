@@ -333,7 +333,16 @@ input:checked+.tsl:before{transform:translateX(16px)}
 .wam-d{font-size:11px;color:#059669;font-weight:500}
 .wa-charts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .wa-chart-full{grid-column:1/-1}
-.trp{flex:1;overflow-y:auto;padding:20px 24px}
+.terp{flex:1;overflow:hidden;padding:20px 24px;display:flex;flex-direction:column;gap:12px}
+.ter-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:9px;cursor:pointer;transition:all var(--t);border:1px solid transparent}
+.ter-item:hover{background:var(--bg2);border-color:var(--border)}
+.ter-item.active{background:#EFF6FF;border-color:#BFDBFE}
+.ter-item-name{font-size:13px;font-weight:500;color:var(--text)}
+.ter-item-count{font-size:11px;font-weight:700;color:var(--accent)}
+.ter-item.active .ter-item-name{color:#1D4ED8}
+.ter-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.ter-section{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
+.ter-ttl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
 .tr-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .tr-full{grid-column:1/-1}
 .tr-box{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}
@@ -425,6 +434,10 @@ input:checked+.tsl:before{transform:translateX(16px)}
     <div class="nav" onclick="showPage('trends',this)" id="nav-trends">
       <svg class="ni" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"/></svg>
       <span>Tendances</span>
+    </div>
+    <div class="nav" onclick="showPage('territories',this)" id="nav-territories">
+      <svg class="ni" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
+      <span>Territoires</span>
     </div>
   </div>
   <div class="sc">
@@ -696,6 +709,53 @@ input:checked+.tsl:before{transform:translateX(16px)}
     </div>
   </div>
 
+  <!-- PAGE TERRITOIRES -->
+  <div class="page" id="page-territories">
+    <div class="terp">
+      <div class="ph">
+        <div>
+          <h2>Veille territoriale</h2>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">Couverture presse par territoire</div>
+        </div>
+        <div style="display:flex;gap:4px" id="ter-type-chips">
+          <div class="wap-chip active" onclick="setTerType(this,'region')">Régions</div>
+          <div class="wap-chip" onclick="setTerType(this,'department')">Départements</div>
+          <div class="wap-chip" onclick="setTerType(this,'commune')">Mes communes</div>
+        </div>
+        <div style="display:flex;gap:4px" id="ter-period-chips">
+          <div class="wap-chip active" onclick="setTerPeriod(this,24)">24h</div>
+          <div class="wap-chip" onclick="setTerPeriod(this,72)">3j</div>
+          <div class="wap-chip" onclick="setTerPeriod(this,168)">7j</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:220px 1fr;gap:12px;flex:1;overflow:hidden">
+        <!-- Liste territoires -->
+        <div style="overflow-y:auto">
+          <div id="ter-list"><div class="sl2"><div class="sp2"></div>Chargement…</div></div>
+          <!-- Ajout commune -->
+          <div id="ter-add-commune" style="display:none;margin-top:8px">
+            <button class="btng" onclick="toggleAddCommune()" style="width:100%;justify-content:center;margin-bottom:8px">
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              Nouvelle commune
+            </button>
+            <div id="ter-commune-form" style="display:none" class="nwp v" style="padding:12px">
+              <div class="ff"><label class="ffl">Nom de la commune</label><input type="text" class="ffi" id="ter-commune-name" placeholder="ex : Strasbourg"></div>
+              <div class="ff" style="margin-top:8px"><label class="ffl">Mots-clés (virgule)</label><input type="text" class="ffi" id="ter-commune-kw" placeholder="ex : strasbourg, bas-rhin"></div>
+              <div style="display:flex;gap:6px;margin-top:10px">
+                <button class="btnp" onclick="saveTerCommune()">Créer</button>
+                <button class="btng" onclick="document.getElementById('ter-commune-form').style.display='none'">Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Détail territoire -->
+        <div style="overflow-y:auto" id="ter-detail">
+          <div class="se" style="margin-top:60px"><div class="ei">🗺️</div><div style="font-weight:600;color:var(--text2)">Sélectionnez un territoire</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- PAGE TENDANCES -->
   <div class="page" id="page-trends">
     <div class="trp">
@@ -794,6 +854,7 @@ function showPage(n,el){
   if(n==='sources')loadSrc();
   if(n==='watchlists')loadWL();
   if(n==='search')loadSrcList();
+  if(n==='territories')loadTerritories();
   if(n==='trends')loadTrends();
   closeAllDD();
 }
@@ -1840,6 +1901,153 @@ async function revokeShareLink(){
   removeSharePopup();
   await fetch(`${API}/watchlists/${currentWatchId}/share`,{method:'DELETE'});
   alert('Lien révoqué.');
+}
+
+// ── TERRITOIRES ───────────────────────────────────────────────
+let terType='region', terHours=24, terSelected=null;
+
+const TOPIC_COLORS_TER={'Politique':'#7C3AED','Économie':'#0891B2','Social':'#D97706','Justice':'#DC2626','International':'#059669','Société':'#DB2777','Santé':'#16A34A','Environnement':'#15803D','Science & Tech':'#1D4ED8','Culture':'#9333EA','Sport':'#EA580C','Faits divers':'#475569'};
+const SRC_COLORS={'PQN':'#2563EB','PQR':'#059669','TV':'#C2410C','Radio':'#9333EA','Magazine':'#0369A1','Agence':'#BE123C','Natif':'#065F46','International':'#475569'};
+
+function setTerType(chip,type){
+  document.querySelectorAll('#ter-type-chips .wap-chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  terType=type;terSelected=null;
+  document.getElementById('ter-detail').innerHTML='<div class="se" style="margin-top:60px"><div class="ei">🗺️</div><div style="font-weight:600;color:var(--text2)">Sélectionnez un territoire</div></div>';
+  document.getElementById('ter-add-commune').style.display=type==='commune'?'block':'none';
+  loadTerritories();
+}
+
+function setTerPeriod(chip,hours){
+  document.querySelectorAll('#ter-period-chips .wap-chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');terHours=hours;
+  loadTerritories();
+  if(terSelected) loadTerDetail(terSelected);
+}
+
+async function loadTerritories(){
+  const list=document.getElementById('ter-list');
+  list.innerHTML='<div class="sl2"><div class="sp2"></div>Chargement…</div>';
+  try{
+    let url=terType==='commune'
+      ?`${API}/territories?type=commune`
+      :`${API}/territories?hours=${terHours}`;
+    if(terType==='department') url=`${API}/territories?type=department`;
+    const data=await fetch(url).then(r=>r.json());
+    const items=Array.isArray(data)?data:[];
+    if(!items.length){
+      list.innerHTML=terType==='commune'
+        ?'<div style="font-size:12px;color:var(--text3);padding:8px 4px">Aucune commune — créez-en une ci-dessous</div>'
+        :'<div class="se"><div class="ei">🗺️</div>Aucun territoire</div>';
+      return;
+    }
+    list.innerHTML=items.map(t=>`
+      <div class="ter-item ${terSelected===t.id?'active':''}" onclick="loadTerDetail('${t.id}')">
+        <span class="ter-item-name">${t.name}</span>
+        <span class="ter-item-count">${t.count||0}</span>
+      </div>`).join('');
+  }catch(e){list.innerHTML='<div class="se"><div class="ei">⚠️</div>Erreur</div>';}
+}
+
+async function loadTerDetail(id){
+  terSelected=id;
+  // Surligne l'item actif
+  document.querySelectorAll('.ter-item').forEach(el=>{
+    el.classList.toggle('active',el.onclick?.toString().includes(`'${id}'`));
+  });
+  const detail=document.getElementById('ter-detail');
+  detail.innerHTML='<div class="sl2"><div class="sp2"></div>Chargement…</div>';
+  try{
+    const [stats,arts]=await Promise.all([
+      fetch(`${API}/territories/${id}/stats?hours=${terHours}`).then(r=>r.json()),
+      fetch(`${API}/territories/${id}/articles?hours=${terHours}&limit=30`).then(r=>r.json()),
+    ]);
+    const t=stats.territory||{};
+    const diff=stats.diff||0;
+    const diffColor=diff>0?'#059669':diff<0?'#DC2626':'#9CA3AF';
+    const diffStr=(diff>0?'+':'')+diff+'%';
+
+    const topicRows=(stats.topics||[]).slice(0,6).map(tp=>{
+      const max=stats.topics[0]?.count||1;
+      const color=TOPIC_COLORS_TER[tp.topic]||'#9CA3AF';
+      return`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.03)">
+        <div style="width:7px;height:7px;border-radius:50%;background:${color};flex-shrink:0"></div>
+        <span style="font-size:12px;flex:1;color:var(--text)">${tp.topic}</span>
+        <div style="width:70px;height:4px;background:var(--bg2);border-radius:2px;overflow:hidden"><div style="width:${Math.round(tp.count/max*100)}%;height:100%;background:${color};border-radius:2px"></div></div>
+        <span style="font-size:11px;color:var(--text2);width:28px;text-align:right">${tp.count}</span>
+      </div>`;
+    }).join('');
+
+    const srcRows=(stats.top_sources||[]).map(s=>{
+      const color=SRC_COLORS[s.category]||'#9CA3AF';
+      const max=stats.top_sources[0]?.count||1;
+      return`<div style="display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.03)">
+        <span style="font-size:9px;padding:1px 5px;border-radius:4px;background:${color}18;color:${color};border:1px solid ${color}33;flex-shrink:0;font-weight:700">${s.category||''}</span>
+        <span style="font-size:12px;flex:1;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.name}</span>
+        <span style="font-size:11px;color:var(--text3)">${s.count}</span>
+      </div>`;
+    }).join('');
+
+    const artRows=(Array.isArray(arts)?arts:[]).map(a=>{
+      const cat=a.topic||'';
+      const color=TOPIC_COLORS_TER[cat]||'#9CA3AF';
+      return`<div style="padding:10px;background:var(--bg);border-radius:9px;border:1px solid var(--border);margin-bottom:6px;cursor:pointer" onclick="window.open('${a.url}','_blank')">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+          ${cat?`<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:${color}18;color:${color};font-weight:700">${cat}</span>`:''}
+          <span style="font-size:11px;font-weight:500;color:var(--text2)">${a.source_name||''}</span>
+          <span style="font-size:10px;color:var(--text3);margin-left:auto">${ago(a.collected_at)}</span>
+        </div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);line-height:1.4">${a.title||''}</div>
+      </div>`;
+    }).join('');
+
+    const isCommune=t.type==='commune';
+
+    detail.innerHTML=`
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div>
+          <div style="font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px">${t.name||''}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${t.region_name?t.region_name+' · ':''} ${terHours}h</div>
+        </div>
+        ${isCommune?`<button class="btng" style="color:#DC2626;border-color:#FECACA" onclick="deleteTerCommune('${id}')">Supprimer</button>`:''}
+      </div>
+      <div class="ter-metrics">
+        <div class="wam"><div class="wam-v">${stats.total||0}</div><div class="wam-l">Articles</div><div style="font-size:10px;font-weight:500;color:${diffColor};margin-top:2px">${diffStr} vs préc.</div></div>
+        <div class="wam"><div class="wam-v">${stats.distinct_sources||0}</div><div class="wam-l">Sources</div></div>
+        <div class="wam"><div class="wam-v">${stats.top_topic||'—'}</div><div class="wam-l">Thème dominant</div></div>
+        <div class="wam"><div class="wam-v">${(arts||[]).length}</div><div class="wam-l">Articles chargés</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div class="ter-section"><div class="ter-ttl">Thèmes</div>${topicRows||'<div style="font-size:12px;color:var(--text3)">Pas de données</div>'}</div>
+        <div class="ter-section"><div class="ter-ttl">Top sources</div>${srcRows||'<div style="font-size:12px;color:var(--text3)">Pas de données</div>'}</div>
+      </div>
+      <div class="ter-section"><div class="ter-ttl">Derniers articles · ${(arts||[]).length} résultats</div>${artRows||'<div style="font-size:12px;color:var(--text3);padding:8px 0">Aucun article</div>'}</div>
+    `;
+  }catch(e){detail.innerHTML='<div class="se"><div class="ei">⚠️</div>Erreur de chargement</div>';}
+}
+
+function toggleAddCommune(){
+  const form=document.getElementById('ter-commune-form');
+  if(form)form.style.display=form.style.display==='none'?'block':'none';
+}
+
+async function saveTerCommune(){
+  const name=document.getElementById('ter-commune-name').value.trim();
+  const kw=document.getElementById('ter-commune-kw').value.trim();
+  if(!name||!kw){alert('Remplissez le nom et les mots-clés.');return}
+  await fetch(`${API}/territories/communes?name=${encodeURIComponent(name)}&keywords=${encodeURIComponent(kw)}`,{method:'POST'});
+  document.getElementById('ter-commune-name').value='';
+  document.getElementById('ter-commune-kw').value='';
+  document.getElementById('ter-add-commune').style.display='none';
+  loadTerritories();
+}
+
+async function deleteTerCommune(id){
+  if(!confirm('Supprimer cette commune ?'))return;
+  await fetch(`${API}/territories/${id}`,{method:'DELETE'});
+  terSelected=null;
+  document.getElementById('ter-detail').innerHTML='<div class="se" style="margin-top:60px"><div class="ei">🗺️</div><div style="font-weight:600;color:var(--text2)">Sélectionnez un territoire</div></div>';
+  loadTerritories();
 }
 
 // ── TENDANCES ─────────────────────────────────────────────────
