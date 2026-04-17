@@ -209,7 +209,9 @@ def trends_stats():
             today = cur.fetchone()[0]
             cur.execute("SELECT COUNT(*) FROM sources WHERE active = true")
             active_sources = cur.fetchone()[0]
-    avg_day = round(total / 30) if total else 0
+            cur.execute("SELECT COUNT(*) FROM articles WHERE collected_at >= NOW() - INTERVAL '30 days'")
+            last30 = cur.fetchone()[0]
+    avg_day = round(last30 / 30) if last30 else 0
     return {"total": total, "today": today, "active_sources": active_sources, "avg_day": avg_day}
 
 @app.get("/trends/topics")
@@ -283,52 +285,80 @@ def trends_words(hours: int = Query(24, ge=1, le=168)):
         'nouvelle','premier','première','france','français','française',
         'gouvernement','ministre','président','paris','national','police',
         'selon','celui','celle','ceux','celles','autre','autres','tout','tous',
-        'toutes','toute','cette','lors','dont','dont','lequel','laquelle',
-        # Noms de médias / sources fréquents dans les titres
+        'toutes','toute','lors','lequel','laquelle',
         'monde','figaro','libération','express','point','nouvel','humanité',
         'croix','ouest','voix','nord','alsace','républicain','progrès','dauphiné',
         'provence','méridional','dépêche','midi','bretagne','normandie',
         'berry','canard','enchaîné','rugbyrama','franceantilles','martinique',
         'réunion','guadeloupe','montagne','lorrain','républicaine','populaire',
         'journal','presse','quotidien','hebdomadaire','revue','gazette',
-        'info','news','actu','media','radio','télé','tele','france','bfm',
+        'info','news','actu','media','radio','télé','tele','bfm',
         'cnews','lci','itele','rmc','europe','rtl','inter','culture','bleu',
+        'huffpost','franceinfo','lefigaro','lemonde','leparisien',
     }
+    ref_hours = hours * 6
+    def extract_words(text):
+        return re.findall(r'\b[a-zàâäéèêëîïôùûüÿœæç]{4,}\b', (text or '').lower())
+
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT title, summary FROM articles
-                WHERE collected_at >= NOW() - (%s || ' hours')::INTERVAL
+                SELECT a.title, a.summary, a.source_id
+                FROM articles a
+                WHERE a.collected_at >= NOW() - (%s || ' hours')::INTERVAL
             """, (str(hours),))
-            current_texts = [f"{r[0] or ''} {r[1] or ''}" for r in cur.fetchall()]
+            current_rows = cur.fetchall()
             cur.execute("""
-                SELECT title, summary FROM articles
-                WHERE collected_at >= NOW() - (%s || ' hours')::INTERVAL * 2
-                  AND collected_at < NOW() - (%s || ' hours')::INTERVAL
-            """, (str(hours), str(hours)))
-            prev_texts = [f"{r[0] or ''} {r[1] or ''}" for r in cur.fetchall()]
+                SELECT a.title, a.summary
+                FROM articles a
+                WHERE a.collected_at >= NOW() - (%s || ' hours')::INTERVAL
+                  AND a.collected_at < NOW() - (%s || ' hours')::INTERVAL
+            """, (str(ref_hours), str(hours)))
+            ref_rows = cur.fetchall()
+            cur.execute("SELECT id, name FROM sources")
+            source_names = {r[0]: r[1] for r in cur.fetchall()}
 
-    def count_words(texts):
-        c = Counter()
-        for t in texts:
-            words = re.findall(r'\b[a-zàâäéèêëîïôùûüÿœæç]{4,}\b', t.lower())
-            c.update(w for w in words if w not in STOPWORDS)
-        return c
+    word_counts = Counter()
+    word_sources = {}
+    for title, summary, src_id in current_rows:
+        words = [w for w in extract_words(f"{title or ''} {summary or ''}") if w not in STOPWORDS]
+        for w in words:
+            word_counts[w] += 1
+            if w not in word_sources:
+                word_sources[w] = set()
+            word_sources[w].add(src_id)
 
-    curr = count_words(current_texts)
-    prev = count_words(prev_texts)
-    total_curr = max(sum(curr.values()), 1)
-    total_prev = max(sum(prev.values()), 1)
+    ref_counts = Counter()
+    ref_total_docs = max(len(ref_rows), 1)
+    for title, summary in ref_rows:
+        words = [w for w in extract_words(f"{title or ''} {summary or ''}") if w not in STOPWORDS]
+        ref_counts.update(set(words))
 
+    curr_total_docs = max(len(current_rows), 1)
     results = []
-    for word, cnt in curr.most_common(500):
-        if cnt < 5:
+    for word, cnt in word_counts.most_common(500):
+        if cnt < 3:
             continue
-        freq_curr = cnt / total_curr
-        freq_prev = (prev.get(word, 0) + 0.5) / total_prev
-        ratio = freq_curr / freq_prev
+        n_sources = len(word_sources.get(word, set()))
+        if n_sources < 2:
+            continue
+        freq_curr = cnt / curr_total_docs
+        freq_ref = (ref_counts.get(word, 0) + 0.5) / ref_total_docs
+        ratio = freq_curr / freq_ref
         score = ratio * math.log(cnt + 1)
-        results.append({"word": word, "count": cnt, "ratio": round(ratio, 2), "score": round(score, 2)})
+        heat = 'VIRAL' if n_sources >= 11 else 'CHAUD' if n_sources >= 8 else 'HAUSSE' if n_sources >= 4 else 'STABLE'
+        direction = 'emergence' if ratio >= 2.0 else 'retombee' if ratio < 0.8 else 'plateau'
+        src_counts = Counter()
+        for title, summary, src_id in current_rows:
+            if word in extract_words(f"{title or ''} {summary or ''}"):
+                src_counts[src_id] += 1
+        top_sources = [source_names.get(s, s) for s, _ in src_counts.most_common(4)]
+        results.append({
+            "word": word, "count": cnt, "sources": n_sources,
+            "ratio": round(ratio, 1), "score": round(score, 1),
+            "heat": heat, "direction": direction,
+            "top_sources": top_sources, "ref_hours": ref_hours,
+        })
 
     results.sort(key=lambda x: -x["score"])
     return results[:20]
