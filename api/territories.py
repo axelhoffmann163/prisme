@@ -236,31 +236,36 @@ def delete_territory(territory_id: str):
     return {'deleted': territory_id}
 
 
-def get_territories_overview(hours: int = 24):
-    """Compte rapide d'articles par région pour la vue d'ensemble."""
-    regions = get_territories('region')
+def get_territories_overview(hours: int = 24, type_filter: str = 'region'):
+    """Compte rapide d'articles par territoire pour la vue d'ensemble."""
+    territories = get_territories(type_filter)
     result = []
     with get_conn() as conn:
         with conn.cursor() as cur:
-            for r in regions:
-                source_ids = r.get('source_ids') or []
-                keywords = r.get('keywords') or []
-                conditions = ["collected_at >= NOW() - (%s || ' hours')::INTERVAL"]
+            for t in territories:
+                source_ids = t.get('source_ids') or []
+                keywords = t.get('keywords') or []
                 params = [str(hours)]
+                parts = []
+
                 if source_ids:
-                    placeholders = ','.join(['%s'] * len(source_ids))
-                    src_c = f"source_id IN ({placeholders})"
+                    ph = ','.join(['%s'] * len(source_ids))
+                    parts.append(f"source_id IN ({ph})")
                     params += source_ids
-                    if keywords:
-                        kw_parts = [f"lower(title) LIKE lower(%s)" for kw in keywords[:5]]
-                        kw_c = '(' + ' OR '.join(kw_parts) + ')'
-                        params += [f'%{kw}%' for kw in keywords[:5]]
-                        conditions.append(f"({src_c} OR {kw_c})")
-                    else:
-                        conditions.append(src_c)
-                where = ' AND '.join(conditions)
+
+                if keywords:
+                    kw_parts = [f"lower(title) LIKE lower(%s)" for kw in keywords[:6]]
+                    parts.append('(' + ' OR '.join(kw_parts) + ')')
+                    params += [f'%{kw}%' for kw in keywords[:6]]
+
+                if not parts:
+                    result.append({**t, 'count': 0})
+                    continue
+
+                where = f"collected_at >= NOW() - (%s || ' hours')::INTERVAL AND ({' OR '.join(parts)})"
                 cur.execute(f"SELECT COUNT(*) FROM articles WHERE {where}", params)
                 count = cur.fetchone()[0]
-                result.append({**r, 'count': count})
+                result.append({**t, 'count': count})
+
     result.sort(key=lambda x: -x['count'])
     return result

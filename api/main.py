@@ -346,9 +346,13 @@ def trends_words(hours: int = Query(24, ge=1, le=168)):
 # ── Territoires ───────────────────────────────────────────────
 @app.get("/territories")
 def territories_list(type: Optional[str] = None, hours: int = Query(24, ge=1, le=336)):
-    if type is None:
-        return get_territories_overview(hours=hours)
-    return get_territories(type_filter=type)
+    if type in ('region', None):
+        return get_territories_overview(hours=hours, type_filter=type or 'region')
+    elif type == 'department':
+        return get_territories_overview(hours=hours, type_filter='department')
+    elif type == 'commune':
+        return get_territories(type_filter='commune')
+    return get_territories_overview(hours=hours)
 
 @app.get("/territories/{territory_id}/stats")
 def territory_stats_ep(territory_id: str, hours: int = Query(24, ge=1, le=336)):
