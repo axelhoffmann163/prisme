@@ -248,7 +248,32 @@ input:checked+.tsl:before{transform:translateX(16px)}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg2);border-radius:4px}
 @media(max-width:768px){.sidebar{width:60px}.sn,.ss,.nav span,.slb,.li span{display:none}.srcst{grid-template-columns:repeat(2,1fr)}.stc{display:none}}
 
-/* ═══ WATCHLISTS & FOLDERS ═══ */
+/* ═══ ACCORDÉON VEILLES ═══ */
+.acc-folder{background:var(--white);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;margin-bottom:8px;box-shadow:var(--shadow)}
+.acc-folder-hdr{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;transition:background var(--t);user-select:none}
+.acc-folder-hdr:hover{background:var(--bg)}
+.acc-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.acc-folder-name{font-size:13px;font-weight:600;color:var(--text);flex:1}
+.acc-folder-meta{display:flex;align-items:center;gap:8px}
+.acc-folder-count{font-size:11px;color:var(--text3)}
+.acc-new-badge{display:inline-flex;align-items:center;padding:2px 7px;background:var(--accent);color:white;border-radius:20px;font-size:10px;font-weight:700}
+.acc-chevron{transition:transform var(--t);color:var(--text3);flex-shrink:0}
+.acc-chevron.open{transform:rotate(90deg)}
+.acc-body{border-top:1px solid var(--border);padding:6px 8px;display:flex;flex-direction:column;gap:4px}
+.acc-wl{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;cursor:pointer;transition:all var(--t);border:1px solid transparent}
+.acc-wl:hover{background:var(--bg2);border-color:var(--border)}
+.acc-wl-info{flex:1;min-width:0}
+.acc-wl-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.acc-wl-query{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acc-wl-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.acc-wl-new{display:inline-flex;align-items:center;padding:3px 8px;background:var(--accent);color:white;border-radius:20px;font-size:10px;font-weight:700}
+.acc-wl-time{font-size:11px;color:var(--text3)}
+.acc-wl-actions{display:flex;gap:3px;opacity:0;transition:opacity var(--t)}
+.acc-wl:hover .acc-wl-actions{opacity:1}
+.acc-no-folder{margin-top:4px}
+.acc-no-folder-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;padding:4px 4px 8px;opacity:.6}
+.acc-add-folder{border:1.5px dashed var(--border);border-radius:var(--r);padding:12px;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--text3);font-size:12px;cursor:pointer;transition:all var(--t);margin-top:4px}
+.acc-add-folder:hover{border-color:var(--accent);color:var(--accent)}
 .wlp{flex:1;overflow-y:auto;padding:20px 24px}
 .wl-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:16px}
 .wl-toolbar h2{font-size:18px;font-weight:600;letter-spacing:-0.3px;flex:1}
@@ -540,8 +565,14 @@ input:checked+.tsl:before{transform:translateX(16px)}
     <div class="wlp">
       <div class="wl-toolbar">
         <h2>Mes veilles</h2>
-        <button class="btng" onclick="toggleNewFolder()"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Nouveau dossier</button>
-        <button class="btnp" onclick="toggleNWP()"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Nouvelle veille</button>
+        <button class="btng" onclick="toggleNewFolder()">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Nouveau dossier
+        </button>
+        <button class="btnp" onclick="toggleNWP()">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Nouvelle veille
+        </button>
       </div>
       <!-- Formulaire nouveau dossier -->
       <div class="nwp" id="new-folder-panel">
@@ -575,15 +606,8 @@ input:checked+.tsl:before{transform:translateX(16px)}
           </div>
         </div>
       </div>
-      <!-- Dossiers -->
-      <div class="wl-section-hdr"><span class="wl-section-ttl" id="wl-section-lbl">Dossiers</span></div>
-      <div class="folder-grid" id="folder-grid"></div>
-      <!-- Veilles -->
-      <div class="wl-section-hdr" id="wl-veilles-hdr" style="display:none">
-        <span class="wl-section-ttl" id="wl-veilles-lbl">Toutes les veilles</span>
-        <span style="font-size:11px;color:var(--accent);cursor:pointer" onclick="showAllWL()">Voir tout</span>
-      </div>
-      <div class="wlg" id="wlg"><div class="sl2"><div class="sp2"></div>Chargement…</div></div>
+      <!-- Accordéon -->
+      <div id="wlg"><div class="sl2"><div class="sp2"></div>Chargement…</div></div>
     </div>
   </div>
 
@@ -965,8 +989,9 @@ async function saveCurrentSearch(){
   alert(`Veille "${name}" créée !`);loadWL();
 }
 
-// ── FOLDERS & WATCHLISTS ─────────────────────────────────────
+// ── FOLDERS & WATCHLISTS (ACCORDÉON) ─────────────────────────
 let allFolders=[], currentFolderId=null, currentWatchId=null, currentWatchHours=24;
+let openFolders=new Set();
 
 function toggleNewFolder(){document.getElementById('new-folder-panel').classList.toggle('v')}
 function toggleNWP(){document.getElementById('nwp').classList.toggle('v')}
@@ -984,7 +1009,7 @@ async function saveFolder(){
 async function delFolder(id){
   if(!confirm('Supprimer ce dossier ? Les veilles ne seront pas supprimées.'))return;
   await fetch(`${API}/folders/${id}`,{method:'DELETE'});
-  currentFolderId=null;loadWL();
+  openFolders.delete(id);loadWL();
 }
 
 async function loadWL(){
@@ -997,84 +1022,92 @@ async function loadWL(){
     const tn=watchlists.reduce((s,w)=>s+(w.new_articles||0),0);
     const b=document.getElementById('wnb');
     b.style.display=tn>0?'':'none';if(tn>0)b.textContent=tn;
-    // Populate folder select in new watchlist form
     const sel=document.getElementById('wfolder');
     sel.innerHTML='<option value="">— Aucun dossier —</option>'+folders.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
-    // Render folders
-    renderFolders(folders,watchlists);
-    // Render watchlists
-    if(currentFolderId){
-      const folderWLs=watchlists.filter(w=>(w.folder_ids||[]).includes(currentFolderId));
-      renderWatchlists(folderWLs);
-      document.getElementById('wl-veilles-hdr').style.display='flex';
-      const fn=folders.find(f=>f.id===currentFolderId);
-      document.getElementById('wl-veilles-lbl').textContent=fn?fn.name:'Veilles';
-    } else {
-      renderWatchlists(watchlists);
-      document.getElementById('wl-veilles-hdr').style.display='none';
-    }
+    renderAccordion(folders,watchlists);
   }catch(e){}
 }
 
-function renderFolders(folders,watchlists){
-  const g=document.getElementById('folder-grid');
-  if(!folders.length){g.innerHTML='';return}
-  g.innerHTML=folders.map(f=>{
-    const count=(watchlists||[]).filter(w=>(w.folder_ids||[]).includes(f.id)).length;
-    const today=(watchlists||[]).filter(w=>(w.folder_ids||[]).includes(f.id)).reduce((s,w)=>s+(w.new_articles||0),0);
-    return`<div class="folder-card" onclick="filterByFolder(${f.id})">
-      <div class="fc-actions" onclick="event.stopPropagation()">
-        <div class="fc-btn danger" onclick="delFolder(${f.id})">✕</div>
-      </div>
-      <div class="fc-icon" style="background:${f.color}22;color:${f.color}">
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v8.25"/></svg>
-      </div>
-      <div class="fc-name">${f.name}</div>
-      <div class="fc-meta">${count} veille${count>1?'s':''} ${today>0?'· <strong style="color:var(--accent)">+'+today+' nouveaux</strong>':''}</div>
-    </div>`;
-  }).join('')+`<div class="folder-card add-folder" onclick="toggleNewFolder()">
-    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-    Nouveau dossier
-  </div>`;
-}
-
-function filterByFolder(id){
-  currentFolderId=id;loadWL();
-  document.getElementById('wl-veilles-hdr').style.display='flex';
-}
-
-function showAllWL(){currentFolderId=null;loadWL()}
-
-function renderWatchlists(watchlists){
+function renderAccordion(folders,watchlists){
   const g=document.getElementById('wlg');
-  if(!watchlists||!watchlists.length){
+  if(!folders.length&&!watchlists.length){
     g.innerHTML='<div class="se"><div class="ei">📋</div><div style="font-weight:600;color:var(--text2)">Aucune veille</div><div>Créez votre première veille ci-dessus</div></div>';
     return;
   }
-  g.innerHTML=watchlists.map(w=>`
-    <div class="wc" onclick="openWatchAnalytics(${w.id},'${w.name.replace(/'/g,"\\'")}','${w.query.replace(/'/g,"\\'")}')">
-      <div class="wc-info">
-        <div class="wcn">${w.name}</div>
-        <div class="wcq">${w.query}</div>
-        ${(w.folder_ids&&w.folder_ids.length)?`<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap">
-          ${w.folder_ids.map(fid=>{const f=allFolders.find(x=>x.id===fid);return f?`<span style="font-size:10px;padding:1px 7px;border-radius:10px;background:${f.color}22;color:${f.color};font-weight:500">${f.name}</span>`:''}).join('')}
-        </div>`:''}
-      </div>
-      <div class="wc-right">
-        <div class="wstat"><div class="wsv">${w.new_articles||0}</div><div class="wsl">nouveaux</div></div>
-        <div class="wsep"></div>
-        <div class="wstat" style="text-align:right">
-          <div style="font-size:11px;color:var(--text3)">${w.last_viewed?'Vu '+ago(w.last_viewed):'Jamais consulté'}</div>
+  // Ouvre tous les dossiers par défaut au premier rendu
+  if(openFolders.size===0&&folders.length>0) folders.forEach(f=>openFolders.add(f.id));
+
+  let html='';
+
+  folders.forEach(f=>{
+    const fWLs=watchlists.filter(w=>(w.folder_ids||[]).includes(f.id));
+    const fNew=fWLs.reduce((s,w)=>s+(w.new_articles||0),0);
+    const isOpen=openFolders.has(f.id);
+    html+=`<div class="acc-folder" id="acc-f-${f.id}">
+      <div class="acc-folder-hdr" onclick="toggleFolder(${f.id})" onmouseenter="document.getElementById('acc-fa-${f.id}').style.opacity='1'" onmouseleave="document.getElementById('acc-fa-${f.id}').style.opacity='0'">
+        <div class="acc-dot" style="background:${f.color}"></div>
+        <span class="acc-folder-name">${f.name}</span>
+        <div class="acc-folder-meta">
+          ${fNew>0?`<span class="acc-new-badge">+${fNew}</span>`:''}
+          <span class="acc-folder-count">${fWLs.length} veille${fWLs.length!==1?'s':''}</span>
+          <div id="acc-fa-${f.id}" style="display:flex;gap:3px;opacity:0;transition:opacity var(--t)" onclick="event.stopPropagation()">
+            <button class="wab danger" onclick="delFolder(${f.id})" title="Supprimer">✕</button>
+          </div>
         </div>
-        <div class="wc-actions" onclick="event.stopPropagation()">
-          <button class="wab" onclick="showFolderPicker(${w.id},this)" title="Ajouter à un dossier">
-            <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v8.25"/></svg>
-          </button>
-          <button class="wab danger" onclick="delW(${w.id})" title="Supprimer">✕</button>
-        </div>
+        <svg class="acc-chevron ${isOpen?'open':''}" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg>
       </div>
-    </div>`).join('');
+      ${isOpen?`<div class="acc-body">
+        ${fWLs.length?fWLs.map(w=>renderWLRow(w)).join(''):'<div style="padding:10px 8px;font-size:12px;color:var(--text3);text-align:center">Aucune veille dans ce dossier</div>'}
+      </div>`:''}
+    </div>`;
+  });
+
+  // Veilles sans dossier
+  const noFolder=watchlists.filter(w=>!(w.folder_ids&&w.folder_ids.length));
+  if(noFolder.length){
+    html+=`<div class="acc-no-folder">
+      <div class="acc-no-folder-lbl">Sans dossier</div>
+      ${noFolder.map(w=>renderWLRow(w)).join('')}
+    </div>`;
+  }
+
+  html+=`<div class="acc-add-folder" onclick="toggleNewFolder()">
+    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+    Nouveau dossier
+  </div>`;
+
+  g.innerHTML=html;
 }
+
+function renderWLRow(w){
+  const newCount=w.new_articles||0;
+  return`<div class="acc-wl" onclick="openWatchAnalytics(${w.id},'${w.name.replace(/'/g,"\\'")}','${w.query.replace(/'/g,"\\'")}')">
+    <div class="acc-wl-info">
+      <div class="acc-wl-name">${w.name}</div>
+      <div class="acc-wl-query">${w.query}</div>
+    </div>
+    <div class="acc-wl-right">
+      ${newCount>0
+        ?`<span class="acc-wl-new">+${newCount} nouveaux</span>`
+        :`<span class="acc-wl-time">${w.last_viewed?'Vu '+ago(w.last_viewed):'Jamais consulté'}</span>`
+      }
+      <div class="acc-wl-actions" onclick="event.stopPropagation()">
+        <button class="wab" onclick="showFolderPicker(${w.id},this)" title="Ajouter à un dossier">
+          <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v8.25"/></svg>
+        </button>
+        <button class="wab danger" onclick="delW(${w.id})" title="Supprimer">✕</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleFolder(id){
+  if(openFolders.has(id)) openFolders.delete(id);
+  else openFolders.add(id);
+  loadWL();
+}
+
+function showAllWL(){currentFolderId=null;loadWL()}
 
 let _fpWid=null;
 function showFolderPicker(wid,btn){
