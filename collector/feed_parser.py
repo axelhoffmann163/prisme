@@ -155,6 +155,7 @@ TOPICS = {
     },
 }
 
+
 def classify_topic(title: str, summary: str = "") -> Optional[str]:
     """Classification pondérée : titre compte 3x plus que le résumé."""
     title_lower = title.lower()
@@ -171,9 +172,7 @@ def classify_topic(title: str, summary: str = "") -> Optional[str]:
             scores[topic] = score
     if not scores:
         return None
-    # Retourne le topic avec le score le plus élevé
     best = max(scores, key=scores.get)
-    # Seuil minimum : score >= 3 pour éviter les faux positifs
     return best if scores[best] >= 3 else None
 
 
