@@ -181,15 +181,11 @@ body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t
 .ffl{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
 .ffi{height:38px;padding:0 12px;border:1px solid var(--border);border-radius:9px;font-size:13px;font-family:inherit;color:var(--text);background:var(--bg);outline:none;transition:all var(--t)}
 .ffi:focus{border-color:var(--accent);background:var(--white);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
-.wlg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-.wc{background:var(--white);border-radius:var(--r);padding:18px;border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;transition:all var(--t)}
-.wc:hover{box-shadow:var(--shadow-h);transform:translateY(-2px);border-color:rgba(37,99,235,0.15)}
-.wch{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
-.wcn{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-0.2px}
-.wcq{font-size:12px;color:var(--text2);margin-bottom:14px}
-.wcf{display:flex;align-items:center;justify-content:space-between}
-.wnb2{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;background:var(--accent);color:white;border-radius:20px;font-size:11px;font-weight:600}
-.wu{font-size:11px;color:var(--text3)}
+.wlg{display:flex;flex-direction:column;gap:8px}
+.wc{background:var(--white);border-radius:var(--r);padding:14px 16px;border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;transition:all var(--t);display:flex;align-items:center;gap:14px}
+.wc:hover{box-shadow:var(--shadow-h);border-color:rgba(37,99,235,0.15)}
+.wcn{font-size:14px;font-weight:600;color:var(--text);letter-spacing:-0.2px}
+.wcq{font-size:12px;color:var(--text2)}
 .wa2{display:flex;gap:4px;opacity:0;transition:opacity var(--t)}
 .wc:hover .wa2{opacity:1}
 .wab{width:26px;height:26px;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--t);color:var(--text3);font-size:12px}
@@ -775,6 +771,10 @@ input:checked+.tsl:before{transform:translateX(16px)}
         <div class="wap-chip" onclick="setTerDetailPeriod(this,336)">14j</div>
       </div>
       <div style="display:flex;gap:6px;margin-left:12px">
+        <button class="btng" onclick="shareTerCurrent()">
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.935-2.186 2.25 2.25 0 0 0-3.935 2.186Z"/></svg>
+          Partager
+        </button>
         <button class="btng" id="ter-delete-btn" onclick="deleteTerCurrent()" style="color:#DC2626;border-color:#FECACA">Supprimer</button>
       </div>
     </div>
@@ -2188,14 +2188,15 @@ function selectTerResult(idx){
   _terSelected=r;
   ac.style.display='none';
   document.getElementById('ter-search-input').value=r.name;
+  // Cache la barre de recherche
+  document.getElementById('ter-search-input').blur();
   const color=TYPE_COLORS[r.type]||'#9CA3AF';
   const lbl=TYPE_LABELS[r.type]||r.type;
-  const pop=r.population>0?` · ${r.population>1000?Math.round(r.population/1000)+'k':r.population} hab.`:'';
+  const pop=r.population>0?` · ${r.population>1000?r.population.toLocaleString('fr-FR')+' hab.':r.population+' hab.'}`:'';
   document.getElementById('ter-preview-name').innerHTML=`<span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;background:${color}18;color:${color};border:1px solid ${color}33;margin-right:6px">${lbl}</span>${r.name}`;
   document.getElementById('ter-preview-meta').textContent=r.sub+pop;
   document.getElementById('ter-preview-kw').textContent='Mots-clés : '+(r.keywords||[r.name.toLowerCase()]).slice(0,5).join(', ');
   document.getElementById('ter-selected-preview').style.display='flex';
-  // Stocker le code INSEE si disponible
   if(!r.geo_code && r.insee) r.geo_code=r.insee;
 }
 
@@ -2250,12 +2251,18 @@ async function loadTerritories(){
 }
 
 async function shareTer(id, e){
-  if(e) e.stopPropagation();
-  const r=await fetch(`${API}/territories/${id}/share`,{method:'POST'}).then(r=>r.json());
-  if(r.url){
-    navigator.clipboard?.writeText(r.url).catch(()=>{});
-    showToast('Lien copié : '+r.url);
-  }
+  if(e){e.stopPropagation();e.preventDefault();}
+  try{
+    const r=await fetch(`${API}/territories/${id}/share`,{method:'POST'}).then(r=>r.json());
+    if(r.url){
+      try{await navigator.clipboard.writeText(r.url);}catch(e){}
+      showToast('🔗 Lien copié dans le presse-papier');
+    }
+  }catch(e){showToast('Erreur lors de la génération du lien');}
+}
+
+function shareTerCurrent(){
+  shareTer(terCurrentId, null);
 }
 
 function openTerDetail(id,name,kw,type,geoCode,population){
