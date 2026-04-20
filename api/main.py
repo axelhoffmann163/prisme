@@ -2,7 +2,7 @@ from fastapi import FastAPI, Query, Response, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 
-from database.connection import init_pool, close_pool
+from database.connection import init_pool, close_pool, get_conn
 from database.repository import get_recent_articles, get_stats
 from api.search import search_articles
 from api.sources import (
@@ -347,11 +347,34 @@ def territories_list():
     return get_all_territories()
 
 @app.post("/territories")
-def create_ter(name: str, type: str = 'commune', keywords: str = ''):
+def create_ter(name: str, type: str = 'commune', keywords: str = '', population: int = 0, geo_code: str = ''):
     kws = [k.strip() for k in keywords.split(',') if k.strip()]
     if not kws:
         kws = [name.lower()]
-    return create_territory(name=name, type=type, keywords=kws)
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO territories (name, type, keywords, population, geo_code) VALUES (%s, %s, %s, %s, %s) RETURNING id, name, type, keywords, population, geo_code, created_at",
+                (name, type, kws, population or None, geo_code or None)
+            )
+            cols = [d[0] for d in cur.description]
+            return dict(zip(cols, cur.fetchone()))
+
+@app.post("/territories/{territory_id}/share")
+def share_territory(territory_id: int):
+    import secrets
+    from datetime import datetime, timezone, timedelta
+    token = secrets.token_urlsafe(24)
+    expires = datetime.now(timezone.utc) + timedelta(days=30)
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE territories SET metadata = jsonb_set(coalesce(metadata,'{}'), '{share_token}', %s::jsonb), "
+                "metadata = jsonb_set(metadata, '{share_expires}', %s::jsonb) WHERE id = %s",
+                (f'"{token}"', f'"{expires.isoformat()}"', territory_id)
+            )
+    base = "https://prisme.axelhoffmann.fr:8081"
+    return {"token": token, "url": f"{base}/territory/{token}", "expires": expires.isoformat()}
 
 @app.delete("/territories/{territory_id}")
 def remove_territory(territory_id: int):
