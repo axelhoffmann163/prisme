@@ -1935,24 +1935,6 @@ let terCurrentId=null, terCurrentHours=168, _terSelected=null, _terSearchTimer=n
 const TYPE_LABELS={'region':'Région','departement':'Département','intercommunalite':'Intercommunalité','commune':'Commune'};
 const TYPE_COLORS={'region':'#7C3AED','departement':'#2563EB','intercommunalite':'#059669','commune':'#D97706'};
 
-function toggleTerNew(){
-  const panel=document.getElementById('ter-new-panel');
-  panel.classList.toggle('v');
-  if(panel.classList.contains('v')){
-    setTimeout(()=>document.getElementById('ter-search-input')?.focus(),100);
-    _terSelected=null;
-    document.getElementById('ter-search-input').value='';
-    document.getElementById('ter-autocomplete').style.display='none';
-    document.getElementById('ter-selected-preview').style.display='none';
-  }
-}
-
-// ── TERRITOIRES ───────────────────────────────────────────────
-let terCurrentId=null, terCurrentHours=168, _terSelected=null, _terSearchTimer=null;
-
-const TYPE_LABELS={'region':'Région','departement':'Département','intercommunalite':'Intercommunalité','commune':'Commune'};
-const TYPE_COLORS={'region':'#7C3AED','departement':'#2563EB','intercommunalite':'#059669','commune':'#D97706'};
-
 const GEO_STATIC=[
   {name:'Île-de-France',type:'region',sub:'',keywords:['île-de-france','idf']},
   {name:'Hauts-de-France',type:'region',sub:'',keywords:['hauts-de-france','nord','pas-de-calais','lille','amiens']},
