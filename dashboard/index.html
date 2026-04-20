@@ -1003,7 +1003,7 @@ function setTF(item,t,lbl){
 
 async function loadTopicCounts(){
   try{
-    const d=await fetch(`${API}/articles?limit=500`).then(r=>r.json());
+    const d=await fetch(`${API}/articles?limit=200`).then(r=>r.json());
     const c={};d.forEach(a=>{if(a.topic)c[a.topic]=(c[a.topic]||0)+1});
     const m={'Politique':'Politique','Économie':'Economie','Social':'Social','Justice':'Justice','International':'International','Société':'Societe','Santé':'Sante','Environnement':'Environnement','Science & Tech':'ScienceTech','Culture':'Culture','Sport':'Sport','Faits divers':'Faitsdivers'};
     Object.entries(m).forEach(([t,k])=>{const el=document.getElementById(`cnt-${k}`);if(el)el.textContent=c[t]||0});
