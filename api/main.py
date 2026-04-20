@@ -368,10 +368,15 @@ def share_territory(territory_id: int):
     expires = datetime.now(timezone.utc) + timedelta(days=30)
     with get_conn() as conn:
         with conn.cursor() as cur:
+            # Ajoute les colonnes si elles n'existent pas encore
+            cur.execute("""
+                ALTER TABLE territories
+                ADD COLUMN IF NOT EXISTS share_token TEXT,
+                ADD COLUMN IF NOT EXISTS share_expires_at TIMESTAMPTZ
+            """)
             cur.execute(
-                "UPDATE territories SET metadata = jsonb_set(coalesce(metadata,'{}'), '{share_token}', %s::jsonb), "
-                "metadata = jsonb_set(metadata, '{share_expires}', %s::jsonb) WHERE id = %s",
-                (f'"{token}"', f'"{expires.isoformat()}"', territory_id)
+                "UPDATE territories SET share_token=%s, share_expires_at=%s WHERE id=%s",
+                (token, expires, territory_id)
             )
     base = "https://prisme.axelhoffmann.fr:8081"
     return {"token": token, "url": f"{base}/territory/{token}", "expires": expires.isoformat()}
