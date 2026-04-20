@@ -106,12 +106,16 @@ function barsSvg(data,color='#2563EB'){
 }
 
 async function load(){
+  const isTerritory=location.search.includes('type=territory');
+  const endpoint=isTerritory?`${API}/territory-share/${token}`:`${API}/share/${token}`;
   try{
-    const data=await fetch(`${API}/share/${token}`).then(r=>{
+    const data=await fetch(endpoint).then(r=>{
       if(!r.ok)throw new Error(r.status);
       return r.json();
     });
-    render(data);
+    if(!data) throw new Error('null');
+    if(isTerritory) renderTerritory(data);
+    else render(data);
   }catch(e){
     document.getElementById('app').innerHTML=`
       <div class="error">
@@ -120,6 +124,44 @@ async function load(){
         <div>Ce lien de partage n'est plus actif.</div>
       </div>`;
   }
+}
+
+function renderTerritory(s){
+  const TYPE_LABELS={region:'Région',departement:'Département',intercommunalite:'Intercommunalité',commune:'Commune'};
+  const TYPE_COLORS={region:'#7C3AED',departement:'#2563EB',intercommunalite:'#059669',commune:'#D97706'};
+  const color=TYPE_COLORS[s.type]||'#9CA3AF';
+  const lbl=TYPE_LABELS[s.type]||s.type||'Territoire';
+  const pop=s.population?`${s.population.toLocaleString('fr-FR')} hab. · `:'';
+  const diff=s.diff||0;
+  const diffColor=diff>0?'#059669':diff<0?'#DC2626':'#9CA3AF';
+  const arts=s.articles||[];
+  const topWords=s.top_words||[];
+  const maxWc=topWords[0]?.count||1;
+  const typeColors={PQN:'#2563EB',PQR:'#059669',TV:'#C2410C',Radio:'#9333EA',Magazine:'#0369A1',Agence:'#BE123C'};
+  const TOPIC_COLORS={Politique:'#7C3AED',Économie:'#0891B2',Social:'#D97706',Justice:'#DC2626',International:'#059669',Société:'#DB2777',Santé:'#16A34A',Environnement:'#15803D','Science & Tech':'#1D4ED8',Culture:'#9333EA',Sport:'#EA580C','Faits divers':'#475569'};
+  document.title=`Prisme — ${s.name}`;
+
+  document.getElementById('app').innerHTML=`
+    <div class="header">
+      <div class="wl-name">
+        <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:${color}18;color:${color};border:1px solid ${color}33;margin-right:8px">${lbl}</span>
+        ${s.name}
+      </div>
+      <div class="wl-meta">${pop}${(s.keywords||[]).slice(0,4).join(', ')}</div>
+    </div>
+    <div class="metrics">
+      <div class="metric"><div class="mv">${s.total||0}</div><div class="ml">Articles</div></div>
+      <div class="metric"><div class="mv">${s.distinct_sources||0}</div><div class="ml">Sources</div></div>
+      <div class="metric"><div class="mv" style="font-size:14px;color:${diffColor}">${diff>0?'+':''}${diff}%</div><div class="ml">vs période préc.</div></div>
+    </div>
+    <div class="section">
+      <div class="section-title">Mots fréquents</div>
+      <div class="words">${topWords.slice(0,15).map(w=>{const r=w.count/maxWc;return`<span class="word" style="font-size:${Math.round(11+r*5)}px;opacity:${(0.4+r*0.6).toFixed(2)}">${w.word}</span>`;}).join('')}</div>
+    </div>
+    <div class="section">
+      <div class="section-title">Articles récents · ${arts.length} résultats</div>
+      ${arts.slice(0,20).map(a=>{const c=TOPIC_COLORS[a.topic]||'#9CA3AF';const sc=typeColors[a.source_category]||'#9CA3AF';return`<div class="article" onclick="window.open('${a.url}','_blank')"><div class="art-meta">${a.topic?`<span style="font-size:9px;padding:1px 6px;border-radius:4px;background:${c}18;color:${c};font-weight:700">${a.topic}</span>`:''}<span style="font-size:11px;color:#6B7280;font-weight:500">${a.source_name||''}</span><span style="font-size:10px;color:#9CA3AF;margin-left:auto">${new Date(a.collected_at).toLocaleDateString('fr-FR')}</span></div><div class="art-title">${a.title||''}</div></div>`;}).join('')}
+    </div>`;
 }
 
 function render(d){

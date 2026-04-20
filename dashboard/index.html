@@ -2230,12 +2230,16 @@ async function loadTerritories(){
         const nameEsc=t.name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
         const kwEsc=(t.keywords||[]).join(', ').replace(/'/g,"\\'");
         return`<div class="wc" onclick="openTerDetail(${t.id},'${nameEsc}','${kwEsc}','${t.type||'commune'}','${t.geo_code||''}',${t.population||0})">
+          <div style="width:36px;height:36px;border-radius:8px;background:${color}18;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="${color}" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
+          </div>
           <div class="wc-info">
-            <div class="wcn" style="display:flex;align-items:center;gap:6px">
-              <span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;background:${color}18;color:${color};border:1px solid ${color}33;flex-shrink:0">${lbl}</span>
-              ${t.name}
+            <div class="wcn">${t.name}</div>
+            <div class="wcq" style="display:flex;align-items:center;gap:6px;margin-top:2px">
+              <span style="font-size:9px;font-weight:600;padding:1px 6px;border-radius:6px;background:${color}18;color:${color}">${lbl}</span>
+              ${t.population?`<span style="font-size:11px;color:var(--text3)">${t.population.toLocaleString('fr-FR')} hab.</span>`:''}
+              <span style="font-size:11px;color:var(--text3)">${(t.keywords||[]).slice(0,3).join(', ')}</span>
             </div>
-            <div class="wcq">${(t.keywords||[]).slice(0,4).join(', ')}${pop}</div>
           </div>
           <div class="wc-right">
             <div class="wc-actions" onclick="event.stopPropagation()">
@@ -2274,9 +2278,13 @@ function openTerDetail(id,name,kw,type,geoCode,population){
   document.getElementById('nav-territories').classList.add('active');
   const color=TYPE_COLORS[type]||'#9CA3AF';
   const lbl=TYPE_LABELS[type]||type;
-  const pop=population>0?` · ${population>1000?Math.round(population/1000)+'k hab.':population+' hab.'}`:'';
-  document.getElementById('ter-detail-name').innerHTML=`<span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:${color}18;color:${color};border:1px solid ${color}33;margin-right:8px">${lbl}</span>${name}<span style="font-size:12px;color:var(--text3);font-weight:400;margin-left:8px">${pop}</span>`;
-  document.getElementById('ter-detail-kw').textContent=kw;
+  const pop=population>0?`${population.toLocaleString('fr-FR')} hab.`:'';
+  document.getElementById('ter-detail-name').textContent=name;
+  document.getElementById('ter-detail-kw').innerHTML=`
+    <span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:6px;background:${color}18;color:${color};margin-right:6px">${lbl}</span>
+    ${pop?`<span style="margin-right:6px">${pop}</span>`:''}
+    <span style="color:var(--text3)">${kw.split(', ').slice(0,4).join(', ')}</span>
+  `;
   document.querySelectorAll('#ter-period-chips .wap-chip').forEach(c=>c.classList.toggle('active',c.textContent==='7j'));
   loadTerDetail();
   if(geoCode && type==='commune') loadTerInstitutional(geoCode);
