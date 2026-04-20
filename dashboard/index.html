@@ -1947,59 +1947,235 @@ function toggleTerNew(){
   }
 }
 
+// ── TERRITOIRES ───────────────────────────────────────────────
+let terCurrentId=null, terCurrentHours=168, _terSelected=null, _terSearchTimer=null;
+
+const TYPE_LABELS={'region':'Région','departement':'Département','intercommunalite':'Intercommunalité','commune':'Commune'};
+const TYPE_COLORS={'region':'#7C3AED','departement':'#2563EB','intercommunalite':'#059669','commune':'#D97706'};
+
+const GEO_STATIC=[
+  {name:'Île-de-France',type:'region',sub:'',keywords:['île-de-france','idf']},
+  {name:'Hauts-de-France',type:'region',sub:'',keywords:['hauts-de-france','nord','pas-de-calais','lille','amiens']},
+  {name:'Grand Est',type:'region',sub:'',keywords:['grand-est','alsace','lorraine','champagne','strasbourg','nancy','reims','metz']},
+  {name:'Normandie',type:'region',sub:'',keywords:['normandie','rouen','caen','le havre']},
+  {name:'Bretagne',type:'region',sub:'',keywords:['bretagne','rennes','brest','quimper']},
+  {name:'Pays de la Loire',type:'region',sub:'',keywords:['pays-de-la-loire','nantes','angers']},
+  {name:'Centre-Val de Loire',type:'region',sub:'',keywords:['centre-val-de-loire','orléans','tours']},
+  {name:'Bourgogne-Franche-Comté',type:'region',sub:'',keywords:['bourgogne','franche-comté','dijon','besançon']},
+  {name:'Auvergne-Rhône-Alpes',type:'region',sub:'',keywords:['auvergne','rhône-alpes','lyon','grenoble','clermont-ferrand']},
+  {name:'Nouvelle-Aquitaine',type:'region',sub:'',keywords:['nouvelle-aquitaine','bordeaux','limoges','poitiers']},
+  {name:'Occitanie',type:'region',sub:'',keywords:['occitanie','toulouse','montpellier','nîmes']},
+  {name:'Provence-Alpes-Côte d\'Azur',type:'region',sub:'',keywords:['provence','alpes','côte-d\'azur','marseille','nice','toulon']},
+  {name:'Corse',type:'region',sub:'',keywords:['corse','ajaccio','bastia']},
+  {name:'Nord',type:'departement',sub:'Hauts-de-France',keywords:['nord','lille','roubaix','valenciennes','59']},
+  {name:'Pas-de-Calais',type:'departement',sub:'Hauts-de-France',keywords:['pas-de-calais','calais','arras','lens','62']},
+  {name:'Somme',type:'departement',sub:'Hauts-de-France',keywords:['somme','amiens','80']},
+  {name:'Oise',type:'departement',sub:'Hauts-de-France',keywords:['oise','beauvais','60']},
+  {name:'Aisne',type:'departement',sub:'Hauts-de-France',keywords:['aisne','laon','saint-quentin','02']},
+  {name:'Paris',type:'departement',sub:'Île-de-France',keywords:['paris','75']},
+  {name:'Hauts-de-Seine',type:'departement',sub:'Île-de-France',keywords:['hauts-de-seine','nanterre','boulogne','92']},
+  {name:'Seine-Saint-Denis',type:'departement',sub:'Île-de-France',keywords:['seine-saint-denis','saint-denis','93']},
+  {name:'Val-de-Marne',type:'departement',sub:'Île-de-France',keywords:['val-de-marne','créteil','94']},
+  {name:'Seine-et-Marne',type:'departement',sub:'Île-de-France',keywords:['seine-et-marne','melun','77']},
+  {name:'Yvelines',type:'departement',sub:'Île-de-France',keywords:['yvelines','versailles','78']},
+  {name:'Essonne',type:'departement',sub:'Île-de-France',keywords:['essonne','évry','91']},
+  {name:'Val-d\'Oise',type:'departement',sub:'Île-de-France',keywords:['val-d\'oise','cergy','95']},
+  {name:'Bas-Rhin',type:'departement',sub:'Grand Est',keywords:['bas-rhin','strasbourg','67']},
+  {name:'Haut-Rhin',type:'departement',sub:'Grand Est',keywords:['haut-rhin','mulhouse','colmar','68']},
+  {name:'Moselle',type:'departement',sub:'Grand Est',keywords:['moselle','metz','thionville','57']},
+  {name:'Meurthe-et-Moselle',type:'departement',sub:'Grand Est',keywords:['meurthe-et-moselle','nancy','54']},
+  {name:'Marne',type:'departement',sub:'Grand Est',keywords:['marne','reims','51']},
+  {name:'Ardennes',type:'departement',sub:'Grand Est',keywords:['ardennes','charleville','08']},
+  {name:'Aube',type:'departement',sub:'Grand Est',keywords:['aube','troyes','10']},
+  {name:'Meuse',type:'departement',sub:'Grand Est',keywords:['meuse','verdun','55']},
+  {name:'Vosges',type:'departement',sub:'Grand Est',keywords:['vosges','épinal','88']},
+  {name:'Haute-Marne',type:'departement',sub:'Grand Est',keywords:['haute-marne','chaumont','52']},
+  {name:'Seine-Maritime',type:'departement',sub:'Normandie',keywords:['seine-maritime','rouen','le havre','76']},
+  {name:'Calvados',type:'departement',sub:'Normandie',keywords:['calvados','caen','14']},
+  {name:'Manche',type:'departement',sub:'Normandie',keywords:['manche','cherbourg','50']},
+  {name:'Eure',type:'departement',sub:'Normandie',keywords:['eure','évreux','27']},
+  {name:'Orne',type:'departement',sub:'Normandie',keywords:['orne','alençon','61']},
+  {name:'Ille-et-Vilaine',type:'departement',sub:'Bretagne',keywords:['ille-et-vilaine','rennes','35']},
+  {name:'Finistère',type:'departement',sub:'Bretagne',keywords:['finistère','brest','quimper','29']},
+  {name:'Morbihan',type:'departement',sub:'Bretagne',keywords:['morbihan','vannes','56']},
+  {name:'Côtes-d\'Armor',type:'departement',sub:'Bretagne',keywords:['côtes-d\'armor','saint-brieuc','22']},
+  {name:'Loire-Atlantique',type:'departement',sub:'Pays de la Loire',keywords:['loire-atlantique','nantes','44']},
+  {name:'Maine-et-Loire',type:'departement',sub:'Pays de la Loire',keywords:['maine-et-loire','angers','49']},
+  {name:'Vendée',type:'departement',sub:'Pays de la Loire',keywords:['vendée','85']},
+  {name:'Sarthe',type:'departement',sub:'Pays de la Loire',keywords:['sarthe','le mans','72']},
+  {name:'Mayenne',type:'departement',sub:'Pays de la Loire',keywords:['mayenne','laval','53']},
+  {name:'Rhône',type:'departement',sub:'Auvergne-Rhône-Alpes',keywords:['rhône','lyon','69']},
+  {name:'Isère',type:'departement',sub:'Auvergne-Rhône-Alpes',keywords:['isère','grenoble','38']},
+  {name:'Puy-de-Dôme',type:'departement',sub:'Auvergne-Rhône-Alpes',keywords:['puy-de-dôme','clermont-ferrand','63']},
+  {name:'Haute-Savoie',type:'departement',sub:'Auvergne-Rhône-Alpes',keywords:['haute-savoie','annecy','74']},
+  {name:'Savoie',type:'departement',sub:'Auvergne-Rhône-Alpes',keywords:['savoie','chambéry','73']},
+  {name:'Loire',type:'departement',sub:'Auvergne-Rhône-Alpes',keywords:['loire','saint-étienne','42']},
+  {name:'Ain',type:'departement',sub:'Auvergne-Rhône-Alpes',keywords:['ain','bourg-en-bresse','01']},
+  {name:'Drôme',type:'departement',sub:'Auvergne-Rhône-Alpes',keywords:['drôme','valence','26']},
+  {name:'Ardèche',type:'departement',sub:'Auvergne-Rhône-Alpes',keywords:['ardèche','privas','07']},
+  {name:'Haute-Loire',type:'departement',sub:'Auvergne-Rhône-Alpes',keywords:['haute-loire','43']},
+  {name:'Allier',type:'departement',sub:'Auvergne-Rhône-Alpes',keywords:['allier','moulins','03']},
+  {name:'Cantal',type:'departement',sub:'Auvergne-Rhône-Alpes',keywords:['cantal','aurillac','15']},
+  {name:'Gironde',type:'departement',sub:'Nouvelle-Aquitaine',keywords:['gironde','bordeaux','33']},
+  {name:'Haute-Vienne',type:'departement',sub:'Nouvelle-Aquitaine',keywords:['haute-vienne','limoges','87']},
+  {name:'Charente-Maritime',type:'departement',sub:'Nouvelle-Aquitaine',keywords:['charente-maritime','la rochelle','17']},
+  {name:'Pyrénées-Atlantiques',type:'departement',sub:'Nouvelle-Aquitaine',keywords:['pyrénées-atlantiques','pau','bayonne','64']},
+  {name:'Dordogne',type:'departement',sub:'Nouvelle-Aquitaine',keywords:['dordogne','périgueux','24']},
+  {name:'Charente',type:'departement',sub:'Nouvelle-Aquitaine',keywords:['charente','angoulême','16']},
+  {name:'Corrèze',type:'departement',sub:'Nouvelle-Aquitaine',keywords:['corrèze','tulle','brive','19']},
+  {name:'Lot-et-Garonne',type:'departement',sub:'Nouvelle-Aquitaine',keywords:['lot-et-garonne','agen','47']},
+  {name:'Vienne',type:'departement',sub:'Nouvelle-Aquitaine',keywords:['vienne','poitiers','86']},
+  {name:'Deux-Sèvres',type:'departement',sub:'Nouvelle-Aquitaine',keywords:['deux-sèvres','niort','79']},
+  {name:'Creuse',type:'departement',sub:'Nouvelle-Aquitaine',keywords:['creuse','guéret','23']},
+  {name:'Haute-Garonne',type:'departement',sub:'Occitanie',keywords:['haute-garonne','toulouse','31']},
+  {name:'Hérault',type:'departement',sub:'Occitanie',keywords:['hérault','montpellier','34']},
+  {name:'Gard',type:'departement',sub:'Occitanie',keywords:['gard','nîmes','30']},
+  {name:'Pyrénées-Orientales',type:'departement',sub:'Occitanie',keywords:['pyrénées-orientales','perpignan','66']},
+  {name:'Aude',type:'departement',sub:'Occitanie',keywords:['aude','carcassonne','11']},
+  {name:'Tarn',type:'departement',sub:'Occitanie',keywords:['tarn','albi','81']},
+  {name:'Tarn-et-Garonne',type:'departement',sub:'Occitanie',keywords:['tarn-et-garonne','montauban','82']},
+  {name:'Aveyron',type:'departement',sub:'Occitanie',keywords:['aveyron','rodez','12']},
+  {name:'Lot',type:'departement',sub:'Occitanie',keywords:['lot','cahors','46']},
+  {name:'Gers',type:'departement',sub:'Occitanie',keywords:['gers','auch','32']},
+  {name:'Hautes-Pyrénées',type:'departement',sub:'Occitanie',keywords:['hautes-pyrénées','tarbes','65']},
+  {name:'Ariège',type:'departement',sub:'Occitanie',keywords:['ariège','foix','09']},
+  {name:'Lozère',type:'departement',sub:'Occitanie',keywords:['lozère','mende','48']},
+  {name:'Bouches-du-Rhône',type:'departement',sub:'Provence-Alpes-Côte d\'Azur',keywords:['bouches-du-rhône','marseille','aix-en-provence','13']},
+  {name:'Alpes-Maritimes',type:'departement',sub:'Provence-Alpes-Côte d\'Azur',keywords:['alpes-maritimes','nice','cannes','06']},
+  {name:'Var',type:'departement',sub:'Provence-Alpes-Côte d\'Azur',keywords:['var','toulon','83']},
+  {name:'Vaucluse',type:'departement',sub:'Provence-Alpes-Côte d\'Azur',keywords:['vaucluse','avignon','84']},
+  {name:'Alpes-de-Haute-Provence',type:'departement',sub:'Provence-Alpes-Côte d\'Azur',keywords:['alpes-de-haute-provence','digne','04']},
+  {name:'Hautes-Alpes',type:'departement',sub:'Provence-Alpes-Côte d\'Azur',keywords:['hautes-alpes','gap','05']},
+  {name:'Haute-Corse',type:'departement',sub:'Corse',keywords:['haute-corse','bastia','2b']},
+  {name:'Corse-du-Sud',type:'departement',sub:'Corse',keywords:['corse-du-sud','ajaccio','2a']},
+  {name:'Loiret',type:'departement',sub:'Centre-Val de Loire',keywords:['loiret','orléans','45']},
+  {name:'Indre-et-Loire',type:'departement',sub:'Centre-Val de Loire',keywords:['indre-et-loire','tours','37']},
+  {name:'Loir-et-Cher',type:'departement',sub:'Centre-Val de Loire',keywords:['loir-et-cher','blois','41']},
+  {name:'Eure-et-Loir',type:'departement',sub:'Centre-Val de Loire',keywords:['eure-et-loir','chartres','28']},
+  {name:'Cher',type:'departement',sub:'Centre-Val de Loire',keywords:['cher','bourges','18']},
+  {name:'Indre',type:'departement',sub:'Centre-Val de Loire',keywords:['indre','châteauroux','36']},
+  {name:'Côte-d\'Or',type:'departement',sub:'Bourgogne-Franche-Comté',keywords:['côte-d\'or','dijon','21']},
+  {name:'Saône-et-Loire',type:'departement',sub:'Bourgogne-Franche-Comté',keywords:['saône-et-loire','mâcon','71']},
+  {name:'Doubs',type:'departement',sub:'Bourgogne-Franche-Comté',keywords:['doubs','besançon','25']},
+  {name:'Yonne',type:'departement',sub:'Bourgogne-Franche-Comté',keywords:['yonne','auxerre','89']},
+  {name:'Jura',type:'departement',sub:'Bourgogne-Franche-Comté',keywords:['jura','39']},
+  {name:'Haute-Saône',type:'departement',sub:'Bourgogne-Franche-Comté',keywords:['haute-saône','vesoul','70']},
+  {name:'Nièvre',type:'departement',sub:'Bourgogne-Franche-Comté',keywords:['nièvre','nevers','58']},
+  {name:'Territoire de Belfort',type:'departement',sub:'Bourgogne-Franche-Comté',keywords:['territoire-de-belfort','belfort','90']},
+  {name:'Métropole du Grand Paris',type:'intercommunalite',sub:'Île-de-France',keywords:['grand paris','métropole grand paris','mgp']},
+  {name:'Métropole de Lyon',type:'intercommunalite',sub:'Auvergne-Rhône-Alpes',keywords:['métropole de lyon','grand lyon']},
+  {name:'Métropole Aix-Marseille-Provence',type:'intercommunalite',sub:'Provence-Alpes-Côte d\'Azur',keywords:['aix-marseille','métropole aix-marseille']},
+  {name:'Métropole Européenne de Lille',type:'intercommunalite',sub:'Hauts-de-France',keywords:['métropole européenne de lille','mel','lille métropole']},
+  {name:'Bordeaux Métropole',type:'intercommunalite',sub:'Nouvelle-Aquitaine',keywords:['bordeaux métropole']},
+  {name:'Toulouse Métropole',type:'intercommunalite',sub:'Occitanie',keywords:['toulouse métropole']},
+  {name:'Nantes Métropole',type:'intercommunalite',sub:'Pays de la Loire',keywords:['nantes métropole']},
+  {name:'Rennes Métropole',type:'intercommunalite',sub:'Bretagne',keywords:['rennes métropole']},
+  {name:'Strasbourg Eurométropole',type:'intercommunalite',sub:'Grand Est',keywords:['eurométropole','strasbourg eurométropole']},
+  {name:'Grenoble-Alpes Métropole',type:'intercommunalite',sub:'Auvergne-Rhône-Alpes',keywords:['grenoble alpes métropole']},
+  {name:'Montpellier Méditerranée Métropole',type:'intercommunalite',sub:'Occitanie',keywords:['montpellier méditerranée','montpellier métropole']},
+  {name:'Nice Côte d\'Azur',type:'intercommunalite',sub:'Provence-Alpes-Côte d\'Azur',keywords:['nice côte d\'azur','nca']},
+  {name:'Toulon Provence Méditerranée',type:'intercommunalite',sub:'Provence-Alpes-Côte d\'Azur',keywords:['toulon provence méditerranée','tpm']},
+  {name:'Rouen Normandie Métropole',type:'intercommunalite',sub:'Normandie',keywords:['rouen métropole','métropole rouen normandie']},
+  {name:'Clermont Auvergne Métropole',type:'intercommunalite',sub:'Auvergne-Rhône-Alpes',keywords:['clermont auvergne métropole']},
+  {name:'Saint-Étienne Métropole',type:'intercommunalite',sub:'Auvergne-Rhône-Alpes',keywords:['saint-étienne métropole']},
+  {name:'Dijon Métropole',type:'intercommunalite',sub:'Bourgogne-Franche-Comté',keywords:['dijon métropole']},
+  {name:'Brest Métropole',type:'intercommunalite',sub:'Bretagne',keywords:['brest métropole']},
+  {name:'Tours Métropole Val de Loire',type:'intercommunalite',sub:'Centre-Val de Loire',keywords:['tours métropole']},
+  {name:'Orléans Métropole',type:'intercommunalite',sub:'Centre-Val de Loire',keywords:['orléans métropole']},
+  {name:'Angers Loire Métropole',type:'intercommunalite',sub:'Pays de la Loire',keywords:['angers loire métropole']},
+  {name:'Metz Métropole',type:'intercommunalite',sub:'Grand Est',keywords:['metz métropole']},
+  {name:'Caen la Mer',type:'intercommunalite',sub:'Normandie',keywords:['caen la mer','caen métropole']},
+  {name:'Nancy Grand Cœur',type:'intercommunalite',sub:'Grand Est',keywords:['nancy grand cœur','grand nancy']},
+  {name:'Perpignan Méditerranée',type:'intercommunalite',sub:'Occitanie',keywords:['perpignan méditerranée']},
+];
+
+function _norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+
+function _searchStatic(q){
+  const nq=_norm(q);
+  return GEO_STATIC.filter(r=>_norm(r.name).includes(nq)||r.keywords.some(k=>_norm(k).includes(nq))).slice(0,4);
+}
+
+async function _searchCommunes(q){
+  try{
+    const res=await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&type=municipality&limit=6`).then(r=>r.json());
+    return(res.features||[]).map(f=>({
+      name:f.properties.city||f.properties.label,
+      type:'commune',
+      sub:f.properties.context||'',
+      keywords:[(f.properties.city||f.properties.label).toLowerCase(),f.properties.postcode||''].filter(Boolean),
+      population:f.properties.population||0,
+    }));
+  }catch(e){return[];}
+}
+
+function _renderAC(results){
+  const ac=document.getElementById('ter-autocomplete');
+  ac._results=results;
+  ac.innerHTML=results.map((r,i)=>{
+    const color=TYPE_COLORS[r.type]||'#9CA3AF';
+    const lbl=TYPE_LABELS[r.type]||r.type;
+    const pop=r.population>0?` · ${r.population>1000?Math.round(r.population/1000)+'k':r.population} hab.`:'';
+    return`<div onclick="selectTerResult(${i})" style="display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s" onmouseenter="this.style.background='var(--bg)'" onmouseleave="this.style.background=''">
+      <span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;background:${color}18;color:${color};border:1px solid ${color}33;flex-shrink:0">${lbl}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;color:var(--text)">${r.name}</div>
+        <div style="font-size:11px;color:var(--text3)">${r.sub}${pop}</div>
+      </div>
+    </div>`;
+  }).join('');
+  ac.style.display=results.length?'block':'none';
+}
+
+function toggleTerNew(){
+  const panel=document.getElementById('ter-new-panel');
+  panel.classList.toggle('v');
+  if(panel.classList.contains('v')){
+    setTimeout(()=>document.getElementById('ter-search-input')?.focus(),100);
+    _terSelected=null;
+    document.getElementById('ter-search-input').value='';
+    document.getElementById('ter-autocomplete').style.display='none';
+    document.getElementById('ter-selected-preview').style.display='none';
+  }
+}
+
 function onTerSearch(val){
   clearTimeout(_terSearchTimer);
   const ac=document.getElementById('ter-autocomplete');
-  if(val.length<2){ac.style.display='none';return}
+  if(val.length<2){ac.style.display='none';return;}
+  // Résultats statiques immédiats
+  const staticR=_searchStatic(val);
+  if(staticR.length) _renderAC(staticR);
+  // Puis communes via API
   _terSearchTimer=setTimeout(async()=>{
-    try{
-      const results=await fetch(`${API}/geo/search?q=${encodeURIComponent(val)}`).then(r=>r.json());
-      if(!results.length){ac.style.display='none';return}
-      ac.innerHTML=results.map((r,i)=>{
-        const color=TYPE_COLORS[r.type]||'#9CA3AF';
-        const lbl=TYPE_LABELS[r.type]||r.type;
-        const sub=[r.dept_name,r.region_name].filter(Boolean).join(' · ');
-        const pop=r.population?` · ${(r.population/1000).toFixed(0)}k hab.`:'';
-        return`<div class="ter-ac-item" onclick="selectTerResult(${i})" data-idx="${i}" style="display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;transition:background var(--t)" onmouseenter="this.style.background='var(--bg)'" onmouseleave="this.style.background=''">
-          <span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;background:${color}18;color:${color};border:1px solid ${color}33;flex-shrink:0;white-space:nowrap">${lbl}</span>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:600;color:var(--text)">${r.name}</div>
-            ${sub?`<div style="font-size:11px;color:var(--text3)">${sub}${pop}</div>`:''}
-          </div>
-        </div>`;
-      }).join('');
-      ac._results=results;
-      ac.style.display='block';
-    }catch(e){ac.style.display='none';}
-  },200);
+    const communesR=await _searchCommunes(val);
+    const seen=new Set(staticR.map(r=>_norm(r.name)));
+    const merged=[...staticR,...communesR.filter(r=>!seen.has(_norm(r.name)))].slice(0,10);
+    _renderAC(merged);
+  },300);
 }
 
 function onTerSearchKey(e){
-  if(e.key==='Escape'){document.getElementById('ter-autocomplete').style.display='none';}
+  if(e.key==='Escape')document.getElementById('ter-autocomplete').style.display='none';
 }
 
 function selectTerResult(idx){
   const ac=document.getElementById('ter-autocomplete');
-  const r=ac._results[idx];
-  if(!r)return;
+  const r=ac._results[idx];if(!r)return;
   _terSelected=r;
   ac.style.display='none';
   document.getElementById('ter-search-input').value=r.name;
-
   const color=TYPE_COLORS[r.type]||'#9CA3AF';
   const lbl=TYPE_LABELS[r.type]||r.type;
-  const sub=[r.dept_name,r.region_name].filter(Boolean).join(' · ');
-  const pop=r.population?`${(r.population/1000).toFixed(0)}k hab.`:'';
-  const kws=(r.keywords||[]).slice(0,5).join(', ');
-
+  const pop=r.population>0?` · ${r.population>1000?Math.round(r.population/1000)+'k':r.population} hab.`:'';
   document.getElementById('ter-preview-name').innerHTML=`<span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;background:${color}18;color:${color};border:1px solid ${color}33;margin-right:6px">${lbl}</span>${r.name}`;
-  document.getElementById('ter-preview-meta').textContent=[sub,pop].filter(Boolean).join(' · ');
-  document.getElementById('ter-preview-kw').textContent='Mots-clés : '+kws;
+  document.getElementById('ter-preview-meta').textContent=r.sub+pop;
+  document.getElementById('ter-preview-kw').textContent='Mots-clés : '+(r.keywords||[r.name.toLowerCase()]).slice(0,5).join(', ');
   document.getElementById('ter-selected-preview').style.display='flex';
 }
 
 async function confirmTerCreate(){
-  if(!_terSelected){alert('Sélectionnez un territoire dans la liste.');return}
+  if(!_terSelected){alert('Sélectionnez un territoire.');return;}
   const r=_terSelected;
   const kws=(r.keywords||[r.name.toLowerCase()]).join(',');
   await fetch(`${API}/territories?name=${encodeURIComponent(r.name)}&type=${r.type}&keywords=${encodeURIComponent(kws)}`,{method:'POST'});
