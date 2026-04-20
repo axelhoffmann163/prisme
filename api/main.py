@@ -342,34 +342,8 @@ def trends_words(hours: int = Query(24, ge=1, le=168)):
     return results[:20]
 
 # ── Territoires ───────────────────────────────────────────────
-@app.get("/geo/search")
-def geo_search(q: str = Query(..., min_length=2)):
-    from database.connection import get_conn
-    with get_conn() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT id, name, type, dept_name, region_name, population, keywords
-                FROM geo_places
-                WHERE unaccent(lower(name)) LIKE unaccent(lower(%s))
-                   OR unaccent(lower(name)) LIKE unaccent(lower(%s))
-                   OR EXISTS (
-                       SELECT 1 FROM unnest(keywords) kw
-                       WHERE unaccent(lower(kw)) LIKE unaccent(lower(%s))
-                   )
-                ORDER BY
-                    CASE type
-                        WHEN 'region' THEN 1
-                        WHEN 'departement' THEN 2
-                        WHEN 'intercommunalite' THEN 3
-                        WHEN 'commune' THEN 4
-                    END,
-                    population DESC NULLS LAST
-                LIMIT 10
-            """, (f"{q}%", f"% {q}%", f"{q}%"))
-            cols = [d[0] for d in cur.description]
-            return [dict(zip(cols, r)) for r in cur.fetchall()]
-
-
+@app.get("/territories")
+def territories_list():
     return get_all_territories()
 
 @app.post("/territories")
