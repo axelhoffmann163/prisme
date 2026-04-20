@@ -360,8 +360,28 @@ def create_ter(name: str, type: str = 'commune', keywords: str = '', population:
             cols = [d[0] for d in cur.description]
             return dict(zip(cols, cur.fetchone()))
 
-@app.post("/territories/{territory_id}/share")
-def share_territory(territory_id: int):
+@app.get("/territory-share/{token}")
+def get_territory_shared(token: str):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT t.id, t.name, t.type, t.keywords, t.population, t.geo_code
+                FROM territories t
+                WHERE t.share_token = %s
+                  AND (t.share_expires_at IS NULL OR t.share_expires_at > NOW())
+            """, (token,))
+            row = cur.fetchone()
+            if not row:
+                return None
+            tid, name, ttype, keywords, population, geo_code = row
+    # Retourne les stats du territoire
+    from api.territories import get_territory_stats
+    stats = get_territory_stats(territory_id=tid, hours=168)
+    if stats:
+        stats['share_token'] = token
+        stats['population'] = population
+        stats['geo_code'] = geo_code
+    return stats
     import secrets
     from datetime import datetime, timezone, timedelta
     token = secrets.token_urlsafe(24)
@@ -379,7 +399,7 @@ def share_territory(territory_id: int):
                 (token, expires, territory_id)
             )
     base = "https://prisme.axelhoffmann.fr:8081"
-    return {"token": token, "url": f"{base}/territory/{token}", "expires": expires.isoformat()}
+    return {"token": token, "url": f"{base}/share/{token}?type=territory", "expires": expires.isoformat()}
 
 @app.delete("/territories/{territory_id}")
 def remove_territory(territory_id: int):
